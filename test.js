@@ -10,10 +10,11 @@ const buyBtn = document.querySelector("#buy-btn");
 
 console.log(buyBtn);
 
+// Metamask 연결!
 window.addEventListener("load", function() {
   if (typeof web3 !== "undefined") {
     console.log("Web3 Detected! " + web3.currentProvider.constructor.name);
-    window.web3 = new Web3(web3.currentProvider);
+    web3 = new Web3(web3.currentProvider);
   } else {
     console.log("No Web3 Detected... using HTTP Provider");
     window.web3 = new Web3(
@@ -22,8 +23,10 @@ window.addEventListener("load", function() {
       )
     );
   }
+  getContract();
 });
 
+// 계좌에서 잔액 확인하기
 function getBalance() {
   var address = document.getElementById("address").value;
   try {
@@ -36,6 +39,32 @@ function getBalance() {
   } catch (err) {
     document.getElementById("output").innerHTML = err;
   }
+}
+
+// 이더리움 네트워크에 배포된 컨트랙트 연결하기!
+// ABI , 컨트랙트 주소!
+
+// Create Contract Instance
+function readTextFile(file, callback) {
+  let rawFile = new XMLHttpRequest();
+  rawFile.overrideMimeType("application/json");
+  rawFile.open("GET", file, true);
+  rawFile.onreadystatechange = function() {
+    if (rawFile.readyState === 4 && rawFile.status == "200") {
+      callback(rawFile.responseText);
+    }
+  };
+  rawFile.send(null);
+}
+
+function getContract() {
+  readTextFile("./Demo.json", function(data) {
+    // change to contract address (Demo)
+    const address = "0x3eA2073DE1aaAA3A03D189eC5114F15e5f555021"; // sangil contract address
+    const ABI = JSON.parse(data).abi;
+    Demo = new web3.eth.Contract(ABI, address);
+    console.log(Demo);
+  });
 }
 
 function onBuyBtn(event) {
