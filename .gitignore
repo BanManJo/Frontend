@@ -149,4 +149,6 @@ docs/_book
 # TODO: where does this rule come from?
 test/
 
+### Contracts ###
+contracts/
 # End of https://www.toptal.com/developers/gitignore/api/vue,node,visualstudiocode
