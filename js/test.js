@@ -56,20 +56,26 @@ function readTextFile(file, callback) {
   };
   rawFile.send(null);
 }
-
+const contracts = {
+  Demo: null,
+};
 function getContract() {
-  readTextFile("./Demo.json", function(data) {
+  readTextFile("./contracts/Demo.json", function(data) {
     // change to contract address (Demo)
-    const address = "0x3eA2073DE1aaAA3A03D189eC5114F15e5f555021"; // sangil contract address
+    const address = "0x64619F72e5572bE021e3C411Aa1c8EE7f824981D"; // sangil contract address
     const ABI = JSON.parse(data).abi;
-    Demo = new web3.eth.Contract(ABI, address);
-    console.log(Demo);
+    contracts.Demo = new web3.eth.Contract(ABI, address);
+    console.log(contracts.Demo);
   });
 }
 
 function onBuyBtn(event) {
   event.preventDefault();
   alert("metamask");
+  contracts.Demo.methods
+    .testing()
+    .send({ from: "0x5b3bb65dC52177BAc0eeebcD5270Ad76499A4e8F" })
+    .then(console.log);
 }
 
 buyBtn.addEventListener("submit", onBuyBtn);
