@@ -11,8 +11,6 @@ const testBtn = document.querySelector("#test-btn");
 // <li>1조</li>
 // </ul>`;
 
-console.log(buyBtn);
-
 // Metamask 연결!
 window.addEventListener("load", function() {
   if (typeof web3 !== "undefined") {
