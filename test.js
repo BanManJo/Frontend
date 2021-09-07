@@ -1,4 +1,7 @@
-const buyBtn = document.querySelector("#buy-btn");
+const contracts = {
+  Demo: null,
+};
+const testBtn = document.querySelector("#test-btn");
 // const product = document.querySelector("#product");
 // console.log(product)
 
@@ -51,16 +54,21 @@ function getContractWithFetch() {
     .then((response) => response.json())
     .then((data) => {
       // change to contract address (Demo)
-      const address = "0x3eA2073DE1aaAA3A03D189eC5114F15e5f555021"; // sangil contract address
+      const address = "0x9b0C0f91f9148D2bCd60075b146551900f00f423"; // sangil contract address
       const ABI = data.abi;
-      Demo = new web3.eth.Contract(ABI, address);
-      console.log(Demo);
+      contracts.Demo = new web3.eth.Contract(ABI, address);
+      console.log(contracts.Demo);
     });
 }
 
-function onBuyBtn(event) {
+function onCallMethodBtn(event) {
   event.preventDefault();
-  alert("metamask");
+  contracts.Demo.methods
+    .testing()
+    .call()
+    .then((data) => {
+      alert(`Succed! call the contracts methods! => ${data}`);
+    });
 }
 
-buyBtn.addEventListener("submit", onBuyBtn);
+testBtn.addEventListener("submit", onCallMethodBtn);
