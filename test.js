@@ -23,21 +23,21 @@ window.addEventListener("load", function() {
       )
     );
   }
-  getContract();
+  getContractWithFetch();
 });
 
 // 계좌에서 잔액 확인하기
 function getBalance() {
-  var address = document.getElementById("address").value;
+  const address = document.getElementById("address").value;
   try {
     web3.eth.getBalance(address, function(error, wei) {
       if (!error) {
-        var balance = web3.utils.fromWei(wei, "ether");
-        document.getElementById("output").innerHTML = balance + " ETH";
+        const balance = web3.utils.fromWei(wei, "ether");
+        document.getElementById("output").innerText = balance + " ETH";
       }
     });
   } catch (err) {
-    document.getElementById("output").innerHTML = err;
+    document.getElementById("output").innerText = err;
   }
 }
 
@@ -45,26 +45,17 @@ function getBalance() {
 // ABI , 컨트랙트 주소!
 
 // Create Contract Instance
-function readTextFile(file, callback) {
-  let rawFile = new XMLHttpRequest();
-  rawFile.overrideMimeType("application/json");
-  rawFile.open("GET", file, true);
-  rawFile.onreadystatechange = function() {
-    if (rawFile.readyState === 4 && rawFile.status == "200") {
-      callback(rawFile.responseText);
-    }
-  };
-  rawFile.send(null);
-}
 
-function getContract() {
-  readTextFile("./Demo.json", function(data) {
-    // change to contract address (Demo)
-    const address = "0x3eA2073DE1aaAA3A03D189eC5114F15e5f555021"; // sangil contract address
-    const ABI = JSON.parse(data).abi;
-    Demo = new web3.eth.Contract(ABI, address);
-    console.log(Demo);
-  });
+function getContractWithFetch() {
+  fetch("./contracts/Demo.json")
+    .then((response) => response.json())
+    .then((data) => {
+      // change to contract address (Demo)
+      const address = "0x3eA2073DE1aaAA3A03D189eC5114F15e5f555021"; // sangil contract address
+      const ABI = data.abi;
+      Demo = new web3.eth.Contract(ABI, address);
+      console.log(Demo);
+    });
 }
 
 function onBuyBtn(event) {
