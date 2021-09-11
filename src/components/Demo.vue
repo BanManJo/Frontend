@@ -56,13 +56,11 @@
 <script>
 export default {
   data: () => ({
+    //modal value
     roomModal: false,
     roomNumber: null,
     storeName: null,
     foodName: null,
-
-    //asset
-    createAssetSuccess: false,
 
     //table
     headers: [
