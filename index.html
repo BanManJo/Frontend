@@ -1,37 +1,22 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
   <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <script src="node_modules/web3/dist/web3.min.js"></script>
-    <title>BanManDapp</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>KT Blockchain Center</title>
+    <link href='https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons' rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+    <link href="https://unpkg.com/vuetify@0.17.6/dist/vuetify.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
   </head>
   <body>
-    <div id="root"></div>
-
-    <h1>Check web3 Connection MetaMask</h1>
-    <p>Enter your Ropsten Acoount Address:</p>
-    <input type="text" size="50" id="address" />
-    <button type="button" onClick="getBalance();">Get Balance</button>
-    <br />
-    <br />
-    <br />
-    <div id="output"></div>
-
-    <div id="product">
-      <ul>
-        <li><img src="images/1.jpg" width="300" height="300" /></li>
-        <li>
-          <form id="test-btn">
-            <input type="submit" value="컨트랙트 함수 테스트" />
-          </form>
-        </li>
-        <li>1조</li>
-      </ul>
-    </div>
-
-    <script src="./dist/app.js"></script>
-    <script src="test.js"></script>
+    <div id="app"></div>
+    <!-- built files will be auto injected -->
   </body>
+  <style>
+    html, body {
+      margin:0;
+      padding: 0;
+    }
+  </style>
 </html>
