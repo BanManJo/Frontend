@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import {AuctionRepository} from "../models/AuctionRepository";
+import {DemoRepository} from "../models/DemoRepository";
 export default {
 };
 </script>

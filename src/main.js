@@ -4,7 +4,7 @@ import Config from './config';
 import router from './router';
 import Vuetify from 'vuetify';
 import VueResource from 'vue-resource';
-import { AuctionRepository } from './models/AuctionRepository';
+import { DemoRepository } from './models/DemoRepository';
 
 let Web3_1 = require('web3');
 
@@ -81,12 +81,12 @@ const getWeb3 = () => {
 
 Vue.mixin({
     created: function () {
-        this.$auctionRepoInstance = new AuctionRepository();
+        this.$DemoRepoInstance = new DemoRepository();
         // one instance of web3 available to all components
         if (typeof web3 !== 'undefined') {
             web3 = getWeb3Instance();
             console.log(web3);
-            this.$auctionRepoInstance.setWeb3(web3);
+            this.$DemoRepoInstance.setWeb3(web3);
         }
         // inject config to components
         this.$config = Config;
