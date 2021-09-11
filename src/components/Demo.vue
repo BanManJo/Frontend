@@ -77,6 +77,8 @@ export default {
       try {
         alert('주문 생성');
         console.log('주문 생성');
+        // 스마트컨트랙트 이벤트 캣치후 완료 처리
+        this.roomModal = false;
       } catch (e) {
         console.error(e);
       }
