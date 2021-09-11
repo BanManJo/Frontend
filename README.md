@@ -1,1 +1,1 @@
-# BanManJo Blockchain FrontEnd
+# BanManJo Frontend
