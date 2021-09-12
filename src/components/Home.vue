@@ -6,7 +6,7 @@
 
 <script>
 import {DemoRepository} from "../models/DemoRepository";
-export default {
-};
+
+export default {};
 </script>
 <style></style>

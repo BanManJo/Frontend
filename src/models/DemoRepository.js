@@ -29,26 +29,41 @@ export class DemoRepository {
       try {
         var result = await this.contractInstance.methods.getRoomCounts().call();
         resolve(result);
-      } catch(e) {
+      } catch (e) {
         reject(e);
       }
     });
   }
 
   async createRoom(roomId, roomTitle, roomMenu) {
-    let accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
+    let accounts = await window.ethereum.request({method: "eth_requestAccounts"});
 
     return new Promise(async (resolve, reject) => {
       try {
         this.contractInstance.methods
           .createRoom(roomId, roomTitle, roomMenu)
-          .send({ from: accounts[0], gas: 4476768 }, (err, transaction) => {
-            if(!err) resolve(transaction);
+          .send({from: accounts[0], gas: 4476768}, (err, transaction) => {
+            if (!err) resolve(transaction);
             reject(err);
           });
-      } catch(e) {
+      } catch (e) {
         reject(e);
       }
     });
+  }
+
+  getCurrentBlock() {
+    return new Promise((resolve, reject) => {
+      this.web3.eth.getBlockNumber((err, blocknumber) => {
+        if (!err) resolve(blocknumber);
+        reject(err);
+      });
+    });
+  }
+
+  // Create Room Event
+  async watchIfCreated(cb) {
+    const currentBlock = await this.getCurrentBlock();
+    const eventWatcher = this.contractInstance.events.RoomCreated({fromBlock: currentBlock - 1}, cb);
   }
 }

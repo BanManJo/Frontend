@@ -6,35 +6,31 @@
         <!-- https://vuetifyjs.com/en/components/simple-tables/ -->
         <v-data-table :headers="headers" :items="items">
           <td :class="headers[0].class">1</td>
-          <td :class="headers[1].class">2</td>
-          <td :class="headers[2].class">3</td>
-          <td :class="headers[3].class">4</td>
-          <td :class="headers[4].class">5</td>
         </v-data-table>
-        <v-btn color="gray" @click="roomModal = true">Create Order Room</v-btn>
+        <v-btn color="gray" @click="room.roomModal = true">Create Order Room</v-btn>
       </v-flex>
     </v-layout>
 
     <!-- modal -->
-    <v-dialog v-model="roomModal" max-width="290">
+    <v-dialog v-model="room.roomModal" max-width="290">
       <v-card>
         <v-card-title class="headline">방생성</v-card-title>
         <v-card-text style="text-align: center;">
           <v-flex style="height:100%; padding-bottom:5px;" xs12 sm12 md12>
             <v-text-field
-              v-model="roomNumber"
+              v-model="room.roomNumber"
               placeholder="1"
               label="방이름"
               persistent-hint
             ></v-text-field>
             <v-text-field
-              v-model="storeName"
+              v-model="room.storeName"
               placeholder="BBQ"
               label="가맹점이름"
               persistent-hint
             ></v-text-field>
             <v-text-field
-              v-model="foodName"
+              v-model="room.foodName"
               placeholder="Chicken"
               label="메뉴"
               persistent-hint
@@ -56,31 +52,33 @@
 <script>
 export default {
   data: () => ({
-    //modal value
-    roomModal: false,
-    roomNumber: null,
-    storeName: null,
-    foodName: null,
+    // Create Room Model
+    room: {
+      roomModal: false,
+      roomNumber: '',
+      storeName: '',
+      foodName: '',
+    },
 
-    //table
+    //Data Table
     headers: [
-      {text: 'Txn Hash', value: '_id', sortable: false},
-      {text: 'Block', value: 'title', sortable: false},
-      {text: 'Age', value: '_user', sortable: true, class: 'hidden-sm-and-down'},
-      {text: 'From', value: 'cnt.view', sortable: false},
-      {text: 'To', value: 'cnt.like', sortable: false}
+      {text: 'Txn Hash', value: '_id', sortable: false}
     ],
     items: [],
   }),
   methods: {
     async createOrderRoom() {
       try {
-        alert('주문 생성');
-        console.log('주문 생성');
-        // 스마트컨트랙트 이벤트 캣치후 완료 처리
-        this.roomModal = false;
+        const transaction = await this.$DemoRepoInstance.createRoom(this.room.roomNumber, this.room.storeName, this.room.foodName);
+        console.dir(transaction);
+
+        this.$DemoRepoInstance.watchIfCreated((error, result) => {
+          if (!error) {
+            this.room.roomModal = false;
+          }
+        })
       } catch (e) {
-        console.error(e);
+        this.error = e.message;
       }
     },
   },
