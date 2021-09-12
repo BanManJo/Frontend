@@ -1,12 +1,13 @@
-import Vue from 'vue';
-import App from './App';
-import Config from './config';
-import router from './router';
-import Vuetify from 'vuetify';
-import VueResource from 'vue-resource';
-import {DemoRepository} from './models/DemoRepository';
+import Vue from "vue";
+import App from "./App";
+import Config from "./config";
+import router from "./router";
+import Vuetify from "vuetify";
+import VueResource from "vue-resource";
+import { DemoRepository } from "./models/DemoRepository";
+import { AdminTestRepository } from "./models/AdminTestRepository";
 
-let Web3_1 = require('web3');
+let Web3_1 = require("web3");
 
 Vue.use(VueResource);
 Vue.use(Vuetify);
@@ -18,16 +19,20 @@ let store = {
   state: {
     // metamask state variable
     metamask: {
-      web3DefaultAccount: '0xcB51566f355B8D5523bd0DF01498A45352B0D59a',
+      web3DefaultAccount: "0x5b3bb65dC52177BAc0eeebcD5270Ad76499A4e8F",
       metamaskInstalled: true,
-      networkId: '3',
+      networkId: "3"
     },
 
     // local web3 instance(not metamask)
-    web3: null,
+    web3: null
   },
   networkReady() {
-    return this.getNetworkId() != '' && this.getMetamaskInstalled() && this.getWeb3DefaultAccount() != '';
+    return (
+      this.getNetworkId() != "" &&
+      this.getMetamaskInstalled() &&
+      this.getWeb3DefaultAccount() != ""
+    );
   },
   setNetworkId(networkId) {
     this.state.metamask.networkId = networkId;
@@ -64,7 +69,7 @@ const getWeb3 = () => {
         const web3 = new Web3_1(window.ethereum);
         try {
           // ask user permission to access his accounts
-          await window.ethereum.request({method: "eth_requestAccounts"});
+          await window.ethereum.request({ method: "eth_requestAccounts" });
           resolve(web3);
         } catch (error) {
           reject(error);
@@ -77,13 +82,15 @@ const getWeb3 = () => {
 };
 
 Vue.mixin({
-  created: function () {
+  created: function() {
     this.$DemoRepoInstance = new DemoRepository();
+    this.$AdminTestRepository = new AdminTestRepository();
     // one instance of web3 available to all components
-    if (typeof web3 !== 'undefined') {
+    if (typeof web3 !== "undefined") {
       web3 = getWeb3Instance();
       console.log(web3);
       this.$DemoRepoInstance.setWeb3(web3);
+      this.$AdminTestRepository.setWeb3(web3);
     }
     // inject config to components
     this.$config = Config;
@@ -91,13 +98,12 @@ Vue.mixin({
 });
 
 new Vue({
-  el: '#app',
+  el: "#app",
   data: {
-    globalState: store,
+    globalState: store
   },
   router,
-  template: '<App/>',
-  components: {App},
-  mounted() {
-  }
+  template: "<App/>",
+  components: { App },
+  mounted() {}
 });
