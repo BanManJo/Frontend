@@ -7,11 +7,41 @@
     <link href='https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons' rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
     <link href="https://unpkg.com/vuetify@0.17.6/dist/vuetify.css" rel="stylesheet">
+    <link rel="stylesheet" href="src/css/style.css" />
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+    <script
+      type="text/javascript"
+      src="//dapi.kakao.com/v2/maps/sdk.js?appkey=90a0a92381055a15049bdf5ac6e0e291"
+    ></script>
+    <!-- <script src="node_modules/web3/dist/web3.min.js"></script> -->
   </head>
   <body>
     <div id="app"></div>
     <!-- built files will be auto injected -->
+    <div id="map"></div>
+    <div id="contents">
+      <div id="root"></div>
+      <h1>Check web3 Connection MetaMask</h1>
+      <p>Enter your Ropsten Acoount Address:</p>
+      <input type="text" size="50" id="address" />
+      <button type="button" onClick="getBalance();">Get Balance</button>
+      <br />
+      <br />
+      <br />
+      <div id="output"></div>
+      <ul>
+        <li><img src="images/1.jpg" width="300" height="300" /></li>
+        <li>
+          <form id="buy-btn"><input type="submit" value="구매" /></form>
+        </li>
+        <li>1조</li>
+      </ul>
+      <div id="product"></div>
+    </div>
+
+    <script src="src/js/initWindow.js"></script>
+    <script src="src/js/map.js"></script>
+    <script src="src/js/test.js"></script>
   </body>
   <style>
     html, body {
