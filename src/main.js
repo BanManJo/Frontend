@@ -88,6 +88,7 @@ Vue.mixin({
     // one instance of web3 available to all components
     if (typeof web3 !== "undefined") {
       web3 = getWeb3Instance();
+      console.log("-");
       console.log(web3);
       this.$DemoRepoInstance.setWeb3(web3);
       this.$AdminTestRepository.setWeb3(web3);
