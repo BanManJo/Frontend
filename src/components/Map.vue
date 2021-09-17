@@ -3,87 +3,44 @@
     <v-content>
       <v-container id="map" style="padding: 0px" fluid> </v-container>
     </v-content>
-    <v-navigation-drawer v-model="drawer" absolute right>
-      <v-list class="pa-1">
-        <v-list-tile avatar>
-          <v-list-tile-avatar>
-            <img src="https://randomuser.me/api/portraits/men/85.jpg" />
-          </v-list-tile-avatar>
 
-          <v-list-tile-content>
-            <v-list-tile-title>John Leider</v-list-tile-title>
-          </v-list-tile-content>
-        </v-list-tile>
-      </v-list>
-      <!-- <v-list class="pt-0" dense>
-        <v-divider></v-divider>
-
-        <v-list-tile v-for="item in items" :key="item.title" @click="">
-          <v-list-tile-action>
-            <v-icon>{{ item.icon }}</v-icon>
-          </v-list-tile-action>
-
-          <v-list-tile-content>
-            <v-list-tile-title>{{ item.title }}</v-list-tile-title>
-          </v-list-tile-content>
-        </v-list-tile>
-      </v-list> -->
-      <v-list class="pt-1">
-        <v-divider></v-divider>
-        <v-card v-for="(card, cardIndex) in cards" :key="cardIndex">
-          <v-img
-            src="https://cdn.vuetifyjs.com/images/cards/sunshine.jpg"
-            height="200px"
-          >
-          </v-img>
-
-          <v-card-title primary-title>
-            <div>
-              <div class="headline">{{ card.headline }}</div>
-              <span class="grey--text">{{ card.subText }}</span>
-            </div>
-          </v-card-title>
-
-          <v-card-actions>
-            <v-btn flat>Order</v-btn>
-            <v-btn flat color="purple">Chatting</v-btn>
-            <v-spacer></v-spacer>
-            <v-btn icon @click="card.show = !card.show">
-              <v-icon>{{
-                card.show ? "keyboard_arrow_down" : "keyboard_arrow_up"
-              }}</v-icon>
-            </v-btn>
-          </v-card-actions>
-
-          <v-slide-y-transition>
-            <v-card-text v-show="card.show">
-              {{ card.description }}
-            </v-card-text>
-          </v-slide-y-transition>
-          <v-divider></v-divider>
-        </v-card>
-      </v-list>
-    </v-navigation-drawer>
     <v-content id="contents">
-      <v-btn @click="createMarker" depressed> create Marker </v-btn>
+      <v-btn @click="registerCH.dialog = !registerCH.dialog" depressed>
+        Register Chicken House
+      </v-btn>
     </v-content>
-    <v-content id="contents">
-      <!-- <v-container class="fill-height">
-        <v-row align="center" justify="center">
-          <v-btn color="pink" dark @click.stop="drawer = !drawer">
-            Toggle
-          </v-btn>
-        </v-row>
-      </v-container> -->
-    </v-content>
+    <register-chicken-house-dialog
+      :registerCH="registerCH"
+    ></register-chicken-house-dialog>
+    <!-- Navigation Drawer -->
+    <right-navigation-drawer :navDrawer="navDrawer"></right-navigation-drawer>
+    <!-- modal -->
+    <create-room-dialog :room="room"></create-room-dialog>
   </v-app>
 </template>
 
 <script>
+// import { mapState } from "vuex";
+// import store, { OPEN_CREATE_ROOM, CLOSE_CREATE_ROOM } from "../vuex/store";
+import CreateRoomDialog from "./CreateRoomDialog";
+import RightNavigationDrawer from "./RightNavigationDrawer.vue";
+import RegisterChickenHouseDialog from "./RegisterChickenHouseDialog.vue";
 export default {
   name: "map",
+  // store,
+  components: {
+    CreateRoomDialog,
+    RightNavigationDrawer,
+    RegisterChickenHouseDialog,
+  },
   data() {
     return {
+      registerCH: {
+        dialog: false,
+        notifications: false,
+        sound: true,
+        widgets: false,
+      },
       map: null,
       markerDatas: [
         {
@@ -101,70 +58,52 @@ export default {
           orderCount: 5,
         },
       ],
-      drawer: false,
-      items: [
-        { title: "Home", icon: "dashboard" },
-        { title: "About", icon: "question_answer" },
-      ],
-      cards: [
-        {
-          headline: "황금 올리브",
-          subText: "종료 시간: 15:23",
-          show: false,
-          description: "황금올리브 같이 먹을 분 구함!~",
-        },
-        {
-          headline: "황금 올리브",
-          subText: "종료 시간: 15:23",
-          show: false,
-          description: "황금올리브 같이 먹을 분 구함!~",
-        },
-        {
-          headline: "황금 올리브",
-          subText: "종료 시간: 15:23",
-          show: false,
-          description: "황금올리브 같이 먹을 분 구함!~",
-        },
-        {
-          headline: "황금 올리브",
-          subText: "종료 시간: 15:23",
-          show: false,
-          description: "황금올리브 같이 먹을 분 구함!~",
-        },
-        {
-          headline: "황금 올리브",
-          subText: "종료 시간: 15:23",
-          show: false,
-          description: "황금올리브 같이 먹을 분 구함!~",
-        },
-        {
-          headline: "황금 올리브",
-          subText: "종료 시간: 15:23",
-          show: false,
-          description: "황금올리브 같이 먹을 분 구함!~",
-        },
-        {
-          headline: "황금 올리브",
-          subText: "종료 시간: 15:23",
-          show: false,
-          description: "황금올리브 같이 먹을 분 구함!~",
-        },
-        {
-          headline: "황금 올리브",
-          subText: "종료 시간: 15:23",
-          show: false,
-          description: "황금올리브 같이 먹을 분 구함!~",
-        },
-      ],
-      show: false,
+      navDrawer: {
+        drawer: false,
+        orderRooms: [
+          {
+            headline: "황금 올리브",
+            subText: "종료 시간: 15:23",
+            show: false,
+            description: "황금올리브 같이 먹을 분 구함!~",
+          },
+        ],
+      },
+      // Create Room Model
+      room: {
+        isLoading: false,
+        roomModal: false,
+        roomName: null,
+        // roomNumber: "",
+        storeName: "BBQ",
+        storeIdx: 0,
+        // foodName: "",
+        menus: [
+          {
+            chicken: "황금 올리브",
+            price: "19,000₩",
+            description: "고소한 올리브유로 티킨 바삭한 프라이드 치킨!",
+            selected: false,
+          },
+        ],
+        timer: 15,
+      },
     };
+  },
+  computed: {
+    // ...mapState({
+    //   // cellData(state) {
+    //   //   return state.tableData[rowIndex][cellIndex];
+    //   // },
+    //   createRoomModal: "createRoomModal",
+    // }),
   },
   methods: {
     createOrderRoom() {
-      alert(1);
+      this.room.roomModal = !this.room.roomModal;
     },
     showOrderRooms() {
-      this.drawer = !this.drawer;
+      this.navDrawer.drawer = !this.navDrawer.drawer;
     },
     makeInfoWindow(marker) {
       const content = document.createElement("div");
@@ -261,6 +200,7 @@ export default {
           storeName: "현 위치 ",
           orderCount: 3,
         });
+        this.createMarker();
       }, console.log);
     },
   },
@@ -281,7 +221,7 @@ export default {
       /* global kakao */
       script.onload = () => kakao.maps.load(this.initMap);
       script.src =
-        "http://dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=f16dcaffdef9152c39799852d826d9c4";
+        "http://dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=f16dcaffdef9152c39799852d826d9c4&libraries=services";
       document.head.appendChild(script);
     }
   },
