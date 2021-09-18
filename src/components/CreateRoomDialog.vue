@@ -77,7 +77,16 @@
 <script>
 export default {
   props: {
+    storeName: String,
     room: Object,
+  },
+  methods: {
+    createOrderRoom() {
+      alert(1);
+    },
+  },
+  updated() {
+    console.log("updated");
   },
 };
 </script>

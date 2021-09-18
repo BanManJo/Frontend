@@ -47,37 +47,95 @@ export class AdminTestRepository {
 
     return new Promise(async (resolve, reject) => {
       try {
-        this.contractInstance.methods
-          .createRoom(storeName)
-          .send({ from: accounts[0], gas: 4476768 }, (err, transaction) => {
+        this.contractInstance.methods.createRoom(storeName).send(
+          { from: accounts[0], gas: 4476768 },
+
+          (err, transaction) => {
             if (!err) resolve(transaction);
             reject(err);
-          });
+          }
+        );
       } catch (e) {
         reject(e);
       }
     });
   }
 
-  async registerChickenHouse() {
+  async registerChickenHouse(
+    storeName,
+    latitude,
+    longitude,
+    chickenNames,
+    prices,
+    sunsals
+  ) {
     let accounts = await window.ethereum.request({
       method: "eth_requestAccounts"
     });
-
+    console.log("passs");
     return new Promise(async (resolve, reject) => {
       try {
         this.contractInstance.methods
-          .registerChickenHouse()
-          .send({ from: accounts[0], gas: 4476768 }, (err, transaction) => {
-            if (!err) resolve(transaction);
-            reject(err);
-          });
+          .registerChickenHouse(
+            storeName,
+            latitude,
+            longitude,
+            chickenNames,
+            prices,
+            sunsals
+          )
+          .send(
+            { from: accounts[0], gas: 4476768 },
+
+            (err, transaction) => {
+              if (!err) resolve(transaction);
+              reject(err);
+            }
+          );
       } catch (e) {
         reject(e);
       }
     });
   }
 
+  async getChickenHouse(storeName) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        let result = await this.contractInstance.methods
+          .getChickenHouse(storeName)
+          .call();
+        resolve(result);
+      } catch (e) {
+        reject(e);
+      }
+    });
+  }
+
+  async getChickenHouseByIndex(idx) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        let result = await this.contractInstance.methods
+          .getChickenHouse2(idx)
+          .call();
+        resolve(result);
+      } catch (e) {
+        reject(e);
+      }
+    });
+  }
+
+  async getStoreCount() {
+    return new Promise(async (resolve, reject) => {
+      try {
+        let result = await this.contractInstance.methods
+          .getStoreReturn()
+          .call();
+        resolve(result);
+      } catch (e) {
+        reject(e);
+      }
+    });
+  }
   getCurrentBlock() {
     return new Promise((resolve, reject) => {
       this.web3.eth.getBlockNumber((err, blocknumber) => {

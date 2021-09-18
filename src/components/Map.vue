@@ -13,24 +13,28 @@
       :registerCH="registerCH"
     ></register-chicken-house-dialog>
     <!-- Navigation Drawer -->
-    <right-navigation-drawer :navDrawer="navDrawer"></right-navigation-drawer>
+    <order-room-navigation-drawer
+      :navDrawer="navDrawer"
+    ></order-room-navigation-drawer>
     <!-- modal -->
     <create-room-dialog :room="room"></create-room-dialog>
   </v-app>
 </template>
 
 <script>
-// import { mapState } from "vuex";
-// import store, { OPEN_CREATE_ROOM, CLOSE_CREATE_ROOM } from "../vuex/store";
+import { mapState } from "vuex";
+import { SET_ADMIN_INSTANCE } from "../vuex/store";
+
 import CreateRoomDialog from "./CreateRoomDialog";
-import RightNavigationDrawer from "./RightNavigationDrawer.vue";
+import OrderRoomNavigationDrawer from "./OrderRoomNavigationDrawer.vue";
 import RegisterChickenHouseDialog from "./RegisterChickenHouseDialog.vue";
+
 export default {
   name: "map",
   // store,
   components: {
     CreateRoomDialog,
-    RightNavigationDrawer,
+    OrderRoomNavigationDrawer,
     RegisterChickenHouseDialog,
   },
   data() {
@@ -43,20 +47,13 @@ export default {
       },
       map: null,
       markerDatas: [
-        {
-          latitude: 37.4814,
-          longitude: 126.881,
-          removed: true,
-          storeName: "가산디지털 단지 역",
-          orderCount: 3,
-        },
-        {
-          latitude: 37.481727,
-          longitude: 126.88482,
-          removed: true,
-          storeName: "BHC 가산점",
-          orderCount: 5,
-        },
+        // {
+        //   latitude: 37.4814,
+        //   longitude: 126.881,
+        //   removed: true,
+        //   storeName: "가산디지털 단지 역",
+        //   orderCount: 3,
+        // },
       ],
       navDrawer: {
         drawer: false,
@@ -75,7 +72,7 @@ export default {
         roomModal: false,
         roomName: null,
         // roomNumber: "",
-        storeName: "BBQ",
+        storeName: null,
         storeIdx: 0,
         // foodName: "",
         menus: [
@@ -91,16 +88,14 @@ export default {
     };
   },
   computed: {
-    // ...mapState({
-    //   // cellData(state) {
-    //   //   return state.tableData[rowIndex][cellIndex];
-    //   // },
-    //   createRoomModal: "createRoomModal",
-    // }),
+    ...mapState({
+      AdminInstance: (state) => state.AdminTestRepoInstance,
+    }),
   },
   methods: {
-    createOrderRoom() {
+    createOrderRoom(event) {
       this.room.roomModal = !this.room.roomModal;
+      console.dir(event);
     },
     showOrderRooms() {
       this.navDrawer.drawer = !this.navDrawer.drawer;
@@ -139,48 +134,68 @@ export default {
 
       return content;
     },
-    createMarker() {
-      this.markerDatas.forEach((markerData) => {
-        const markerPosition = new kakao.maps.LatLng(
-          markerData.latitude,
-          markerData.longitude
-        );
-
-        // 마커를 생성합니다
-        const marker = new kakao.maps.Marker({
-          position: markerPosition,
-        });
-
-        // 마커가 지도 위에 표시되도록 설정합니다
-        marker.setMap(this.map);
-
-        // 마커에 커서가 오버됐을 때 마커 위에 표시할 인포윈도우를 생성합니다
-        // const iwContent = `<div style="padding:5px;">가게: ${markerData.storeName} | 주문방: ${markerData.orderCount}</div>`; // 인포윈도우에 표출될 내용으로 HTML 문자열이나 document element가 가능합니다
-        // const iwContent = `<div style="padding:5px;"><div>가게: ${markerData.storeName} </div><div>주문방: ${markerData.orderCount}</div>
-        //               <a onclick="alert('방만들기')" style="color:blue" target="_blank">방만들기</a>
-        //               <a onclick="alert('주문 방 보기')" style="color:blue" target="_blank">주문방 보기</a>
-        //               </div>`;
-        const iwContent = this.makeInfoWindow(markerData);
-        const iwRemoveable = false;
-        // 인포윈도우를 생성합니다
-        const infowindow = new kakao.maps.InfoWindow({
-          content: iwContent,
-          removable: iwRemoveable,
-        });
-        // 마커에 마우스오버 이벤트를 등록합니다
-        kakao.maps.event.addListener(marker, "click", () => {
-          // let removed = true;
-          // console.log(this);
-          if (markerData.removed) {
-            // 마커에 마우스오버 이벤트가 발생하면 인포윈도우를 마커위에 표시합니다
-            infowindow.open(this.map, marker);
-            markerData.removed = false;
-          } else {
-            infowindow.close();
-            markerData.removed = true;
+    async createMarker() {
+      // get chicken houses number
+      // // get chicken house info
+      // // // setting chicken houses
+      this.AdminInstance.getStoreCount()
+        .then(async (val) => {
+          console.log(val);
+          for (let idx = 0; idx < val; idx++) {
+            await this.AdminInstance.getChickenHouseByIndex(idx).then(
+              (result) => {
+                console.log(result);
+                // console.log(this.markerDatas);
+                this.markerDatas.push({
+                  latitude: Number(result.latitude),
+                  longitude: Number(result.longitude),
+                  removed: true,
+                  storeName: result.storeName,
+                  orderCount: 3,
+                });
+              }
+            );
           }
-        });
-      });
+          console.log(this.markerDatas);
+          this.markerDatas.forEach((markerData) => {
+            const markerPosition = new kakao.maps.LatLng(
+              markerData.latitude,
+              markerData.longitude
+            );
+
+            // 마커를 생성합니다
+            const marker = new kakao.maps.Marker({
+              position: markerPosition,
+            });
+
+            // 마커가 지도 위에 표시되도록 설정합니다
+            marker.setMap(this.map);
+
+            // 마커에 커서가 오버됐을 때 마커 위에 표시할 인포윈도우를 생성합니다
+
+            const iwContent = this.makeInfoWindow(markerData);
+            const iwRemoveable = false;
+            // 인포윈도우를 생성합니다
+            const infowindow = new kakao.maps.InfoWindow({
+              content: iwContent,
+              removable: iwRemoveable,
+            });
+            // 마커에 마우스오버 이벤트를 등록합니다
+            kakao.maps.event.addListener(marker, "click", () => {
+              // let removed = true;
+              // console.log(this);
+              if (markerData.removed) {
+                // 마커에 마우스오버 이벤트가 발생하면 인포윈도우를 마커위에 표시합니다
+                infowindow.open(this.map, marker);
+                markerData.removed = false;
+              } else {
+                infowindow.close();
+                markerData.removed = true;
+              }
+            });
+          });
+        })
+        .catch();
     },
     initMap() {
       const container = document.getElementById("map");
@@ -205,8 +220,6 @@ export default {
     },
   },
   mounted() {
-    console.log("mounted");
-
     document.body.style.width = `${window.screen.width}px`;
     document.body.style.height = `${
       window.innerHeight ||
@@ -216,7 +229,6 @@ export default {
     if (window.kakao && window.kakao.maps) {
       this.initMap();
     } else {
-      console.log("false");
       const script = document.createElement("script");
       /* global kakao */
       script.onload = () => kakao.maps.load(this.initMap);
@@ -224,6 +236,9 @@ export default {
         "http://dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=f16dcaffdef9152c39799852d826d9c4&libraries=services";
       document.head.appendChild(script);
     }
+  },
+  async created() {
+    await this.$store.commit(SET_ADMIN_INSTANCE);
   },
 };
 </script>

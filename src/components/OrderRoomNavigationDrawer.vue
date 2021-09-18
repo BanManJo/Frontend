@@ -1,5 +1,5 @@
 <template>
-  <v-navigation-drawer v-model="navDrawer.drawer" width="350" absolute right>
+  <v-navigation-drawer v-model="navDrawer.drawer" width="350" absolute>
     <v-list class="pa-0">
       <v-toolbar dense>
         <v-toolbar-side-icon></v-toolbar-side-icon>
@@ -30,11 +30,11 @@
     <v-list class="pt-1">
       <v-divider></v-divider>
       <v-card v-for="(orderRoom, idx) in orderRooms" :key="idx">
-        <v-img
+        <img
           src="https://cdn.vuetifyjs.com/images/cards/sunshine.jpg"
           height="200px"
         >
-        </v-img>
+        </img>
 
         <v-card-title primary-title>
           <div>

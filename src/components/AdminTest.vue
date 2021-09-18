@@ -1,13 +1,18 @@
 <template>
   <div>
     <v-layout
-      style="color: black; padding: 25px; text-align: center; background-color: white"
+      style="
+        color: black;
+        padding: 25px;
+        text-align: center;
+        background-color: white;
+      "
       align-center
       row
       wrap
     >
-      <v-flex style="height:100%; padding-bottom:20px;" xs12 sm12 md12>
-        <h1 style="margin-bottom: 20px; line-height: 32px;">
+      <v-flex style="height: 100%; padding-bottom: 20px" xs12 sm12 md12>
+        <h1 style="margin-bottom: 20px; line-height: 32px">
           Transaction History
         </h1>
         <!-- https://vuetifyjs.com/en/components/simple-tables/ -->
@@ -31,13 +36,13 @@
     <v-dialog v-model="room.roomModal" max-width="290">
       <v-card>
         <v-card-title class="headline">방생성</v-card-title>
-        <v-card-text style="text-align: center;">
+        <v-card-text style="text-align: center">
           <v-progress-circular
             indeterminate
             color="red"
             v-show="room.isLoading"
           ></v-progress-circular>
-          <v-flex style="height:100%; padding-bottom:5px;" xs12 sm12 md12>
+          <v-flex style="height: 100%; padding-bottom: 5px" xs12 sm12 md12>
             <v-text-field
               v-model="room.roomNumber"
               placeholder="1"
@@ -57,7 +62,7 @@
               persistent-hint
             ></v-text-field>
           </v-flex>
-          <v-flex style="height:100%; padding-bottom:5px;" xs12 sm12 md12>
+          <v-flex style="height: 100%; padding-bottom: 5px" xs12 sm12 md12>
             <v-btn @click="registerChickenHouse()" outline color="teal"
               >Create Chicken House</v-btn
             >
@@ -72,6 +77,8 @@
 </template>
 
 <script>
+import { SET_ADMIN_INSTANCE } from "../vuex/store";
+import { mapState } from "vuex";
 export default {
   data: () => ({
     // Create Room Model
@@ -80,7 +87,7 @@ export default {
       roomModal: false,
       roomNumber: "",
       storeName: "",
-      foodName: ""
+      foodName: "",
     },
 
     //Data Table
@@ -89,27 +96,34 @@ export default {
         text: "Transaction Hash",
         align: "center",
         sortable: false,
-        value: "hash"
-      }
+        value: "hash",
+      },
     ],
-    items: []
+    items: [],
   }),
+  computed: {
+    ...mapState({
+      AdminInstance: (state) => state.AdminTestRepoInstance,
+    }),
+  },
   methods: {
     async registerChickenHouse() {
       this.room.isLoading = true;
       try {
-        const transaction = await this.$AdminTestRepository.registerChickenHouse();
+        const transaction =
+          await this.$AdminTestRepository.registerChickenHouse();
         console.dir(transaction);
       } catch (e) {
         this.error = e.message;
       }
-    }
+    },
   },
-  async mounted() {
+  async created() {
+    await this.$store.commit(SET_ADMIN_INSTANCE);
     // const count = await this.$DemoRepoInstance.getCount();
     // console.log('count:' + count);
     // await this.$DemoRepoInstance.createRoom(1, 'BBQ', 'Chicken');
-  }
+  },
 };
 </script>
 <style></style>

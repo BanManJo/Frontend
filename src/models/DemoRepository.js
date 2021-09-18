@@ -1,9 +1,9 @@
-import Config from '../config';
+import Config from "../config";
 
 export class DemoRepository {
   web3 = null;
   contractInstance = null;
-  account = '';
+  account = "";
   gas = 4476768;
 
   constructor() {
@@ -12,7 +12,10 @@ export class DemoRepository {
 
   setWeb3(web3) {
     this.web3 = web3;
-    this.contractInstance = new this.web3.eth.Contract(Config.DEMO_ABI, Config.DEMO_ADDRESS);
+    this.contractInstance = new this.web3.eth.Contract(
+      Config.DEMO_ABI,
+      Config.DEMO_ADDRESS
+    );
   }
 
   getWeb3() {
@@ -36,13 +39,15 @@ export class DemoRepository {
   }
 
   async createRoom(roomId, roomTitle, roomMenu) {
-    let accounts = await window.ethereum.request({method: "eth_requestAccounts"});
+    let accounts = await window.ethereum.request({
+      method: "eth_requestAccounts"
+    });
 
     return new Promise(async (resolve, reject) => {
       try {
         this.contractInstance.methods
           .createRoom(roomId, roomTitle, roomMenu)
-          .send({from: accounts[0], gas: 4476768}, (err, transaction) => {
+          .send({ from: accounts[0], gas: 4476768 }, (err, transaction) => {
             if (!err) resolve(transaction);
             reject(err);
           });
@@ -64,6 +69,9 @@ export class DemoRepository {
   // Create Room Event
   async watchIfCreated(cb) {
     const currentBlock = await this.getCurrentBlock();
-    const eventWatcher = this.contractInstance.events.RoomCreated({fromBlock: currentBlock - 1}, cb);
+    const eventWatcher = this.contractInstance.events.RoomCreated(
+      { fromBlock: currentBlock - 1 },
+      cb
+    );
   }
 }

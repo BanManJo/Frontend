@@ -32,6 +32,7 @@
               v-model="storeName"
               label="Store Name"
               placeholder="BBQ 부천점"
+              :rules="[required]"
             ></v-text-field>
           </v-flex>
         </v-layout>
@@ -47,6 +48,8 @@
               placeholder="도로명 주소"
               suffix-inner-icon="mdi-map-marker"
               v-model="address"
+              :rules="[required]"
+              readonly
             ></v-text-field>
           </v-flex>
           <v-btn @click="execDaumPostcod" color="primary">주소 찾기</v-btn>
@@ -86,6 +89,9 @@
               required
             ></v-text-field>
           </v-flex>
+          <v-flex xs1>
+            <v-checkbox v-model="sunsal" label="순살?"></v-checkbox>
+          </v-flex>
           <v-btn @click="addMenu" class="mx-1" fab dark small color="indigo">
             <v-icon dark> add </v-icon>
           </v-btn>
@@ -111,39 +117,91 @@
 </template>
 
 <script>
+import { mapState } from "vuex";
 export default {
   data() {
     return {
-      location: {
-        latitude: null,
-        longitude: null,
-      },
+      latitude: null,
+      longitude: null,
       storeName: "",
       chicken: "",
       price: "",
+      sunsal: false,
       menus: [],
       address: "",
+      map: null,
+      required: (value) => !!value || "Required.",
     };
+  },
+  computed: {
+    ...mapState({
+      AdminInstance: (state) => state.AdminTestRepoInstance,
+    }),
   },
   props: {
     registerCH: Object,
   },
   methods: {
-    registerChickenHouse() {
+    async registerChickenHouse() {
+      // check User input right info
+      // if (storeName){
+
+      // }
+      // make lists of chicke and price
+      const chickens = this.menus
+        .filter((menu) => menu.appended)
+        .map((menu) => menu.chicken);
+      const prices = this.menus
+        .filter((menu) => menu.appended)
+        .map((menu) => menu.price);
+      const isSunsals = this.menus
+        .filter((menu) => menu.appended)
+        .map((menu) => (menu.sunsal ? 2 : 1));
+      console.log(chickens, prices);
       alert(
-        `치킨집 이름: ${this.storeName} 치킨집 위치: ${this.address} ${this.location.latitude} ${this.location.longitude} 메뉴들: ${this.menus} `
+        `치킨집 이름: ${this.storeName} 치킨집 위치: ${this.address} ${this.latitude} ${this.longitude} 메뉴들: ${this.menus} `
       );
+      try {
+        const transaction = await this.AdminInstance.registerChickenHouse(
+          this.storeName,
+          this.latitude,
+          this.longitude,
+          chickens,
+          prices,
+          isSunsals
+        );
+        console.dir(transaction);
+      } catch (e) {
+        this.error = e.message;
+        console.log(this.error);
+      }
+
+      let mapContainer = document.getElementById("map-chicken-house");
+      mapContainer.style.display = "none";
+      this.menus = [];
+      this.latitude = null;
+      this.longitude = null;
+      this.storeName = "";
+      this.address = "";
       this.registerCH.dialog = false;
     },
     addMenu() {
       if (this.chicken === "" || this.price < 0 || this.price == "") {
+        alert("다시 입력해주세요.");
+        this.chicken = "";
+        this.price = "";
+        this.sunsal = false;
         return;
       }
       this.menus.push({
         chicken: this.chicken,
         price: parseInt(this.price),
         appended: true,
+        sunsal: this.sunsal,
       });
+      this.chicken = "";
+      this.price = "";
+      this.sunsal = false;
       console.log(this.menus);
     },
     setAddress(data) {
@@ -158,8 +216,8 @@ export default {
       // 정상적으로 검색이 완료됐으면
       if (status === kakao.maps.services.Status.OK) {
         const result = results[0]; //첫번째 결과의 값을 활용
-        this.location.latitude = result.y;
-        this.location.longitude = result.x;
+        this.latitude = result.y;
+        this.longitude = result.x;
         const coords = new kakao.maps.LatLng(result.y, result.x);
 
         let mapContainer = document.getElementById("map-chicken-house"); // 지도를 표시할 div
@@ -169,20 +227,20 @@ export default {
         };
 
         //지도를 미리 생성
-        let map = new kakao.maps.Map(mapContainer, mapOption);
+        this.map = new kakao.maps.Map(mapContainer, mapOption);
         //주소-좌표 변환 객체를 생성
         //   const geocoder = new daum.maps.services.Geocoder();
         //마커를 미리 생성
         let marker = new kakao.maps.Marker({
           position: coords,
-          map: map,
+          map: this.map,
         });
         mapContainer.style.display = "block";
         // 해당 주소에 대한 좌표를 받아서
         //   // 지도를 보여준다.
-        map.relayout();
+        this.map.relayout();
         //   // 지도 중심을 변경한다.
-        map.setCenter(coords);
+        this.map.setCenter(coords);
         //   // 마커를 결과값으로 받은 위치로 옮긴다.
         //   marker.setPosition(coords);
       }
