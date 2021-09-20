@@ -4,6 +4,7 @@ import Home from "@/components/Home";
 import Demo from "@/components/Demo";
 import AdminTest from "@/components/AdminTest";
 import Map from "@/components/Map";
+import OwnerPage from "@/components/OwnerPage";
 
 Vue.use(Router);
 
@@ -27,8 +28,13 @@ export default new Router({
     {
       path: "/map",
       name: "Map",
-      component: Map,
-    }
+      component: Map
+    },
+    {
+      path: "/ownerPage",
+      name: "OwnerPage",
+      component: OwnerPage
+    },
   ],
   mode: "history",
   scrollBehavior(to, from, savedPosition) {
