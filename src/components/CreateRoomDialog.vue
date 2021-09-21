@@ -75,18 +75,85 @@
 </template>
 
 <script>
+import { mapState } from "vuex";
 export default {
+  data() {
+    return {
+      // not loaded on map page
+      // isLoading: false,
+      // roomModal: false,
+      // roomName: null,
+      // // roomNumber: "",
+      // storeIdx: 0,
+      // // foodName: "",
+      // menus: [
+      //   {
+      //     chicken: "황금 올리브",
+      //     price: "19,000₩",
+      //     description: "고소한 올리브유로 티킨 바삭한 프라이드 치킨!",
+      //     selected: false,
+      //   },
+      // ],
+      // timer: 15,
+      // storeName: room.storeName,
+    };
+  },
+  computed: {
+    ...mapState({
+      AdminInstance: (state) => state.AdminTestRepoInstance,
+    }),
+  },
   props: {
-    storeName: String,
     room: Object,
   },
   methods: {
     createOrderRoom() {
       alert(1);
     },
+    selectMenu(idx) {
+      this.room.menus.forEach((menu, _idx) => {
+        if (_idx === idx) {
+          menu.selected = !menu.selected;
+        } else {
+          menu.selected = false;
+        }
+      });
+    },
   },
   updated() {
+    // 변수가 변경 될때마다 update 실행된다.!
+    // if (this.room.roomModal === false) {
+    //   console.log("close");
+    //   // this.room.menus = [];
+    // } //
+    // not loaded on map page
+    // this.isLoading = false;
+    // this.roomModal = false;
+    // this.roomName = null;
+    // // roomNumber ""
+    // this.storeIdx = 0;
+    // // foodName ""
+    // this.menus = [
+    //   {
+    //     chicken: "황금 올리브",
+    //     price: "19,000₩",
+    //     description: "고소한 올리브유로 티킨 바삭한 프라이드 치킨!",
+    //     selected: false,
+    //   },
+    // ];
+    // this.timer = 15;
+    // this.storeName = room.storeName;
     console.log("updated");
+    // console.log(this.storeName); // undefined
+    // room // props , not defined
+  },
+  watch: {
+    room: (roomState) => {
+      console.log(roomState);
+      if (roomState.roomModal === false) {
+        console.log("close close");
+      }
+    },
   },
 };
 </script>

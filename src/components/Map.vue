@@ -68,21 +68,13 @@ export default {
       },
       // Create Room Model
       room: {
-        isLoading: false,
         roomModal: false,
+        storeName: null,
+        isLoading: false,
         roomName: null,
         // roomNumber: "",
-        storeName: null,
         storeIdx: 0,
-        // foodName: "",
-        menus: [
-          {
-            chicken: "황금 올리브",
-            price: "19,000₩",
-            description: "고소한 올리브유로 티킨 바삭한 프라이드 치킨!",
-            selected: false,
-          },
-        ],
+        menus: [],
         timer: 15,
       },
     };
@@ -95,7 +87,33 @@ export default {
   methods: {
     createOrderRoom(event) {
       this.room.roomModal = !this.room.roomModal;
-      console.dir(event);
+      this.room.storeName = event.target.id;
+      // menus
+      this.room.menus = [];
+      this.AdminInstance.getStoreMenu(this.room.storeName).then((result) => {
+        // results.forEach((_menu) => {
+        // // }
+        const chickens = result[0];
+        const prices = result[1];
+        for (let i = 0; i < chickens.length; i++) {
+          console.log(chickens[i], prices[i]);
+          this.room.menus.push({
+            chicken: chickens[i],
+            price: `${prices[i]}₩`,
+            description: "고소한 올리브유로 티킨 바삭한 프라이드 치킨!",
+            selected: false,
+          });
+        }
+      });
+
+      // this.room.menus.push({
+      //   chicken: "황금 올리브",
+      //   price: "19,000₩",
+      //   description: "고소한 올리브유로 티킨 바삭한 프라이드 치킨!",
+      //   selected: false,
+      // });
+      // storeIdx (if needed)
+      console.dir(event.target.id);
     },
     showOrderRooms() {
       this.navDrawer.drawer = !this.navDrawer.drawer;
@@ -121,6 +139,7 @@ export default {
       const linkCreateRoom = document.createElement("a");
       linkCreateRoom.style.color = "blue";
       linkCreateRoom.target = "_blank";
+      linkCreateRoom.id = marker.storeName;
       linkCreateRoom.addEventListener("click", this.createOrderRoom);
       linkCreateRoom.appendChild(document.createTextNode("방만들기 "));
       content.appendChild(linkCreateRoom);
@@ -239,6 +258,14 @@ export default {
   },
   async created() {
     await this.$store.commit(SET_ADMIN_INSTANCE);
+  },
+  watch: {
+    room: (roomState) => {
+      console.log(roomState);
+      if (roomState.roomModal === false) {
+        console.log("close close");
+      }
+    },
   },
 };
 </script>

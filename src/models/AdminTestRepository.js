@@ -136,6 +136,20 @@ export class AdminTestRepository {
       }
     });
   }
+
+  async getStoreMenu(storeName) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        let result = await this.contractInstance.methods
+          .getStoreMenu(storeName)
+          .call();
+        resolve(result);
+      } catch (e) {
+        reject(e);
+      }
+    });
+  }
+
   getCurrentBlock() {
     return new Promise((resolve, reject) => {
       this.web3.eth.getBlockNumber((err, blocknumber) => {
