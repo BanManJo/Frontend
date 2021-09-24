@@ -70,8 +70,8 @@
           <v-divider></v-divider>
         </v-card>
       </v-list>
-      <button>dkjdfkj</button>
     </v-navigation-drawer>
+    <button>dkjdfkj</button>
   </div>
 </template>
 
