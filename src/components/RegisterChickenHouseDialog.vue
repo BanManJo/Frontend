@@ -143,6 +143,7 @@ export default {
   },
   methods: {
     async registerChickenHouse() {
+      console.log("=== Register Chicken House ===");
       // check User input right info
       // if (storeName){
 
@@ -157,10 +158,8 @@ export default {
       const isSunsals = this.menus
         .filter((menu) => menu.appended)
         .map((menu) => (menu.sunsal ? 2 : 1));
-      console.log(chickens, prices);
-      alert(
-        `치킨집 이름: ${this.storeName} 치킨집 위치: ${this.address} ${this.latitude} ${this.longitude} 메뉴들: ${this.menus} `
-      );
+
+      console.log(`---- Chicken Admin Set Menu: ${chickens}, ${prices} ----`);
       try {
         const transaction = await this.AdminInstance.registerChickenHouse(
           this.storeName,
@@ -170,10 +169,10 @@ export default {
           prices,
           isSunsals
         );
-        console.dir(transaction);
+        console.log(`---- Register Succeed : ${transaction}`);
       } catch (e) {
         this.error = e.message;
-        console.log(this.error);
+        console.error(this.error);
       }
 
       let mapContainer = document.getElementById("map-chicken-house");
@@ -184,6 +183,7 @@ export default {
       this.storeName = "";
       this.address = "";
       this.registerCH.dialog = false;
+      console.log("=== Done Register ===");
     },
     addMenu() {
       if (this.chicken === "" || this.price < 0 || this.price == "") {

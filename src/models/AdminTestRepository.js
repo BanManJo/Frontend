@@ -128,7 +128,7 @@ export class AdminTestRepository {
     return new Promise(async (resolve, reject) => {
       try {
         let result = await this.contractInstance.methods
-          .getStoreReturn()
+          .getStoreCount()
           .call();
         resolve(result);
       } catch (e) {
@@ -142,6 +142,55 @@ export class AdminTestRepository {
       try {
         let result = await this.contractInstance.methods
           .getStoreMenu(storeName)
+          .call();
+        resolve(result);
+      } catch (e) {
+        reject(e);
+      }
+    });
+  }
+
+  async createRoom(storeName, price, finishTime, chicken) {
+    let accounts = await window.ethereum.request({
+      method: "eth_requestAccounts"
+    });
+    console.log("passs");
+    return new Promise(async (resolve, reject) => {
+      try {
+        this.contractInstance.methods
+          .createRoom(storeName, price, finishTime, chicken)
+          .send(
+            { from: accounts[0], gas: 4476768 },
+
+            (err, transaction) => {
+              if (!err) resolve(transaction);
+              reject(err);
+            }
+          );
+      } catch (e) {
+        reject(e);
+      }
+    });
+  }
+
+  async getRoomInfo(storeName, roomIdx) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        let result = await this.contractInstance.methods
+          .getRoomInfo(storeName, roomIdx)
+          .call();
+        resolve(result);
+      } catch (e) {
+        reject(e);
+      }
+    });
+  }
+
+  async getRoomsCount(storeName) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        let result = await this.contractInstance.methods
+          .getRoomsCount(storeName)
           .call();
         resolve(result);
       } catch (e) {

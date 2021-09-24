@@ -31,7 +31,7 @@
               </template>
               <template v-slot:header>
                 <span
-                  >치킨이름: {{ menu.chicken }}, 가격: {{ menu.price }}</span
+                  >치킨이름: {{ menu.chicken }}, 가격: {{ menu.price }}₩</span
                 >
               </template>
               <v-card>
@@ -40,7 +40,7 @@
                 >
                 <v-card-actions>
                   <v-btn outline color="teal" @click="selectMenu(idx)">{{
-                    !menu.selected ? "선택됨" : "선택취소"
+                    !menu.selected ? "선택" : "선택취소"
                   }}</v-btn>
                 </v-card-actions>
               </v-card>
@@ -81,21 +81,6 @@ export default {
     return {
       // not loaded on map page
       // isLoading: false,
-      // roomModal: false,
-      // roomName: null,
-      // // roomNumber: "",
-      // storeIdx: 0,
-      // // foodName: "",
-      // menus: [
-      //   {
-      //     chicken: "황금 올리브",
-      //     price: "19,000₩",
-      //     description: "고소한 올리브유로 티킨 바삭한 프라이드 치킨!",
-      //     selected: false,
-      //   },
-      // ],
-      // timer: 15,
-      // storeName: room.storeName,
     };
   },
   computed: {
@@ -107,10 +92,36 @@ export default {
     room: Object,
   },
   methods: {
-    createOrderRoom() {
-      alert(1);
+    async createOrderRoom() {
+      console.log("=== Create Order Room ===");
+      const menu = this.room.menus.filter((data) => data.selected)[0];
+      console.log(`---- get Menu and Create Room, menu: ${menu}`);
+      if (menu === undefined) {
+        alert("메뉴를 선택해 주세요.");
+        return;
+      }
+      // storeName
+      const _storeName = this.room.storeName;
+      // price
+      const _price = menu.price;
+      // _finish
+      const _timer = this.room.timer;
+      // chicken
+      const _chicken = menu.chicken;
+
+      this.room.isLoading = true;
+      const tsc = await this.AdminInstance.createRoom(
+        _storeName,
+        _price,
+        _timer,
+        _chicken
+      );
+      console.log(`---- Create Order Room Succeed : ${tsc}`);
+      this.room.isLoading = false;
+      console.log("=== Doen Create Order Room ===");
     },
     selectMenu(idx) {
+      console.log(`=== Select Menu : ${idx} ===`);
       this.room.menus.forEach((menu, _idx) => {
         if (_idx === idx) {
           menu.selected = !menu.selected;
@@ -121,6 +132,7 @@ export default {
     },
   },
   updated() {
+    console.log("=== Updated CreateRoomDialog.vue ===");
     // 변수가 변경 될때마다 update 실행된다.!
     // if (this.room.roomModal === false) {
     //   console.log("close");
@@ -128,33 +140,11 @@ export default {
     // } //
     // not loaded on map page
     // this.isLoading = false;
-    // this.roomModal = false;
-    // this.roomName = null;
-    // // roomNumber ""
-    // this.storeIdx = 0;
-    // // foodName ""
-    // this.menus = [
-    //   {
-    //     chicken: "황금 올리브",
-    //     price: "19,000₩",
-    //     description: "고소한 올리브유로 티킨 바삭한 프라이드 치킨!",
-    //     selected: false,
-    //   },
-    // ];
-    // this.timer = 15;
-    // this.storeName = room.storeName;
-    console.log("updated");
+    // console.log("updated");
     // console.log(this.storeName); // undefined
     // room // props , not defined
   },
-  watch: {
-    room: (roomState) => {
-      console.log(roomState);
-      if (roomState.roomModal === false) {
-        console.log("close close");
-      }
-    },
-  },
+  watch: {},
 };
 </script>
 

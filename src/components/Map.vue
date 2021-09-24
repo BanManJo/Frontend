@@ -23,7 +23,7 @@
 
 <script>
 import { mapState } from "vuex";
-import { SET_ADMIN_INSTANCE } from "../vuex/store";
+import store, { SET_ADMIN_INSTANCE } from "../vuex/store";
 
 import CreateRoomDialog from "./CreateRoomDialog";
 import OrderRoomNavigationDrawer from "./OrderRoomNavigationDrawer.vue";
@@ -57,6 +57,8 @@ export default {
       ],
       navDrawer: {
         drawer: false,
+        storeName: null,
+        roomCount: null,
         orderRooms: [
           {
             headline: "황금 올리브",
@@ -86,39 +88,66 @@ export default {
   },
   methods: {
     createOrderRoom(event) {
+      console.log("=== Create Order Room ===");
+
+      event.preventDefault();
       this.room.roomModal = !this.room.roomModal;
       this.room.storeName = event.target.id;
       // menus
       this.room.menus = [];
       this.AdminInstance.getStoreMenu(this.room.storeName).then((result) => {
-        // results.forEach((_menu) => {
-        // // }
+        console.log("---- get store menus from ETH ----");
         const chickens = result[0];
         const prices = result[1];
         for (let i = 0; i < chickens.length; i++) {
           console.log(chickens[i], prices[i]);
           this.room.menus.push({
             chicken: chickens[i],
-            price: `${prices[i]}₩`,
+            price: `${prices[i]}`,
             description: "고소한 올리브유로 티킨 바삭한 프라이드 치킨!",
             selected: false,
           });
         }
       });
 
-      // this.room.menus.push({
-      //   chicken: "황금 올리브",
-      //   price: "19,000₩",
-      //   description: "고소한 올리브유로 티킨 바삭한 프라이드 치킨!",
-      //   selected: false,
-      // });
       // storeIdx (if needed)
-      console.dir(event.target.id);
+      console.log("=== Done Create Order Room ===");
     },
-    showOrderRooms() {
+    async showOrderRooms(event) {
+      console.log("=== Show Order Rooms ===");
+
+      event.preventDefault();
       this.navDrawer.drawer = !this.navDrawer.drawer;
+
+      const storeName = event.target.id;
+      this.navDrawer.storeName = storeName;
+
+      const roomCount = await this.AdminInstance.getRoomsCount(storeName);
+      this.navDrawer.roomCount = roomCount;
+
+      console.log(`---- get Order Rooms Info, Counts: ${roomCount}`);
+      this.navDrawer.orderRooms = [];
+      for (let idx = 0; idx < roomCount; idx++) {
+        await this.AdminInstance.getRoomInfo(storeName, idx)
+          .then((result) => {
+            console.log(result);
+            if (result.state === "1") {
+              this.navDrawer.orderRooms.push({
+                headline: result.chicken,
+                subText: `종료 시간: 15:23 | ${result.price}₩`,
+                show: false,
+                description: "황금올리브 같이 먹을 분 구함!~",
+              });
+            }
+          })
+          .catch((error) => {
+            console.error(error);
+          });
+      }
+      console.log("=== Done Show Order Room ===");
     },
     makeInfoWindow(marker) {
+      console.log("=== Make Info Window ===");
       const content = document.createElement("div");
       content.style.padding = "5px";
 
@@ -147,35 +176,42 @@ export default {
       const linkShowOrderRooms = document.createElement("a");
       linkShowOrderRooms.style.color = "blue";
       linkShowOrderRooms.target = "_blank";
+      linkShowOrderRooms.id = marker.storeName;
       linkShowOrderRooms.addEventListener("click", this.showOrderRooms);
       linkShowOrderRooms.appendChild(document.createTextNode("주문방 보기"));
       content.appendChild(linkShowOrderRooms);
 
+      console.log("=== Done Mark Info Window ===");
       return content;
     },
     async createMarker() {
       // get chicken houses number
       // // get chicken house info
       // // // setting chicken houses
+      console.log("=== Create Marker ===");
+      console.log("---- get Store Counts from ETH ----");
       this.AdminInstance.getStoreCount()
         .then(async (val) => {
-          console.log(val);
+          console.log(
+            `---- get Each Chicken House Infos by idx, Counts: ${val} ----`
+          );
           for (let idx = 0; idx < val; idx++) {
             await this.AdminInstance.getChickenHouseByIndex(idx).then(
-              (result) => {
-                console.log(result);
-                // console.log(this.markerDatas);
+              async (result) => {
+                const _orderCount = await this.AdminInstance.getRoomsCount(
+                  result.storeName
+                );
                 this.markerDatas.push({
                   latitude: Number(result.latitude),
                   longitude: Number(result.longitude),
                   removed: true,
                   storeName: result.storeName,
-                  orderCount: 3,
+                  orderCount: _orderCount,
                 });
               }
             );
           }
-          console.log(this.markerDatas);
+          console.log("---- markerDatas setting on map ----");
           this.markerDatas.forEach((markerData) => {
             const markerPosition = new kakao.maps.LatLng(
               markerData.latitude,
@@ -191,7 +227,7 @@ export default {
             marker.setMap(this.map);
 
             // 마커에 커서가 오버됐을 때 마커 위에 표시할 인포윈도우를 생성합니다
-
+            console.log("---- call make Info Window func ----");
             const iwContent = this.makeInfoWindow(markerData);
             const iwRemoveable = false;
             // 인포윈도우를 생성합니다
@@ -199,6 +235,7 @@ export default {
               content: iwContent,
               removable: iwRemoveable,
             });
+            console.log("---- Add click event on marker ----");
             // 마커에 마우스오버 이벤트를 등록합니다
             kakao.maps.event.addListener(marker, "click", () => {
               // let removed = true;
@@ -215,8 +252,10 @@ export default {
           });
         })
         .catch();
+      console.log("=== Done Create Marker ===");
     },
     initMap() {
+      console.log("=== Init Map ===");
       const container = document.getElementById("map");
       navigator.geolocation.getCurrentPosition((position) => {
         const lat = position.coords.latitude;
@@ -234,17 +273,22 @@ export default {
           storeName: "현 위치 ",
           orderCount: 3,
         });
+        console.log("---- call create marker func ----");
         this.createMarker();
       }, console.log);
+      console.log("=== Done Init Map ===");
     },
   },
   mounted() {
+    console.log("=== Mounted Map.vue ===");
+    console.log("---- Set Window Size ----");
     document.body.style.width = `${window.screen.width}px`;
     document.body.style.height = `${
       window.innerHeight ||
       document.documentElement.clientHeight ||
       document.body.clientHeight
     }px`;
+    console.log("---- Initialize kakao Object and Map Object ----");
     if (window.kakao && window.kakao.maps) {
       this.initMap();
     } else {
@@ -255,9 +299,13 @@ export default {
         "http://dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=f16dcaffdef9152c39799852d826d9c4&libraries=services";
       document.head.appendChild(script);
     }
+    console.log("=== Done Mounted Map.vue ===");
   },
   async created() {
+    console.log("=== Created Map.vue ===");
+    console.log("---- Set Admin Instance ----");
     await this.$store.commit(SET_ADMIN_INSTANCE);
+    console.log("=== Done Created Map.vue ===");
   },
   watch: {
     room: (roomState) => {
