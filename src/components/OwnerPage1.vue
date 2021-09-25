@@ -149,7 +149,7 @@ export default {
       return this.$route.params.storeName;
     },
   },
-  created() {
+  async created() {
     console.log(`=== Created OwnerPage1 ${this.storeName} ===`);
     await this.$store.commit(SET_ADMIN_INSTANCE);
   },
