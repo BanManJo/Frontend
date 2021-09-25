@@ -33,6 +33,7 @@
               >주문방 개수: {{ navDrawer.roomCount }}</v-list-tile-title
             >
           </v-list-tile-content>
+          <router-link :to="ownerPage">Owner</router-link>
         </v-list-tile>
       </v-list>
       <v-list class="pt-1">
@@ -111,6 +112,9 @@ export default {
   computed: {
     orderRooms() {
       return this.navDrawer.orderRooms;
+    },
+    ownerPage() {
+      return `/ownerPage1/${this.navDrawer.storeName}`;
     },
   },
 };
