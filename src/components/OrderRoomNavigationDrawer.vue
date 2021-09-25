@@ -70,8 +70,24 @@
           <v-divider></v-divider>
         </v-card>
       </v-list>
+      <!-- <v-navigation-drawer floating permanent stateless value="true">
+        <v-list dense>
+          <v-list-tile v-for="item in items" :key="item.title" @click="">
+            <v-list-tile-action>
+              <v-icon>{{ item.icon }}</v-icon>
+            </v-list-tile-action>
+
+            <v-list-tile-content>
+              <v-list-tile-title>{{ item.title }}</v-list-tile-title>
+            </v-list-tile-content>
+          </v-list-tile>
+        </v-list>
+      </v-navigation-drawer> -->
+      <!-- <div id="contents" style="right: 0%; z-index: 10">
+        <button>dkjdfkj</button>
+        <div style="width: 300px; height: 200px; background: white"></div>
+      </div> -->
     </v-navigation-drawer>
-    <button>dkjdfkj</button>
   </div>
 </template>
 
@@ -80,6 +96,11 @@ export default {
   data() {
     return {
       //   drawer: this.navDrawer.drawer,
+      items: [
+        { title: "Home", icon: "dashboard" },
+        { title: "About", icon: "question_answer" },
+      ],
+      right: null,
     };
   },
   props: {

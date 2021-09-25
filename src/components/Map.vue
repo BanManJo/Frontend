@@ -318,7 +318,7 @@ export default {
 };
 </script>
 
-<style>
+<style >
 html {
   margin: 0;
   padding: 0;
