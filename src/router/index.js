@@ -38,7 +38,7 @@ export default new Router({
       component: OwnerPage
     },
     {
-      path: "/ownerPage1",
+      path: "/ownerPage1/:storeName",
       name: "OwnerPage1",
       component: OwnerPage1
     },
