@@ -4,6 +4,9 @@ import Home from "@/components/Home";
 import Demo from "@/components/Demo";
 import AdminTest from "@/components/AdminTest";
 import Map from "@/components/Map";
+import OwnerPage from "@/components/OwnerPage";
+import OwnerPage1 from "@/components/OwnerPage1";
+import UserMyPage from "@/components/UserMyPage";
 
 Vue.use(Router);
 
@@ -27,7 +30,22 @@ export default new Router({
     {
       path: "/map",
       name: "Map",
-      component: Map,
+      component: Map
+    },
+    {
+      path: "/ownerPage",
+      name: "OwnerPage",
+      component: OwnerPage
+    },
+    {
+      path: "/ownerPage1",
+      name: "OwnerPage1",
+      component: OwnerPage1
+    },
+    {
+      path: "/user-myPage",
+      name: "UserMyPage",
+      component: UserMyPage
     }
   ],
   mode: "history",
