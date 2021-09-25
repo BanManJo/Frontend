@@ -4,7 +4,6 @@ module.exports = {
     node: true,
   },
   extends: "vuetify",
-  /*
   rules: {
     "no-console": process.env.NODE_ENV === "production" ? "error" : "off",
     "no-debugger": process.env.NODE_ENV === "production" ? "error" : "off",
@@ -13,14 +12,14 @@ module.exports = {
     "no-dupe-class-members": process.env.NODE_ENV === "production" ? "error" : "off",
     "no-unused-vars": process.env.NODE_ENV === "production" ? "error" : "off",
   },
-  */
-  {
-    "rules": {
-        "eqeqeq": "off",
-        "curly": "error",
-        "quotes": ["error", "double"]
+  "overrides": [
+    {
+      "files": ["*.vue", "*.js"],
+      "rules": {
+        "no-unused-expressions": "off"
+      }
     }
-  },
+  ],
   parserOptions: {
     parser: "babel-eslint",
   },
