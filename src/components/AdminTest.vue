@@ -77,7 +77,7 @@
 </template>
 
 <script>
-import { SET_ADMIN_INSTANCE } from "../vuex/store";
+import { SET_ADMIN_INSTANCE } from "../store";
 import { mapState } from "vuex";
 export default {
   data: () => ({
@@ -121,8 +121,8 @@ export default {
   async created() {
     await this.$store.commit(SET_ADMIN_INSTANCE);
     // const count = await this.$DemoRepoInstance.getCount();
-    // console.log('count:' + count);
-    // await this.$DemoRepoInstance.createRoom(1, 'BBQ', 'Chicken');
+    // console.log("count:" + count);
+    // await this.$DemoRepoInstance.createRoom(1, "BBQ", "Chicken");
   },
 };
 </script>

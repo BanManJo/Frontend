@@ -23,7 +23,7 @@
 
 <script>
 import { mapState } from "vuex";
-import store, { SET_ADMIN_INSTANCE } from "../vuex/store";
+import store, { SET_ADMIN_INSTANCE } from "../store";
 
 import CreateRoomDialog from "./CreateRoomDialog";
 import OrderRoomNavigationDrawer from "./OrderRoomNavigationDrawer.vue";
