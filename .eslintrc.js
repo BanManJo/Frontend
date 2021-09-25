@@ -9,6 +9,8 @@ module.exports = {
     "no-debugger": process.env.NODE_ENV === "production" ? "error" : "off",
     "no-async-promise-executor": process.env.NODE_ENV === "production" ? "error" : "off",
     "vuetify/no-deprecated-classes": process.env.NODE_ENV === "production" ? "error" : "off",
+    "no-dupe-class-members": process.env.NODE_ENV === "production" ? "error" : "off",
+    "no-unused-vars": process.env.NODE_ENV === "production" ? "error" : "off",
   },
   parserOptions: {
     parser: "babel-eslint",
