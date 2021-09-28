@@ -46,6 +46,9 @@
                   </v-card-title>
                   <v-card-actions>
                     <v-btn flat color="orange">취소하기</v-btn>
+                    <v-btn @click="testInstance" value="left" color="blue">
+                      <v-icon>TEST</v-icon>
+                    </v-btn>
                   </v-card-actions>
                 </v-card>
               </v-flex>
@@ -100,6 +103,9 @@
 </template>
 
 <script>
+import ContractInstance from "../ContractInstance";
+const contractInstance = new ContractInstance();
+
 export default {
   data() {
     return {
@@ -177,6 +183,17 @@ export default {
         }
       ]
     };
+  },
+  methods: {
+    testInstance() {
+      this.AdminInstance.getStoreCount().then(count => {
+        // resolve
+        alert(`Store Counts : ${count}`);
+      });
+    }
+  },
+  created() {
+    console.log(`=== Created OwnerPage1 ${this.storeName} ===`);
   }
 };
 </script>
