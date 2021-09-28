@@ -1,8 +1,8 @@
 <template>
   <div>
-    <v-navigation-drawer v-model="navDrawer.drawer" absolute>
+    <v-navigation-drawer v-model="navDrawer.drawer" absolute width="300">
       <v-list class="pa-0">
-        <v-toolbar dense flat>
+        <v-toolbar dense text>
           <v-toolbar-title class="pa-1">{{
             navDrawer.storeName
           }}</v-toolbar-title>
@@ -22,30 +22,53 @@
         </v-btn> -->
         </v-toolbar>
       </v-list>
-      <v-list class="pa-1">
-        <v-list-tile avatar>
-          <v-list-tile-avatar>
-            <img src="https://randomuser.me/api/portraits/men/85.jpg" />
-          </v-list-tile-avatar>
-
+      <v-list dense nav>
+        <v-list-item>
+          <v-list-item-avatar class="align-self-center" color="white" contain>
+            <v-img
+              src="https://demos.creative-tim.com/vuetify-material-dashboard/favicon.ico"
+              max-height="30"
+            />
+          </v-list-item-avatar>
+          <v-list-item-content>
+            <v-list-item-title class="display-1"
+              >주문방 개수: {{ navDrawer.roomCount }}</v-list-item-title
+            >
+          </v-list-item-content>
+          <v-btn class="ml-2" min-width="0" text :to="ownerPage">
+            <v-icon>mdi-account</v-icon>
+          </v-btn>
+        </v-list-item>
+        <!-- <v-list-tile avatar>
           <v-list-tile-content>
             <v-list-tile-title
               >주문방 개수: {{ navDrawer.roomCount }}</v-list-tile-title
             >
           </v-list-tile-content>
           <router-link :to="ownerPage">Owner</router-link>
-        </v-list-tile>
+        </v-list-tile> -->
       </v-list>
       <v-list class="pt-1">
         <v-divider></v-divider>
-        <v-card v-for="(orderRoom, idx) in orderRooms" :key="idx" flat>
-          <!-- <img
+        <v-col v-for="(orderRoom, idx) in orderRooms" :key="idx" text>
+          <base-material-order-room-card
+            color="orange"
+            icon="mdi-clock-time-eight-outline"
+            :title="orderRoom.subText"
+            :value="orderRoom.headline"
+            sub-icon="mdi-account-arrow-right"
+            sub-icon-color="green"
+            :sub-text="orderRoom.description"
+          />
+        </v-col>
+        <!-- <v-card v-for="(orderRoom, idx) in orderRooms" :key="idx" text> -->
+        <!-- <img
           src="https://cdn.vuetifyjs.com/images/cards/sunshine.jpg"
           height="100px"
         >
         </img> -->
 
-          <v-card-title primary-title>
+        <!-- <v-card-title primary-title>
             <div>
               <div class="headline">{{ orderRoom.headline }}</div>
               <span class="grey--text">{{ orderRoom.subText }}</span>
@@ -53,12 +76,12 @@
           </v-card-title>
 
           <v-card-actions>
-            <v-btn flat>Order</v-btn>
-            <v-btn flat color="purple">Chatting</v-btn>
+            <v-btn text>Order</v-btn>
+            <v-btn text color="purple">Chatting</v-btn>
             <v-spacer></v-spacer>
             <v-btn icon @click="orderRoom.show = !orderRoom.show">
               <v-icon>{{
-                orderRoom.show ? "keyboard_arrow_down" : "keyboard_arrow_up"
+                orderRoom.show ? "mdi-arrow-down" : "mdi-arrow-up"
               }}</v-icon>
             </v-btn>
           </v-card-actions>
@@ -69,7 +92,7 @@
             </v-card-text>
           </v-slide-y-transition>
           <v-divider></v-divider>
-        </v-card>
+        </v-card> -->
       </v-list>
       <!-- <v-navigation-drawer floating permanent stateless value="true">
         <v-list dense>

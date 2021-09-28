@@ -314,7 +314,6 @@ export default {
   created() {
     console.log("=== Created Map.vue ===");
     console.log("---- Set Admin Instance ----");
-    this.$store.commit(SET_ADMIN_INSTANCE);
 
     console.log("=== Done Created Map.vue ===");
   },
