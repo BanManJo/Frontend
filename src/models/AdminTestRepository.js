@@ -1,49 +1,49 @@
-import Config from '../config'
+import Config from "../config";
 
 export class AdminTestRepository {
   web3 = null;
   contractInstance = null;
-  account = '';
+  account = "";
   gas = 4476768;
 
-  constructor () {
-    this.gas = Config.GAS_AMOUNT
+  constructor() {
+    this.gas = Config.GAS_AMOUNT;
   }
 
-  setWeb3 (web3) {
-    this.web3 = web3
+  setWeb3(web3) {
+    this.web3 = web3;
     this.contractInstance = new this.web3.eth.Contract(
       Config.ADMIN_TEST_ABI,
-      Config.ADMIN_TEST_ADDRESS,
-    )
+      Config.ADMIN_TEST_ADDRESS
+    );
   }
 
-  getWeb3 () {
-    return this.web3
+  getWeb3() {
+    return this.web3;
   }
 
-  setAccount (account) {
-    this.account = account
+  setAccount(account) {
+    this.account = account;
   }
 
-  async getBalanceOfRomm (storeName, roomNumber) {
+  async getBalanceOfRomm(storeName, roomNumber) {
     // await window.ethereum.request({ method: "eth_requestAccounts" });
     return new Promise(async (resolve, reject) => {
       try {
         var result = await this.contractInstance.methods
           .getBalanceOfRomm(storeName, roomNumber)
-          .call()
-        resolve(result)
+          .call();
+        resolve(result);
       } catch (e) {
-        reject(e)
+        reject(e);
       }
-    })
+    });
   }
 
-  async createRoom (storeName) {
+  async createRoom(storeName) {
     const accounts = await window.ethereum.request({
-      method: 'eth_requestAccounts',
-    })
+      method: "eth_requestAccounts"
+    });
 
     return new Promise(async (resolve, reject) => {
       try {
@@ -51,28 +51,28 @@ export class AdminTestRepository {
           { from: accounts[0], gas: 4476768 },
 
           (err, transaction) => {
-            if (!err) resolve(transaction)
-            reject(err)
-          },
-        )
+            if (!err) resolve(transaction);
+            reject(err);
+          }
+        );
       } catch (e) {
-        reject(e)
+        reject(e);
       }
-    })
+    });
   }
 
-  async registerChickenHouse (
+  async registerChickenHouse(
     storeName,
     latitude,
     longitude,
     chickenNames,
     prices,
-    sunsals,
+    sunsals
   ) {
     const accounts = await window.ethereum.request({
-      method: 'eth_requestAccounts',
-    })
-    console.log('passs')
+      method: "eth_requestAccounts"
+    });
+    console.log("passs");
     return new Promise(async (resolve, reject) => {
       try {
         this.contractInstance.methods
@@ -82,79 +82,80 @@ export class AdminTestRepository {
             longitude,
             chickenNames,
             prices,
-            sunsals,
+            sunsals
           )
           .send(
             { from: accounts[0], gas: 4476768 },
 
             (err, transaction) => {
-              if (!err) resolve(transaction)
-              reject(err)
-            },
-          )
+              if (!err) resolve(transaction);
+              reject(err);
+            }
+          );
       } catch (e) {
-        reject(e)
+        reject(e);
       }
-    })
+    });
   }
 
-  async getChickenHouse (storeName) {
+  async getChickenHouse(storeName) {
     return new Promise(async (resolve, reject) => {
       try {
         const result = await this.contractInstance.methods
           .getChickenHouse(storeName)
-          .call()
-        resolve(result)
+          .call();
+        resolve(result);
       } catch (e) {
-        reject(e)
+        reject(e);
       }
-    })
+    });
   }
 
-  async getChickenHouseByIndex (idx) {
+  async getChickenHouseByIndex(idx) {
     return new Promise(async (resolve, reject) => {
       try {
         const result = await this.contractInstance.methods
           .getChickenHouse2(idx)
-          .call()
-        resolve(result)
+          .call();
+        resolve(result);
       } catch (e) {
-        reject(e)
+        reject(e);
       }
-    })
+    });
   }
 
-  async getStoreCount () {
+  // 스토어 개수 반환
+  async getStoreCount() {
     return new Promise(async (resolve, reject) => {
       try {
         const result = await this.contractInstance.methods
-          .getStoreCount()
-          .call()
-        resolve(result)
+          .getStoreCount() // 솔리디티 컨트랙트의 메소드 이름
+          .call(); // Gas 소모가 없는 함수를 호출 하는 방식 vs send
+        resolve(result);
       } catch (e) {
-        reject(e)
+        reject(e);
       }
-    })
+    });
   }
 
-  async getStoreMenu (storeName) {
-    return new Promise(async (resolve, reject) => {
-      try {
-        const result = await this.contractInstance.methods
-          .getStoreMenu(storeName)
-          .call()
-        resolve(result)
-      } catch (e) {
-        reject(e)
-      }
-    })
-  }
+  // async getStoreMenu (storeName) {
+  //   return new Promise(async (resolve, reject) => {
+  //     try {
+  //       const result = await this.contractInstance.methods
+  //         .getStoreMenu(storeName)
+  //         .call()
+  //       resolve(result)
+  //     } catch (e) {
+  //       reject(e)
+  //     }
+  //   })
+  // }
 
-  async createRoom (storeName, price, finishTime, chicken) {
+  async createRoom(storeName, price, finishTime, chicken) {
     const accounts = await window.ethereum.request({
-      method: 'eth_requestAccounts',
-    })
-    console.log('passs')
+      method: "eth_requestAccounts"
+    });
+    console.log("passs");
     return new Promise(async (resolve, reject) => {
       try {
         this.contractInstance.methods
@@ -163,48 +164,48 @@ export class AdminTestRepository {
             { from: accounts[0], gas: 4476768 },
 
             (err, transaction) => {
-              if (!err) resolve(transaction)
-              reject(err)
-            },
-          )
+              if (!err) resolve(transaction);
+              reject(err);
+            }
+          );
       } catch (e) {
-        reject(e)
+        reject(e);
       }
-    })
+    });
   }
 
-  async getRoomInfo (storeName, roomIdx) {
+  async getRoomInfo(storeName, roomIdx) {
     return new Promise(async (resolve, reject) => {
       try {
         const result = await this.contractInstance.methods
           .getRoomInfo(storeName, roomIdx)
-          .call()
-        resolve(result)
+          .call();
+        resolve(result);
       } catch (e) {
-        reject(e)
+        reject(e);
       }
-    })
+    });
   }
 
-  async getRoomsCount (storeName) {
+  async getRoomsCount(storeName) {
     return new Promise(async (resolve, reject) => {
       try {
         const result = await this.contractInstance.methods
           .getRoomsCount(storeName)
-          .call()
-        resolve(result)
+          .call();
+        resolve(result);
       } catch (e) {
-        reject(e)
+        reject(e);
       }
-    })
+    });
   }
 
-  getCurrentBlock () {
+  getCurrentBlock() {
     return new Promise((resolve, reject) => {
       this.web3.eth.getBlockNumber((err, blocknumber) => {
-        if (!err) resolve(blocknumber)
-        reject(err)
-      })
-    })
+        if (!err) resolve(blocknumber);
+        reject(err);
+      });
+    });
   }
 }

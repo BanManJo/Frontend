@@ -8,6 +8,7 @@
       <v-btn @click="registerCH.dialog = !registerCH.dialog" depressed>
         Register Chicken House
       </v-btn>
+      <v-btn @click="testContractInstance">Testing Button</v-btn>
     </v-content>
     <register-chicken-house-dialog
       :registerCH="registerCH"
@@ -87,6 +88,13 @@ export default {
     }),
   },
   methods: {
+    testContractInstance() {
+      this.AdminInstance.getStoreCount().then((count) => {
+        alert(`Store Counts : ${count}`);
+      });
+      // (인자) => {내용} // 함수!
+      // function(인자){내용}
+    },
     createOrderRoom(event) {
       console.log("=== Create Order Room ===");
 
@@ -301,10 +309,10 @@ export default {
     }
     console.log("=== Done Mounted Map.vue ===");
   },
-  async created() {
+  created() {
     console.log("=== Created Map.vue ===");
     console.log("---- Set Admin Instance ----");
-    await this.$store.commit(SET_ADMIN_INSTANCE);
+    this.$store.commit(SET_ADMIN_INSTANCE);
     console.log("=== Done Created Map.vue ===");
   },
   watch: {
