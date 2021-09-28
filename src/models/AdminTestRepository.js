@@ -138,18 +138,18 @@ export class AdminTestRepository {
     });
   }
 
-  // async getStoreMenu (storeName) {
-  //   return new Promise(async (resolve, reject) => {
-  //     try {
-  //       const result = await this.contractInstance.methods
-  //         .getStoreMenu(storeName)
-  //         .call()
-  //       resolve(result)
-  //     } catch (e) {
-  //       reject(e)
-  //     }
-  //   })
-  // }
+  async getStoreMenu(storeName) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const result = await this.contractInstance.methods
+          .getStoreMenu(storeName)
+          .call();
+        resolve(result);
+      } catch (e) {
+        reject(e);
+      }
+    });
+  }
 
   async createRoom(storeName, price, finishTime, chicken) {
     const accounts = await window.ethereum.request({

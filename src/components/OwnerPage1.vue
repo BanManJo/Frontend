@@ -5,7 +5,7 @@
         <v-toolbar-title>{{ storeName }}</v-toolbar-title>
         <v-spacer></v-spacer>
         <v-btn-toggle v-model="icon">
-          <v-btn flat value="left" color="blue">
+          <v-btn @click="testInstance" value="left" color="blue">
             <v-icon>영업 시작</v-icon>
           </v-btn>
           <v-btn flat value="center" color="red">
@@ -85,12 +85,14 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
-// import store, { SET_ADMIN_INSTANCE } from "../vuex/store";
+// Instance 사용하기 위한 구문
+import ContractInstance from "../ContractInstance";
+const contractInstance = new ContractInstance();
 
 export default {
   data() {
     return {
+      AdminInstance: contractInstance.getAdminInstance(), // Admin Instance data
       text: "center",
       icon: "justify",
       toggle_none: null,
@@ -142,16 +144,20 @@ export default {
     };
   },
   computed: {
-    ...mapState({
-      AdminInstance: (state) => state.AdminTestRepoInstance,
-    }),
     storeName() {
       return this.$route.params.storeName;
     },
   },
-  async created() {
+  methods: {
+    testInstance() {
+      this.AdminInstance.getStoreCount().then((count) => {
+        // resolve
+        alert(`Store Counts : ${count}`);
+      });
+    },
+  },
+  created() {
     console.log(`=== Created OwnerPage1 ${this.storeName} ===`);
-    await this.$store.commit(SET_ADMIN_INSTANCE);
   },
 };
 </script>

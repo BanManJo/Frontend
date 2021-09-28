@@ -23,12 +23,13 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
-import store, { SET_ADMIN_INSTANCE } from "../store";
-
 import CreateRoomDialog from "./CreateRoomDialog";
 import OrderRoomNavigationDrawer from "./OrderRoomNavigationDrawer.vue";
 import RegisterChickenHouseDialog from "./RegisterChickenHouseDialog.vue";
+
+// Instance 사용하기 위한 구문
+import ContractInstance from "../ContractInstance";
+const contractInstance = new ContractInstance();
 
 export default {
   name: "map",
@@ -40,6 +41,7 @@ export default {
   },
   data() {
     return {
+      AdminInstance: contractInstance.getAdminInstance(), // Admin Instance data
       registerCH: {
         dialog: false,
         notifications: false,
@@ -82,13 +84,11 @@ export default {
       },
     };
   },
-  computed: {
-    ...mapState({
-      AdminInstance: (state) => state.AdminTestRepoInstance,
-    }),
-  },
+  computed: {},
   methods: {
     testContractInstance() {
+      console.dir(this.AdminInstance);
+      // AdminInstance.getStoreCount()
       this.AdminInstance.getStoreCount().then((count) => {
         // resolve
         alert(`Store Counts : ${count}`);
@@ -315,6 +315,7 @@ export default {
     console.log("=== Created Map.vue ===");
     console.log("---- Set Admin Instance ----");
     this.$store.commit(SET_ADMIN_INSTANCE);
+
     console.log("=== Done Created Map.vue ===");
   },
   watch: {
