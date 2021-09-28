@@ -2,7 +2,7 @@
   <div>
     <v-card>
       <v-toolbar dark color="primary">
-        <v-toolbar-title>{{ storeName }}</v-toolbar-title>
+        <v-toolbar-title></v-toolbar-title>
         <v-spacer></v-spacer>
         <v-btn-toggle v-model="icon">
           <v-btn @click="testInstance" value="left" color="blue">
@@ -14,7 +14,7 @@
         </v-btn-toggle>
         <v-spacer></v-spacer>
         <v-toolbar-items>
-          <v-btn dark flat @click="registerChickenHouse">My Page</v-btn>
+          <v-btn color="info" @click="registerChickenHouse">My Page</v-btn>
         </v-toolbar-items>
       </v-toolbar>
     </v-card>
@@ -106,7 +106,7 @@ export default {
         { 방번호: 3, 메뉴: "양념치킨", 가격: "0.0001 ether" },
         { 방번호: 4, 메뉴: "간장치킨", 가격: "0.0001 ether" },
         { 방번호: 5, 메뉴: "김현수", 가격: "0.0001 ether" },
-        { 방번호: 6, 메뉴: "김현수", 가격: "0.00000001 ether" },
+        { 방번호: 6, 메뉴: "김현수", 가격: "0.00000001 ether" }
       ],
 
       orderedLists: [
@@ -114,51 +114,51 @@ export default {
           방번호: "1",
           종류: "순살",
           메뉴: "후라이드",
-          시간: "17시 45분",
+          시간: "17시 45분"
         },
         {
           방번호: "2",
           종류: "뼈",
           메뉴: "간장치킨",
-          시간: "18시 30분",
+          시간: "18시 30분"
         },
         {
           방번호: "3",
           종류: "순살",
           메뉴: "맛초킹",
-          시간: "18시 55분",
+          시간: "18시 55분"
         },
         {
           방번호: "359",
           종류: "뼈",
           메뉴: "뿌링클",
-          시간: "19시 25분",
+          시간: "19시 25분"
         },
         {
           방번호: "500",
           종류: "순살",
           메뉴: "다글다글",
-          시간: "19시 45분",
-        },
-      ],
+          시간: "19시 45분"
+        }
+      ]
     };
   },
   computed: {
-    storeName() {
-      return this.$route.params.storeName;
-    },
+    // storeName() {
+    //   return this.$route.params.storeName;
+    // },
   },
   methods: {
     testInstance() {
-      this.AdminInstance.getStoreCount().then((count) => {
+      this.AdminInstance.getStoreCount().then(count => {
         // resolve
         alert(`Store Counts : ${count}`);
       });
-    },
+    }
   },
   created() {
     console.log(`=== Created OwnerPage1 ${this.storeName} ===`);
-  },
+  }
 };
 </script>
 
