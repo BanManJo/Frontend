@@ -90,8 +90,10 @@ export default {
   methods: {
     testContractInstance() {
       this.AdminInstance.getStoreCount().then((count) => {
+        // resolve
         alert(`Store Counts : ${count}`);
       });
+      // ${result.chickens} ${result.prices}
       // (인자) => {내용} // 함수!
       // function(인자){내용}
     },
