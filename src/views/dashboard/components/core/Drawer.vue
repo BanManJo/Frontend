@@ -105,6 +105,16 @@ export default {
         icon: "mdi-bell",
         to: "/components/notifications",
       },
+      {
+        title: "buttons",
+        icon: "mdi-apple",
+        to: "/components/buttons",
+      },
+      {
+        title: "timeline",
+        icon: "mdi-apple",
+        to: "/pages/timeline",
+      },
     ],
   }),
 

@@ -27,6 +27,11 @@ export default new Router({
           component: () => import("@/views/dashboard/pages/UserProfile")
         },
         {
+          name: "Timeline",
+          path: "pages/timeline",
+          component: () => import("@/views/dashboard/pages/Timeline")
+        },
+        {
           name: "Notifications",
           path: "components/notifications",
           component: () => import("@/views/dashboard/component/Notifications")
@@ -40,6 +45,11 @@ export default new Router({
           name: "Typography",
           path: "components/typography",
           component: () => import("@/views/dashboard/component/Typography")
+        },
+        {
+          name: "Buttons",
+          path: "components/buttons",
+          component: () => import("@/views/dashboard/component/Buttons")
         },
         // Tables
         {
