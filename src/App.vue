@@ -21,6 +21,7 @@ export default {
     const contractInstance = new ContractInstance();
     // Admin Test Repository Instance 생성
     contractInstance.setAdminInstance();
+    contractInstance.setDemoInstance();
 
     // window.ethereum 객체를 불러온다. (메타마스크 여부 확인)
     const provider = await detectEthereumProvider();
@@ -61,6 +62,7 @@ export default {
       // 현재 계정을 등록 한다.
       // ->
       contractInstance.getAdminInstance().setAccount(accounts[0]);
+      contractInstance.getDemoInstance().setAccount(accounts[0]);
     }
 
     // 연결된 네트워크 상황에 따라 반응한다.
