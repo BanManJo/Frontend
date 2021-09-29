@@ -185,6 +185,27 @@ export class AdminTestRepository {
     });
   }
 
+  async changeOnOff(storeName) {
+    const accounts = await window.ethereum.request({
+      method: "eth_requestAccounts"
+    });
+    console.log("changeOnOff");
+    return new Promise(async (resolve, reject) => {
+      try {
+        this.contractInstance.methods.changeOnOff(storeName).send(
+          { from: accounts[0], gas: 4476768 },
+
+          (err, transaction) => {
+            if (!err) resolve(transaction);
+            reject(err);
+          }
+        );
+      } catch (e) {
+        reject(e);
+      }
+    });
+  }
+
   async getRoomInfo(storeName, roomIdx) {
     return new Promise(async (resolve, reject) => {
       try {
