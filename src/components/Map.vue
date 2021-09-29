@@ -1,22 +1,16 @@
 <template>
   <v-app>
     <v-content>
-      <v-container id="map" style="padding: 0px" fluid> </v-container>
+      <v-container id="map" style="padding: 0px" fluid></v-container>
     </v-content>
 
     <v-content id="contents">
-      <v-btn @click="registerCH.dialog = !registerCH.dialog" depressed>
-        Register Chicken House
-      </v-btn>
+      <v-btn @click="registerCH.dialog = !registerCH.dialog" depressed>Register Chicken House</v-btn>
       <v-btn @click="testContractInstance">Testing Button</v-btn>
     </v-content>
-    <register-chicken-house-dialog
-      :registerCH="registerCH"
-    ></register-chicken-house-dialog>
+    <register-chicken-house-dialog :registerCH="registerCH"></register-chicken-house-dialog>
     <!-- Navigation Drawer -->
-    <order-room-navigation-drawer
-      :navDrawer="navDrawer"
-    ></order-room-navigation-drawer>
+    <order-room-navigation-drawer :navDrawer="navDrawer"></order-room-navigation-drawer>
     <!-- modal -->
     <create-room-dialog :room="room"></create-room-dialog>
   </v-app>
@@ -313,9 +307,13 @@ export default {
   },
   created() {
     console.log("=== Created Map.vue ===");
-    console.log("---- Set Admin Instance ----");
 
     console.log("=== Done Created Map.vue ===");
+  },
+  updated() {
+    console.log("=== Updated Map.vue ===");
+
+    console.log("=== Done Updated Map.vue ===");
   },
   watch: {
     room: (roomState) => {

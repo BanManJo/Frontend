@@ -9,23 +9,24 @@
           <!-- <v-flex style="height: 100%; padding-bottom: 5px" xs12 sm12 md12> -->
           <v-text-field v-model="room.roomName" placeholder="황금올리브 ㄲ?" label="방이름" persistent-hint></v-text-field>
         </v-card-text>
-        <v-card-text style="text-align: center; max-height: 250px">
+
+        <v-expansion-panels v-for="(menu, idx) in room.menus" :key="idx">
           <v-expansion-panel>
-            <v-expansion-panel-content v-for="(menu, idx) in room.menus" :key="idx">
+            <v-expansion-panel-header>
+              <span>치킨이름: {{menu.chicken }}, 가격: d34343{{ menu.price }}₩</span>
               <template v-slot:actions>
                 <v-icon color="primary">
                   {{
-                  menu.selected ? "done" : "expand_more"
+                  menu.selected ? "mdi-check" : "$expand"
                   }}
                 </v-icon>
               </template>
-              <template v-slot:header>
-                <span>치킨이름: {{ menu.chicken }}, 가격: {{ menu.price }}₩</span>
-              </template>
-              <v-card>
-                <v-card-text class="grey lighten-3">{{ menu.description }}</v-card-text>
+            </v-expansion-panel-header>
+            <v-expansion-panel-content>
+              <v-card text>
+                <v-card-text>{{ menu.description }}</v-card-text>
                 <v-card-actions>
-                  <v-btn outline color="teal" @click="selectMenu(idx)">
+                  <v-btn outlined color="teal" @click="selectMenu(idx)">
                     {{
                     !menu.selected ? "선택" : "선택취소"
                     }}
@@ -34,7 +35,7 @@
               </v-card>
             </v-expansion-panel-content>
           </v-expansion-panel>
-        </v-card-text>
+        </v-expansion-panels>
         <v-card-text style="text-align: center">
           <v-slider
             v-model="room.timer"
@@ -52,7 +53,7 @@
         </v-card-text>
         <v-divider></v-divider>
         <v-card-actions>
-          <v-btn @click="createOrderRoom()" outline color="teal">Create Room</v-btn>
+          <v-btn @click="createOrderRoom()" outlined color="teal">Create Room</v-btn>
           <v-spacer></v-spacer>
         </v-card-actions>
       </v-card>
@@ -68,7 +69,8 @@ const contractInstance = new ContractInstance();
 export default {
   data() {
     return {
-      AdminInstance: contractInstance.getAdminInstance(), // Admin Instance data
+      AdminInstance: contractInstance.getAdminInstance(), // Admin Instance data,
+      succeed: false,
       // not loaded on map page
       // isLoading: false,
     };
@@ -96,14 +98,20 @@ export default {
       const _chicken = menu.chicken;
 
       this.room.isLoading = true;
-      const tsc = await this.AdminInstance.createRoom(
-        _storeName,
-        _price,
-        _timer,
-        _chicken
-      );
-      console.log(`---- Create Order Room Succeed : ${tsc}`);
-      this.room.isLoading = false;
+      try {
+        const tsc = await this.AdminInstance.createRoom(
+          _storeName,
+          _price,
+          _timer,
+          _chicken
+        );
+        console.log(`---- Create Order Room Succeed : ${tsc}`);
+        this.room.isLoading = false;
+        this.room.roomModal = false;
+        this.succeed = true;
+      } catch (error) {
+        console.log(error);
+      }
       console.log("=== Doen Create Order Room ===");
     },
     selectMenu(idx) {
@@ -120,17 +128,23 @@ export default {
   updated() {
     console.log("=== Updated CreateRoomDialog.vue ===");
     // 변수가 변경 될때마다 update 실행된다.!
-    // if (this.room.roomModal === false) {
-    //   console.log("close");
-    //   // this.room.menus = [];
-    // } //
+    if (this.room.roomModal === false) {
+      console.log("close");
+      // this.room.menus = [];
+    } //
     // not loaded on map page
     // this.isLoading = false;
     // console.log("updated");
     // console.log(this.storeName); // undefined
     // room // props , not defined
   },
-  watch: {},
+  watch: {
+    succeed: (succeeded) => {
+      if (succeeded) {
+        console.log("succeed");
+      }
+    },
+  },
 };
 </script>
 
