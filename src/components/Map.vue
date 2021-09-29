@@ -1,13 +1,13 @@
 <template>
   <v-app>
-    <v-content>
+    <v-main>
       <v-container id="map" style="padding: 0px" fluid></v-container>
-    </v-content>
+    </v-main>
 
-    <v-content id="contents">
+    <v-main id="contents">
       <v-btn @click="registerCH.dialog = !registerCH.dialog" depressed>Register Chicken House</v-btn>
       <v-btn @click="testContractInstance">Testing Button</v-btn>
-    </v-content>
+    </v-main>
     <register-chicken-house-dialog :registerCH="registerCH"></register-chicken-house-dialog>
     <!-- Navigation Drawer -->
     <order-room-navigation-drawer :navDrawer="navDrawer"></order-room-navigation-drawer>
