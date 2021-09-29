@@ -8,7 +8,7 @@
     >
       <!-- <template v-slot:activator="{ on }">
         <v-btn color="primary" dark v-on="on">Open Dialog</v-btn>
-      </template> -->
+      </template>-->
       <v-card>
         <v-toolbar dark color="primary">
           <v-btn icon dark @click="registerCH.dialog = false">
@@ -73,27 +73,17 @@
             <v-subheader>메뉴 등록</v-subheader>
           </v-flex>
           <v-flex xs2>
-            <v-text-field
-              v-model="chicken"
-              color="purple darken-2"
-              label="치킨 이름"
-              required
-            ></v-text-field>
+            <v-text-field v-model="chicken" color="purple darken-2" label="치킨 이름" required></v-text-field>
           </v-flex>
           <v-flex xs1></v-flex>
           <v-flex xs2>
-            <v-text-field
-              v-model="price"
-              color="blue darken-2"
-              label="가격"
-              required
-            ></v-text-field>
+            <v-text-field v-model="price" color="blue darken-2" label="가격" required></v-text-field>
           </v-flex>
           <v-flex xs1>
             <v-checkbox v-model="sunsal" label="순살?"></v-checkbox>
           </v-flex>
           <v-btn @click="addMenu" class="mx-1" fab dark small color="indigo">
-            <v-icon dark> add </v-icon>
+            <v-icon dark>add</v-icon>
           </v-btn>
         </v-layout>
         <v-layout row>
@@ -105,7 +95,7 @@
               <template mb4 v-for="(menu, idx) in menus">
                 <v-chip :key="idx" v-model="menu.appended" close>
                   <span>{{ menu.chicken }}</span> / 가격:
-                  <span> {{ menu.price }} </span>원
+                  <span>{{ menu.price }}</span>원
                 </v-chip>
               </template>
             </v-layout>
@@ -117,10 +107,13 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
+import ContractInstance from "../ContractInstance";
+const contractInstance = new ContractInstance();
+
 export default {
   data() {
     return {
+      AdminInstance: contractInstance.getAdminInstance(), // Admin Instance data
       latitude: null,
       longitude: null,
       storeName: "",
@@ -133,11 +126,7 @@ export default {
       required: (value) => !!value || "Required.",
     };
   },
-  computed: {
-    ...mapState({
-      AdminInstance: (state) => state.AdminTestRepoInstance,
-    }),
-  },
+  computed: {},
   props: {
     registerCH: Object,
   },

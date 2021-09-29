@@ -125,17 +125,28 @@ export class AdminTestRepository {
   }
 
   // 스토어 개수 반환
+  // getStoreCount() {
+  //   return new Promise(async (resolve, reject) => {
+  //     try {
+  //       const result = await this.contractInstance.methods
+  //         .getStoreCount() // 솔리디티 컨트랙트의 메소드 이름
+  //         .call(); // Gas 소모가 없는 함수를 호출 하는 방식 vs send
+  //       resolve(result); // 2
+  //     } catch (e) {
+  //       reject(e);
+  //     }
+  //   });
+  // }
+
   async getStoreCount() {
-    return new Promise(async (resolve, reject) => {
-      try {
-        const result = await this.contractInstance.methods
-          .getStoreCount() // 솔리디티 컨트랙트의 메소드 이름
-          .call(); // Gas 소모가 없는 함수를 호출 하는 방식 vs send
-        resolve(result); // 2
-      } catch (e) {
-        reject(e);
-      }
-    });
+    try {
+      const result = await this.contractInstance.methods
+        .getStoreCount() // 솔리디티 컨트랙트의 메소드 이름
+        .call(); // Gas 소모가 없는 함수를 호출 하는 방식 vs send
+      return result; // 2
+    } catch (e) {
+      throw e;
+    }
   }
 
   async getStoreMenu(storeName) {
