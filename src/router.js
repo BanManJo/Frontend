@@ -3,6 +3,7 @@ import Router from "vue-router";
 import Demo from "@/components/Demo";
 import Map from "@/components/Map";
 import OwnerPage1 from "@/components/OwnerPage1";
+import OwnerMyPage from "@/components/OwnerMyPage";
 
 Vue.use(Router);
 
@@ -75,6 +76,11 @@ export default new Router({
       path: "/ownerPage1/:storeName",
       name: "OwnerPage1",
       component: OwnerPage1
+    },
+    {
+      path: "/ownerMyPage",
+      name: "OwnerMyPage",
+      component: OwnerMyPage
     }
   ]
 });

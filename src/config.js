@@ -1,10 +1,10 @@
-const DemoRepository = require('./contracts/Demo')
-const AdminTestRepository = require('./contracts/AdminTest')
+const DemoRepository = require("./contracts/Demo");
+const AdminTestRepository = require("./contracts/AdminTest");
 
 module.exports = {
-  DEMO_ADDRESS: '0x2585d9a685aCF4F99F8f7d99a3351211cd6a7339',
+  DEMO_ADDRESS: "0x2585d9a685aCF4F99F8f7d99a3351211cd6a7339",
   DEMO_ABI: DemoRepository.abi,
-  ADMIN_TEST_ADDRESS: '0xDE7295C4790640CC15D6Fa74252F942645d8c797',
+  ADMIN_TEST_ADDRESS: "0x4d6a5530FbA901CFc9eBE6Bacc86FCFda8c2e384",
   ADMIN_TEST_ABI: AdminTestRepository.abi,
-  GAS_AMOUNT: 500000,
-}
+  GAS_AMOUNT: 500000
+};

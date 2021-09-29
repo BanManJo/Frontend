@@ -37,7 +37,7 @@ export default {
   components: {
     CreateRoomDialog,
     OrderRoomNavigationDrawer,
-    RegisterChickenHouseDialog,
+    RegisterChickenHouseDialog
   },
   data() {
     return {
@@ -46,7 +46,7 @@ export default {
         dialog: false,
         notifications: false,
         sound: true,
-        widgets: false,
+        widgets: false
       },
       map: null,
       markerDatas: [
@@ -67,9 +67,9 @@ export default {
             headline: "황금 올리브",
             subText: "종료 시간: 15:23",
             show: false,
-            description: "황금올리브 같이 먹을 분 구함!~",
-          },
-        ],
+            description: "황금올리브 같이 먹을 분 구함!~"
+          }
+        ]
       },
       // Create Room Model
       room: {
@@ -80,16 +80,17 @@ export default {
         // roomNumber: "",
         storeIdx: 0,
         menus: [],
-        timer: 15,
-      },
+        timer: 15
+      }
     };
   },
   computed: {},
   methods: {
     testContractInstance() {
+      alert(1);
       console.dir(this.AdminInstance);
       // AdminInstance.getStoreCount()
-      this.AdminInstance.getStoreCount().then((count) => {
+      this.AdminInstance.getStoreCount("BBQ").then(count => {
         // resolve
         alert(`Store Counts : ${count}`);
       });
@@ -105,7 +106,7 @@ export default {
       this.room.storeName = event.target.id;
       // menus
       this.room.menus = [];
-      this.AdminInstance.getStoreMenu(this.room.storeName).then((result) => {
+      this.AdminInstance.getStoreMenu(this.room.storeName).then(result => {
         console.log("---- get store menus from ETH ----");
         const chickens = result[0];
         const prices = result[1];
@@ -115,7 +116,7 @@ export default {
             chicken: chickens[i],
             price: `${prices[i]}`,
             description: "고소한 올리브유로 티킨 바삭한 프라이드 치킨!",
-            selected: false,
+            selected: false
           });
         }
       });
@@ -139,18 +140,18 @@ export default {
       this.navDrawer.orderRooms = [];
       for (let idx = 0; idx < roomCount; idx++) {
         await this.AdminInstance.getRoomInfo(storeName, idx)
-          .then((result) => {
+          .then(result => {
             console.log(result);
             if (result.state === "1") {
               this.navDrawer.orderRooms.push({
                 headline: result.chicken,
                 subText: `종료 시간: 15:23 | ${result.price}₩`,
                 show: false,
-                description: "황금올리브 같이 먹을 분 구함!~",
+                description: "황금올리브 같이 먹을 분 구함!~"
               });
             }
           })
-          .catch((error) => {
+          .catch(error => {
             console.error(error);
           });
       }
@@ -201,13 +202,13 @@ export default {
       console.log("=== Create Marker ===");
       console.log("---- get Store Counts from ETH ----");
       this.AdminInstance.getStoreCount()
-        .then(async (val) => {
+        .then(async val => {
           console.log(
             `---- get Each Chicken House Infos by idx, Counts: ${val} ----`
           );
           for (let idx = 0; idx < val; idx++) {
             await this.AdminInstance.getChickenHouseByIndex(idx).then(
-              async (result) => {
+              async result => {
                 const _orderCount = await this.AdminInstance.getRoomsCount(
                   result.storeName
                 );
@@ -216,13 +217,13 @@ export default {
                   longitude: Number(result.longitude),
                   removed: true,
                   storeName: result.storeName,
-                  orderCount: _orderCount,
+                  orderCount: _orderCount
                 });
               }
             );
           }
           console.log("---- markerDatas setting on map ----");
-          this.markerDatas.forEach((markerData) => {
+          this.markerDatas.forEach(markerData => {
             const markerPosition = new kakao.maps.LatLng(
               markerData.latitude,
               markerData.longitude
@@ -230,7 +231,7 @@ export default {
 
             // 마커를 생성합니다
             const marker = new kakao.maps.Marker({
-              position: markerPosition,
+              position: markerPosition
             });
 
             // 마커가 지도 위에 표시되도록 설정합니다
@@ -243,7 +244,7 @@ export default {
             // 인포윈도우를 생성합니다
             const infowindow = new kakao.maps.InfoWindow({
               content: iwContent,
-              removable: iwRemoveable,
+              removable: iwRemoveable
             });
             console.log("---- Add click event on marker ----");
             // 마커에 마우스오버 이벤트를 등록합니다
@@ -267,13 +268,13 @@ export default {
     initMap() {
       console.log("=== Init Map ===");
       const container = document.getElementById("map");
-      navigator.geolocation.getCurrentPosition((position) => {
+      navigator.geolocation.getCurrentPosition(position => {
         const lat = position.coords.latitude;
         const lng = position.coords.longitude;
         const _position = new kakao.maps.LatLng(lat, lng);
         const options = {
           center: _position,
-          level: 3,
+          level: 3
         };
         this.map = new kakao.maps.Map(container, options);
         this.markerDatas.push({
@@ -281,23 +282,21 @@ export default {
           longitude: lng,
           removed: true,
           storeName: "현 위치 ",
-          orderCount: 3,
+          orderCount: 3
         });
         console.log("---- call create marker func ----");
         this.createMarker();
       }, console.log);
       console.log("=== Done Init Map ===");
-    },
+    }
   },
   mounted() {
     console.log("=== Mounted Map.vue ===");
     console.log("---- Set Window Size ----");
     document.body.style.width = `${window.screen.width}px`;
-    document.body.style.height = `${
-      window.innerHeight ||
+    document.body.style.height = `${window.innerHeight ||
       document.documentElement.clientHeight ||
-      document.body.clientHeight
-    }px`;
+      document.body.clientHeight}px`;
     console.log("---- Initialize kakao Object and Map Object ----");
     if (window.kakao && window.kakao.maps) {
       this.initMap();
@@ -319,17 +318,17 @@ export default {
     console.log("=== Done Created Map.vue ===");
   },
   watch: {
-    room: (roomState) => {
+    room: roomState => {
       console.log(roomState);
       if (roomState.roomModal === false) {
         console.log("close close");
       }
-    },
-  },
+    }
+  }
 };
 </script>
 
-<style >
+<style>
 html {
   margin: 0;
   padding: 0;
