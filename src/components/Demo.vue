@@ -127,41 +127,41 @@ export default {
           chicken: "황금 올리브",
           price: "19,000₩",
           description: "고소한 올리브유로 티킨 바삭한 프라이드 치킨!",
-          selected: false,
+          selected: false
         },
         {
           chicken: "황금 올리브",
           price: "19,000₩",
           description: "고소한 올리브유로 티킨 바삭한 프라이드 치킨!",
-          selected: false,
+          selected: false
         },
         {
           chicken: "황금 올리브",
           price: "19,000₩",
           description: "고소한 올리브유로 티킨 바삭한 프라이드 치킨!",
-          selected: false,
+          selected: false
         },
         {
           chicken: "황금 올리브",
           price: "19,000₩",
           description: "고소한 올리브유로 티킨 바삭한 프라이드 치킨!",
-          selected: false,
+          selected: false
         },
         {
           chicken: "황금 올리브",
           price: "19,000₩",
           description: "고소한 올리브유로 티킨 바삭한 프라이드 치킨!",
-          selected: false,
+          selected: false
         },
         {
           chicken: "황금 올리브",
           price: "19,000₩",
           description: "고소한 올리브유로 티킨 바삭한 프라이드 치킨!",
-          selected: false,
-        },
+          selected: false
+        }
       ],
       timer: 15,
-      timerRule: (val) => val < 10 || `I don"t believe you!`,
+      timerRule: val => val < 10 || `I don"t believe you!`
     },
 
     //Data Table
@@ -170,15 +170,15 @@ export default {
         text: "Transaction Hash",
         align: "center",
         sortable: false,
-        value: "hash",
-      },
+        value: "hash"
+      }
     ],
-    items: [],
+    items: []
   }),
   computed: {
     ...mapState({
-      DemoInstance: (state) => state.DemoRepoInstance,
-    }),
+      DemoInstance: state => state.DemoRepoInstance
+    })
   },
   methods: {
     selectMenu(_idx) {
@@ -213,14 +213,14 @@ export default {
         this.error = e.message;
         console.log(this.error);
       }
-    },
+    }
   },
   async created() {
     await this.$store.commit(SET_DEMO_INSTANCE);
     // const count = await this.$DemoRepoInstance.getCount();
     // console.log("count:" + count);
     // await this.$DemoRepoInstance.createRoom(1, "BBQ", "Chicken");
-  },
+  }
 };
 </script>
 <style></style>

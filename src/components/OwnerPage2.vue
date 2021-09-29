@@ -72,7 +72,7 @@
                 <v-btn
                   class="ma-2 text-h4"
                   color="orange"
-                  @click="getOrderRooms"
+                  @click="deleteOrderRoom"
                 >
                   <v-icon left> mdi-cancel</v-icon>
                   <span>거절하기</span>
@@ -117,7 +117,7 @@
 
             <div class="text-xs-center">
               <v-btn fab small color="green">
-                <v-icon color="white">mdi-minus</v-icon>
+                <v-icon color="white" @click="finishCook">mdi-minus</v-icon>
               </v-btn>
             </div>
           </v-row>
@@ -147,38 +147,7 @@ export default {
 
       orderRoom: [],
 
-      orderedLists: [
-        {
-          roomNumber: "1",
-          kind: "순살",
-          menu: "후라이드",
-          time: "17시 45분"
-        },
-        {
-          roomNumber: "2",
-          kind: "뼈",
-          menu: "간장치킨",
-          time: "18시 30분"
-        },
-        {
-          roomNumber: "3",
-          kind: "순살",
-          menu: "맛초킹",
-          time: "18시 55분"
-        },
-        {
-          roomNumber: "359",
-          kind: "뼈",
-          menu: "뿌링클",
-          time: "19시 25분"
-        },
-        {
-          roomNumber: "500",
-          kind: "순살",
-          menu: "다글다글",
-          time: "19시 45분"
-        }
-      ]
+      orderedLists: []
     };
   },
   computed: {
@@ -187,6 +156,20 @@ export default {
     }
   },
   methods: {
+    deleteOrderRoom() {
+      var con_test = confirm("주의 : 한번 거절하시면 다시 받을 수 없습니다.");
+      if (con_test == true) {
+        this.orderRoom.splice(0, 1);
+      } else if (con_test == false) {
+      }
+    },
+    finishCook() {
+      var con_test = confirm("주의 : 두명의 손님들이 다 가져가셨나요?");
+      if (con_test == true) {
+        this.orderedLists.splice(0, 1);
+      } else if (con_test == false) {
+      }
+    },
     testInstance() {
       this.AdminInstance.getStoreCount().then(count => {
         // resolve
@@ -228,11 +211,39 @@ export default {
           });
       }
       console.log("=== Done Show Order Room ===");
+    },
+    async getOrderedLists() {
+      console.log("=== Show Order Rooms ===");
+
+      const roomCount = await this.AdminInstance.getRoomsCount(this.storeName);
+
+      console.log(`---- get Order Rooms Info, Counts: ${roomCount}`);
+      this.orderedLists = [];
+
+      for (let idx = 0; idx < roomCount; idx++) {
+        await this.AdminInstance.getRoomInfo(this.storeName, idx)
+          .then(result => {
+            console.log(result);
+            if (result.state === "1") {
+              this.orderedLists.push({
+                roomNumber: "500",
+                kind: "순살",
+                menu: result.chicken,
+                time: "5시 17분"
+              });
+            }
+          })
+          .catch(error => {
+            console.error(error);
+          });
+      }
+      console.log("=== Done Show Order Room ===");
     }
   },
   created() {
     console.log(`=== Created OwnerPage2 ${this.storeName} ===`);
     this.getOrderRooms();
+    this.getOrderedLists();
   },
 
   mounted() {}
