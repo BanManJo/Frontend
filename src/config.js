@@ -1,6 +1,14 @@
 const DemoRepository = require("./contracts/Demo");
 const AdminTestRepository = require("./contracts/AdminTest");
 
+//상일
+//address:
+//대영
+//address:
+// 성구
+//address:
+//현수
+//address:
 module.exports = {
   DEMO_ADDRESS: "0x2585d9a685aCF4F99F8f7d99a3351211cd6a7339",
   DEMO_ABI: DemoRepository.abi,
