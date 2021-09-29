@@ -86,7 +86,7 @@ export class AdminTestRepository {
       this.contractInstance.methods
         .createRoom(storeName, price, finishTime, chicken)
         .send(
-          { from: accounts[0], gas: 4476768 },
+          { from: this.account, gas: this.gas },
 
           (err, transaction) => {
             if (!err) return transaction;
@@ -142,6 +142,27 @@ export class AdminTestRepository {
           .getStoreMenu(storeName)
           .call();
         resolve(result);
+      } catch (e) {
+        reject(e);
+      }
+    });
+  }
+
+  async changeOnOff(storeName) {
+    const accounts = await window.ethereum.request({
+      method: "eth_requestAccounts"
+    });
+    console.log("changeOnOff");
+    return new Promise(async (resolve, reject) => {
+      try {
+        this.contractInstance.methods.changeOnOff(storeName).send(
+          { from: accounts[0], gas: 4476768 },
+
+          (err, transaction) => {
+            if (!err) resolve(transaction);
+            reject(err);
+          }
+        );
       } catch (e) {
         reject(e);
       }

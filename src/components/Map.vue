@@ -307,13 +307,9 @@ export default {
   },
   created() {
     console.log("=== Created Map.vue ===");
+    console.log("---- Set Admin Instance ----");
 
     console.log("=== Done Created Map.vue ===");
-  },
-  updated() {
-    console.log("=== Updated Map.vue ===");
-
-    console.log("=== Done Updated Map.vue ===");
   },
   watch: {
     room: (roomState) => {
@@ -326,7 +322,7 @@ export default {
 };
 </script>
 
-<style >
+<style>
 html {
   margin: 0;
   padding: 0;

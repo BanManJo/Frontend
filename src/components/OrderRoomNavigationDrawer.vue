@@ -109,13 +109,13 @@ export default {
       //   drawer: this.navDrawer.drawer,
       items: [
         { title: "Home", icon: "dashboard" },
-        { title: "About", icon: "question_answer" },
+        { title: "About", icon: "question_answer" }
       ],
-      right: null,
+      right: null
     };
   },
   props: {
-    navDrawer: Object,
+    navDrawer: Object
     // orderRooms: Array,
     // drawer: Boolean,
   },
@@ -124,11 +124,10 @@ export default {
       return this.navDrawer.orderRooms;
     },
     ownerPage() {
-      return `/ownerPage1/${this.navDrawer.storeName}`;
-    },
-  },
+      return `/ownerPage2/${this.navDrawer.storeName}`;
+    }
+  }
 };
 </script>
 
-<style>
-</style>
+<style></style>

@@ -10,13 +10,19 @@
         <v-btn
           class="text-h3 text--white"
           x-large
-          @click="testInstance"
+          @click="getOnOff"
           value="left"
           color="blue"
         >
           영업 시작
         </v-btn>
-        <v-btn class="text-h3 text--white" x-large value="center" color="red">
+        <v-btn
+          class="text-h3 text--white"
+          @click="changeOnOff"
+          x-large
+          value="center"
+          color="red"
+        >
           영업 종료
         </v-btn>
       </v-btn-toggle>
@@ -30,36 +36,6 @@
       </v-btn>
     </v-toolbar>
 
-    <!-- <v-container class="my-5">
-      <v-header class="headline">현재 들어온 주문 목록</v-header>
-      <br />
-      <br />
-      <v-row row wrap>
-        <v-col xs12 sm6 md4 lg3 v-for="order in orders" :key="order.메뉴">
-          <v-card flat outlined class="text-center ma-1 ">
-            <v-card-text>
-              <div class="text-h3">방번호 : {{ order.방번호 }}</div>
-              <br />
-              <div class="text-h4">메뉴 : {{ order.메뉴 }}</div>
-              <div class="text-h4">가격 : {{ order.가격 }}</div>
-            </v-card-text>
-            <v-card-actions>
-              <v-btn class="ma-2 text-h4" color="primary">
-                <v-icon left> mdi-checkbox-marked-circle</v-icon>
-                <span>주문받기</span>
-              </v-btn>
-              <v-spacer></v-spacer>
-
-              <v-btn class="ma-2 text-h4" color="warning">
-                <v-icon left> mdi-cancel</v-icon>
-                <span>거절하기</span>
-              </v-btn>
-            </v-card-actions>
-          </v-card>
-        </v-col>
-      </v-row>
-    </v-container> -->
-
     <v-container>
       <base-material-card
         icon="mdi-clipboard-text"
@@ -69,13 +45,22 @@
         outlined
       >
         <v-row row wrap>
-          <v-col xs12 sm6 md4 lg3 v-for="order in orders" :key="order.메뉴">
+          <v-col
+            xs12
+            sm6
+            md4
+            lg3
+            v-for="orderRoom in orderRoom"
+            :key="orderRoom.roomNumber"
+          >
             <v-card flat outlined class="text-center">
               <v-card-text>
-                <div class="text-h3">방번호 : {{ order.방번호 }}</div>
+                <div class="text-h3">방번호 : {{ orderRoom.roomNumber }}</div>
                 <br />
-                <div class="text-h4">메뉴 : {{ order.메뉴 }}</div>
-                <div class="text-h4">가격 : {{ order.가격 }}</div>
+                <div class="text-h4">
+                  메뉴 : {{ orderRoom.menu }} ({{ orderRoom.kind }})
+                </div>
+                <div class="text-h4">가격 : {{ orderRoom.price }}</div>
               </v-card-text>
               <v-card-actions>
                 <v-btn class="ma-2 text-h4" color="primary">
@@ -84,7 +69,11 @@
                 </v-btn>
                 <v-spacer></v-spacer>
 
-                <v-btn class="ma-2 text-h4" color="orange">
+                <v-btn
+                  class="ma-2 text-h4"
+                  color="orange"
+                  @click="getOrderRooms"
+                >
                   <v-icon left> mdi-cancel</v-icon>
                   <span>거절하기</span>
                 </v-btn>
@@ -108,22 +97,22 @@
           v-for="orderedList in orderedLists"
           :key="orderedList.title"
         >
-          <v-row row wrap :class="`pa-3 orderedList ${orderedList.종류}`">
+          <v-row row wrap :class="`pa-3 orderedList ${orderedList.kind}`">
             <v-col xs12 md5>
               <div class="caption grey--text">주문 받은 시간</div>
-              <div>{{ orderedList.시간 }}</div>
+              <div>{{ orderedList.time }}</div>
             </v-col>
             <v-flex xs6 sm4 md2>
               <div class="caption grey--text">종류</div>
-              <div>{{ orderedList.종류 }}</div>
+              <div>{{ orderedList.kind }}</div>
             </v-flex>
             <v-flex xs6 sm4 md2>
               <div class="caption grey--text">메뉴</div>
-              <div>{{ orderedList.메뉴 }}</div>
+              <div>{{ orderedList.menu }}</div>
             </v-flex>
             <v-flex xs6 sm4 md2>
-              <div class="caption grey--text">방 번호</div>
-              <div>{{ orderedList.방번호 }}</div>
+              <div class="caption grey--text">방번호</div>
+              <div>{{ orderedList.roomNumber }}</div>
             </v-flex>
 
             <div class="text-xs-center">
@@ -156,45 +145,38 @@ export default {
       toggle_exclusive: 2,
       toggle_multiple: [0, 1, 2],
 
-      orders: [
-        { 방번호: 1, 메뉴: "다글다글", 가격: "0.0001 ether" },
-        { 방번호: 2, 메뉴: "후라이드", 가격: "0.0001 ether" },
-        { 방번호: 3, 메뉴: "양념치킨", 가격: "0.0001 ether" },
-        { 방번호: 4, 메뉴: "간장치킨", 가격: "0.0001 ether" },
-        { 방번호: 5, 메뉴: "김현수", 가격: "0.0001 ether" },
-        { 방번호: 6, 메뉴: "김현수", 가격: "0.00000001 ether" }
-      ],
+      orderRoom: [],
 
       orderedLists: [
         {
-          방번호: "1",
-          종류: "순살",
-          메뉴: "후라이드",
-          시간: "17시 45분"
+          roomNumber: "1",
+          kind: "순살",
+          menu: "후라이드",
+          time: "17시 45분"
         },
         {
-          방번호: "2",
-          종류: "뼈",
-          메뉴: "간장치킨",
-          시간: "18시 30분"
+          roomNumber: "2",
+          kind: "뼈",
+          menu: "간장치킨",
+          time: "18시 30분"
         },
         {
-          방번호: "3",
-          종류: "순살",
-          메뉴: "맛초킹",
-          시간: "18시 55분"
+          roomNumber: "3",
+          kind: "순살",
+          menu: "맛초킹",
+          time: "18시 55분"
         },
         {
-          방번호: "359",
-          종류: "뼈",
-          메뉴: "뿌링클",
-          시간: "19시 25분"
+          roomNumber: "359",
+          kind: "뼈",
+          menu: "뿌링클",
+          time: "19시 25분"
         },
         {
-          방번호: "500",
-          종류: "순살",
-          메뉴: "다글다글",
-          시간: "19시 45분"
+          roomNumber: "500",
+          kind: "순살",
+          menu: "다글다글",
+          time: "19시 45분"
         }
       ]
     };
@@ -210,11 +192,50 @@ export default {
         // resolve
         alert(`Store Counts : ${count}`);
       });
+    },
+    changeOnOff() {
+      alert("확인을 누르시면 가게가 활성화 됩니다.");
+      this.AdminInstance.changeOnOff(this.storeName);
+    },
+    getOnOff() {
+      alert("확인을 누르시면 가게가 활성화 됩니다.");
+      this.AdminInstance.getChickenHouse(this.storeName).then(number => {
+        alert(`store switch : ${number.closed}`);
+      });
+    },
+
+    async getOrderRooms() {
+      console.log("=== Show Order Rooms ===");
+
+      const roomCount = await this.AdminInstance.getRoomsCount(this.storeName);
+
+      console.log(`---- get Order Rooms Info, Counts: ${roomCount}`);
+      this.orderRoom = [];
+      for (let idx = 0; idx < roomCount; idx++) {
+        await this.AdminInstance.getRoomInfo(this.storeName, idx)
+          .then(result => {
+            console.log(result);
+            if (result.state === "1") {
+              this.orderRoom.push({
+                roomNumber: "1",
+                menu: result.chicken,
+                price: result.price
+              });
+            }
+          })
+          .catch(error => {
+            console.error(error);
+          });
+      }
+      console.log("=== Done Show Order Room ===");
     }
   },
   created() {
-    console.log(`=== Created OwnerPage1 ${this.storeName} ===`);
-  }
+    console.log(`=== Created OwnerPage2 ${this.storeName} ===`);
+    this.getOrderRooms();
+  },
+
+  mounted() {}
 };
 </script>
 
@@ -224,8 +245,5 @@ export default {
 }
 .orderedList.뼈 {
   border-left: 6px solid #f8a529;
-}
-.orderedList.overdue {
-  border-left: 6px solid #06d15bd3;
 }
 </style>
