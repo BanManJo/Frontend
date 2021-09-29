@@ -1,28 +1,17 @@
 <template>
   <div>
-    <v-navigation-drawer v-model="navDrawer.drawer" absolute width="300">
-      <v-list class="pa-0">
-        <v-toolbar dense text>
-          <v-toolbar-title class="pa-1">{{
-            navDrawer.storeName
-          }}</v-toolbar-title>
-          <!-- <v-spacer></v-spacer> -->
-          <v-text-field
-            hint="방 제목 검색"
-            placeholder="Search..."
-          ></v-text-field>
-          <v-btn icon>
-            <v-icon>search</v-icon>
-          </v-btn>
-          <!-- <v-btn icon>
-          <v-icon>favorite</v-icon>
-        </v-btn>
-        <v-btn icon>
-          <v-icon>more_vert</v-icon>
-        </v-btn> -->
-        </v-toolbar>
+    <v-navigation-drawer v-model="navDrawer.drawer" absolute width="350" right>
+      <v-list align="center" dense app>
+        <v-spacer />
+        <v-text-field :label="$t('search')" color="secondary" hide-details style="max-width: 300px">
+          <template v-if="$vuetify.breakpoint.mdAndUp" v-slot:append-outer>
+            <v-btn class="mt-n2" elevation="12" fab small>
+              <v-icon>mdi-magnify</v-icon>
+            </v-btn>
+          </template>
+        </v-text-field>
       </v-list>
-      <v-list dense nav>
+      <v-list dense app>
         <v-list-item>
           <v-list-item-avatar class="align-self-center" color="white" contain>
             <v-img
@@ -31,9 +20,7 @@
             />
           </v-list-item-avatar>
           <v-list-item-content>
-            <v-list-item-title class="display-1"
-              >주문방 개수: {{ navDrawer.roomCount }}</v-list-item-title
-            >
+            <v-list-item-title class="display-1">주문방 개수: {{ navDrawer.roomCount }}</v-list-item-title>
           </v-list-item-content>
           <v-btn class="ml-2" min-width="0" text :to="ownerPage">
             <v-icon>mdi-account</v-icon>
@@ -46,9 +33,9 @@
             >
           </v-list-tile-content>
           <router-link :to="ownerPage">Owner</router-link>
-        </v-list-tile> -->
+        </v-list-tile>-->
       </v-list>
-      <v-list class="pt-1">
+      <v-list dense app>
         <v-divider></v-divider>
         <v-col v-for="(orderRoom, idx) in orderRooms" :key="idx" text>
           <base-material-order-room-card
@@ -66,7 +53,7 @@
           src="https://cdn.vuetifyjs.com/images/cards/sunshine.jpg"
           height="100px"
         >
-        </img> -->
+        </img>-->
 
         <!-- <v-card-title primary-title>
             <div>
@@ -92,7 +79,7 @@
             </v-card-text>
           </v-slide-y-transition>
           <v-divider></v-divider>
-        </v-card> -->
+        </v-card>-->
       </v-list>
       <!-- <v-navigation-drawer floating permanent stateless value="true">
         <v-list dense>
@@ -106,11 +93,11 @@
             </v-list-tile-content>
           </v-list-tile>
         </v-list>
-      </v-navigation-drawer> -->
+      </v-navigation-drawer>-->
       <!-- <div id="contents" style="right: 0%; z-index: 10">
         <button>dkjdfkj</button>
         <div style="width: 300px; height: 200px; background: white"></div>
-      </div> -->
+      </div>-->
     </v-navigation-drawer>
   </div>
 </template>
