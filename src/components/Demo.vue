@@ -12,23 +12,14 @@
       wrap
     >
       <v-flex style="height: 100%; padding-bottom: 20px" xs12 sm12 md12>
-        <h1 style="margin-bottom: 20px; line-height: 32px">
-          Transaction History
-        </h1>
+        <h1 style="margin-bottom: 20px; line-height: 32px">Transaction History</h1>
         <!-- https://vuetifyjs.com/en/components/simple-tables/ -->
-        <v-data-table
-          :headers="headers"
-          :items="items"
-          :items-per-page="5"
-          class="elevation-1"
-        >
+        <v-data-table :headers="headers" :items="items" :items-per-page="5" class="elevation-1">
           <template v-slot:items="props">
             <td class="text-xs-center">{{ props.item.hash }}</td>
           </template>
         </v-data-table>
-        <v-btn color="gray" @click="room.roomModal = true"
-          >Create Order Room</v-btn
-        >
+        <v-btn color="gray" @click="room.roomModal = true">Create Order Room</v-btn>
       </v-flex>
     </v-layout>
 
@@ -38,43 +29,31 @@
         <v-card-title class="headline">{{ room.storeName }}</v-card-title>
         <v-divider></v-divider>
         <v-card-text style="text-align: center">
-          <v-progress-circular
-            indeterminate
-            color="red"
-            v-show="room.isLoading"
-          ></v-progress-circular>
+          <v-progress-circular indeterminate color="red" v-show="room.isLoading"></v-progress-circular>
           <!-- <v-flex style="height: 100%; padding-bottom: 5px" xs12 sm12 md12> -->
-          <v-text-field
-            v-model="room.roomName"
-            placeholder="황금올리브 ㄲ?"
-            label="방이름"
-            persistent-hint
-          ></v-text-field>
+          <v-text-field v-model="room.roomName" placeholder="황금올리브 ㄲ?" label="방이름" persistent-hint></v-text-field>
         </v-card-text>
         <v-card-text style="text-align: center; max-height: 250px">
           <v-expansion-panel>
-            <v-expansion-panel-content
-              v-for="(menu, idx) in room.menus"
-              :key="idx"
-            >
+            <v-expansion-panel-content v-for="(menu, idx) in room.menus" :key="idx">
               <template v-slot:actions>
-                <v-icon color="primary">{{
+                <v-icon color="primary">
+                  {{
                   menu.selected ? "done" : "expand_more"
-                }}</v-icon>
+                  }}
+                </v-icon>
               </template>
               <template v-slot:header>
-                <span
-                  >치킨이름: {{ menu.chicken }}, 가격: {{ menu.price }}</span
-                >
+                <span>치킨이름: {{ menu.chicken }}, 가격: {{ menu.price }}</span>
               </template>
               <v-card>
-                <v-card-text class="grey lighten-3">
-                  {{ menu.description }}</v-card-text
-                >
+                <v-card-text class="grey lighten-3">{{ menu.description }}</v-card-text>
                 <v-card-actions>
-                  <v-btn outline color="teal" @click="selectMenu(idx)">{{
+                  <v-btn outline color="teal" @click="selectMenu(idx)">
+                    {{
                     !menu.selected ? "선택됨" : "선택취소"
-                  }}</v-btn>
+                    }}
+                  </v-btn>
                 </v-card-actions>
               </v-card>
             </v-expansion-panel-content>
@@ -90,16 +69,14 @@
             max="30"
             thumb-label
           ></v-slider>
-          <v-chip class="pa-1"> {{ room.timer }} Minutes </v-chip>
+          <v-chip class="pa-1">{{ room.timer }} Minutes</v-chip>
           <!-- </v-flex> -->
           <!-- <v-flex style="height: 100%; padding-bottom: 5px" xs12 sm12 md12> -->
           <!-- </v-flex> -->
         </v-card-text>
         <v-divider></v-divider>
         <v-card-actions>
-          <v-btn @click="createOrderRoom()" outline color="teal"
-            >Create Room</v-btn
-          >
+          <v-btn @click="createOrderRoom()" outline color="teal">Create Room</v-btn>
           <v-spacer></v-spacer>
         </v-card-actions>
       </v-card>
@@ -108,11 +85,13 @@
 </template>
 
 <script>
-import { SET_DEMO_INSTANCE } from "../store";
-import { mapState } from "vuex";
+// Instance 사용하기 위한 구문
+import ContractInstance from "../ContractInstance";
+const contractInstance = new ContractInstance();
 
 export default {
   data: () => ({
+    DemoInstance: contractInstance.getDemoInstance(), // Admin Instance data
     // Create Room Model
     room: {
       isLoading: false,
@@ -175,11 +154,7 @@ export default {
     ],
     items: [],
   }),
-  computed: {
-    ...mapState({
-      DemoInstance: (state) => state.DemoRepoInstance,
-    }),
-  },
+  computed: {},
   methods: {
     selectMenu(_idx) {
       this.room.menus.forEach((menu, idx) => {

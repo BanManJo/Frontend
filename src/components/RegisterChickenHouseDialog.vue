@@ -17,7 +17,7 @@
           <v-toolbar-title>치킨 집 등록하기</v-toolbar-title>
           <v-spacer></v-spacer>
           <v-toolbar-items>
-            <v-btn dark flat @click="registerChickenHouse">등록</v-btn>
+            <v-btn dark text @click="registerChickenHouse">등록</v-btn>
           </v-toolbar-items>
         </v-toolbar>
         <v-card-title>
