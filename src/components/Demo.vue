@@ -100,19 +100,18 @@ export default {
       this.room.isLoading = true;
       console.log("pass1");
       try {
-        console.log("pass2");
         const transaction = await this.DemoInstance.createRoom(
           this.room.roomNumber,
           this.room.storeName,
           this.room.foodName
         );
-        console.log("김남윤");
-        console.dir(transaction);
         this.DemoInstance.watchIfCreated((error, result) => {
           if (!error) {
             this.room.isLoading = false;
             this.room.roomModal = false;
             this.items.push({ hash: transaction });
+            console.log(this.items);
+            console.log(result);
           }
         });
       } catch (e) {

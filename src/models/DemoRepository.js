@@ -47,21 +47,6 @@ export class DemoRepository {
     });
   }
 
-  async createRoom(roomId, roomTitle, roomMenu) {
-    return new Promise(async (resolve, reject) => {
-      try {
-        this.contractInstance.methods
-          .createRoom(roomId, roomTitle, roomMenu)
-          .send({ from: this.account, gas: this.gas }, (err, transaction) => {
-            if (!err) resolve(transaction);
-            reject(err);
-          });
-      } catch (e) {
-        reject(e);
-      }
-    });
-  }
-
   getCurrentBlock() {
     return new Promise((resolve, reject) => {
       this.web3.eth.getBlockNumber((err, blocknumber) => {
@@ -75,8 +60,23 @@ export class DemoRepository {
   async watchIfCreated(cb) {
     const currentBlock = await this.getCurrentBlock();
     const eventWatcher = this.contractInstance.events.RoomCreated(
-      { fromBlock: currentBlock - 1 },
+      { fromBlock: currentBlock, ToBlock: currentBlock },
       cb
     );
+  }
+
+  async createRoom(roomId, roomTitle, roomMenu) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        this.contractInstance.methods
+          .createRoom(roomId, roomTitle, roomMenu)
+          .send({ from: this.account, gas: this.gas }, (err, transaction) => {
+            if (!err) resolve(transaction);
+            reject(err);
+          });
+      } catch (e) {
+        reject(e);
+      }
+    });
   }
 }

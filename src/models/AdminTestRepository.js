@@ -88,7 +88,6 @@ export class AdminTestRepository {
   async createRoom(storeName, price, finishTime, chicken) {
     try {
       await this._checkAccountAvailable();
-      console.log(this.account);
       await this.contractInstance.methods
         .createRoom(storeName, price, finishTime, chicken)
         .send({ from: this.account, gas: this.gas })
@@ -101,6 +100,23 @@ export class AdminTestRepository {
         // .on('confirmation', function(confirmationNumber, receipt){
         //     ...
         // })
+        .on("error", function(error, receipt) {
+          throw error;
+        });
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  async approveOrder(storeName, roomIndex) {
+    try {
+      await this._checkAccountAvailable();
+      await this.contractInstance.methods
+        .approveOrder(storeName, roomIndex)
+        .send({ from: this.account, gas: this.gas })
+        .on("transactionHash", function(hash) {
+          return hash;
+        })
         .on("error", function(error, receipt) {
           throw error;
         });

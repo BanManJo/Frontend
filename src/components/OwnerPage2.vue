@@ -27,11 +27,7 @@
         </v-btn>
       </v-btn-toggle>
       <v-spacer></v-spacer>
-      <v-btn
-        class="text-h4 text--white"
-        color="light-green"
-        @click="registerChickenHouse"
-      >
+      <v-btn class="text-h4 text--white" color="light-green">
         My Page
       </v-btn>
     </v-toolbar>
@@ -63,7 +59,11 @@
                 <div class="text-h4">가격 : {{ orderRoom.price }}</div>
               </v-card-text>
               <v-card-actions>
-                <v-btn class="ma-2 text-h4" color="primary">
+                <v-btn
+                  class="ma-2 text-h4"
+                  color="primary"
+                  @click="approveOrder(orderRoom.id)"
+                >
                   <v-icon left> mdi-checkbox-marked-circle</v-icon>
                   <span>주문받기</span>
                 </v-btn>
@@ -187,6 +187,19 @@ export default {
       });
     },
 
+    async approveOrder(idx) {
+      console.log("button IDX :" + idx);
+      var con_test = confirm(
+        "주의 : 주문을 받으시면 받으신 주문을 취소할수가 없습니다."
+      );
+      if (con_test == true) {
+        await this.AdminInstance.approveOrder(this.storeName, idx);
+        this.getOrderRooms();
+        this.getOrderedLists();
+      } else if (con_test == false) {
+      }
+    },
+
     async getOrderRooms() {
       console.log("=== Show Order Rooms ===");
 
@@ -202,7 +215,8 @@ export default {
               this.orderRoom.push({
                 roomNumber: "1",
                 menu: result.chicken,
-                price: result.price
+                price: result.price,
+                id: idx
               });
             }
           })
@@ -224,7 +238,7 @@ export default {
         await this.AdminInstance.getRoomInfo(this.storeName, idx)
           .then(result => {
             console.log(result);
-            if (result.state === "1") {
+            if (result.state === "3") {
               this.orderedLists.push({
                 roomNumber: "500",
                 kind: "순살",
