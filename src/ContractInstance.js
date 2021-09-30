@@ -1,4 +1,5 @@
 import { AdminTestRepository } from "./models/AdminTestRepository";
+import { DemoRepository } from "./models/DemoRepository";
 
 const Web3 = require("web3");
 
@@ -25,7 +26,7 @@ export default class ContractInstance {
   }
 
   setDemoInstance() {
-    this.DemoTestRepoInstance = new AdminTestRepository();
+    this.DemoTestRepoInstance = new DemoRepository();
     const web3 = new Web3(window.ethereum);
     console.log(`well setting web3 ${web3}`);
     this.DemoTestRepoInstance.setWeb3(web3);

@@ -58,9 +58,7 @@
             ></v-text-field>
           </v-flex>
           <v-flex style="height:100%; padding-bottom:5px;" xs12 sm12 md12>
-            <v-btn @click="createOrderRoom()" outlined color="teal"
-              >Create Room</v-btn
-            >
+            <v-btn @click="createOrderRoom" color="teal">Create Room</v-btn>
           </v-flex>
         </v-card-text>
         <v-card-actions>
@@ -100,12 +98,15 @@ export default {
   methods: {
     async createOrderRoom() {
       this.room.isLoading = true;
+      console.log("pass1");
       try {
+        console.log("pass2");
         const transaction = await this.DemoInstance.createRoom(
           this.room.roomNumber,
           this.room.storeName,
           this.room.foodName
         );
+        console.log("김남윤");
         console.dir(transaction);
         this.DemoInstance.watchIfCreated((error, result) => {
           if (!error) {

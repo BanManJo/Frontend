@@ -6,7 +6,7 @@
       }}</v-toolbar-title>
       <v-spacer></v-spacer>
 
-      <v-btn-toggle v-model="icon">
+      <v-btn-toggle v-model="toggle_one">
         <v-btn
           class="text-h3 text--white"
           x-large

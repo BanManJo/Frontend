@@ -61,6 +61,7 @@ export default {
       }
       // 현재 계정을 등록 한다.
       // ->
+
       contractInstance.getAdminInstance().setAccount(accounts[0]);
       contractInstance.getDemoInstance().setAccount(accounts[0]);
     }
@@ -85,6 +86,6 @@ export default {
       window.location.reload();
     }
     console.log("Done Created App.vue");
-  },
+  }
 };
 </script>

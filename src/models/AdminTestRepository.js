@@ -68,7 +68,7 @@ export class AdminTestRepository {
           sunsals
         )
         .send(
-          { from: accounts[0], gas: 4476768 },
+          { from: this.account, gas: this.gas },
 
           (err, transaction) => {
             if (!err) return transaction;
