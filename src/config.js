@@ -6,13 +6,13 @@ const AdminTestRepository = require("./contracts/AdminTest");
 //대영
 //address:
 // 성구
-//address: 0xba9be9d17Bc8FC3097F134Cf4F06ca8810621f0b
+//address: 0x95eA7b442Cda9DB4a924466bdE4C894c72F4761E
 //현수
 //address: 0x494e5437C8D2C1d4D99df401aC180a648242B869
 module.exports = {
-  DEMO_ADDRESS: "0x0812375e6a5A8A8a2Fdbea6C9B0F7d05287197dc",
+  DEMO_ADDRESS: "0xf71Fc218A70e3AC4F8166AE8d3EaA6d905CCD6c1",
   DEMO_ABI: DemoRepository.abi,
-  ADMIN_TEST_ADDRESS: "0xba9be9d17Bc8FC3097F134Cf4F06ca8810621f0b",
+  ADMIN_TEST_ADDRESS: "0x95eA7b442Cda9DB4a924466bdE4C894c72F4761E",
   ADMIN_TEST_ABI: AdminTestRepository.abi,
   GAS_AMOUNT: 500000
 };
