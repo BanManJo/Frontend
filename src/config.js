@@ -14,5 +14,6 @@ module.exports = {
   DEMO_ABI: DemoRepository.abi,
   ADMIN_TEST_ADDRESS: "0x13c97ecd59d2fd674858C7396F900f2761C1A784",
   ADMIN_TEST_ABI: AdminTestRepository.abi,
-  GAS_AMOUNT: 500000
+  GAS_AMOUNT: 4476768
+  //500000
 };

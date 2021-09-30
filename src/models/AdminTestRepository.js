@@ -28,10 +28,10 @@ export class AdminTestRepository {
 
   async _checkAccountAvailable() {
     if (this.account === null) {
-      const accouts = await window.ethereum.request({
+      const accounts = await window.ethereum.request({
         method: "eth_requestAccounts"
       });
-      this.account = accouts[0];
+      this.account = accounts[0];
     }
   }
 
@@ -58,7 +58,7 @@ export class AdminTestRepository {
   ) {
     try {
       await this._checkAccountAvailable();
-      this.contractInstance.methods
+      await this.contractInstance.methods
         .registerChickenHouse(
           storeName,
           latitude,
@@ -67,14 +67,19 @@ export class AdminTestRepository {
           prices,
           sunsals
         )
-        .send(
-          { from: accounts[0], gas: 4476768 },
-
-          (err, transaction) => {
-            if (!err) return transaction;
-            throw err;
-          }
-        );
+        .send({ from: this.account, gas: this.gas })
+        .on("transactionHash", function(hash) {
+          return hash;
+        })
+        // .on('receipt', function(receipt){
+        //     ...
+        // })
+        // .on('confirmation', function(confirmationNumber, receipt){
+        //     ...
+        // })
+        .on("error", function(error, receipt) {
+          throw error;
+        });
     } catch (e) {
       throw e;
     }
@@ -83,16 +88,22 @@ export class AdminTestRepository {
   async createRoom(storeName, price, finishTime, chicken) {
     try {
       await this._checkAccountAvailable();
-      this.contractInstance.methods
+      console.log(this.account);
+      await this.contractInstance.methods
         .createRoom(storeName, price, finishTime, chicken)
-        .send(
-          { from: this.account, gas: this.gas },
-
-          (err, transaction) => {
-            if (!err) return transaction;
-            throw err;
-          }
-        );
+        .send({ from: this.account, gas: this.gas })
+        .on("transactionHash", function(hash) {
+          return hash;
+        })
+        // .on('receipt', function(receipt){
+        //     ...
+        // })
+        // .on('confirmation', function(confirmationNumber, receipt){
+        //     ...
+        // })
+        .on("error", function(error, receipt) {
+          throw error;
+        });
     } catch (e) {
       throw e;
     }

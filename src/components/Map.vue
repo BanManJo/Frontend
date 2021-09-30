@@ -7,7 +7,11 @@
     <v-main id="contents">
       <v-btn @click="registerCH.dialog = !registerCH.dialog" depressed>Register Chicken House</v-btn>
       <v-btn @click="testContractInstance">Testing Button</v-btn>
+      <!-- <v-btn class="mr-3" elevation="1" fab small @click="setDrawer(!drawer)">
+        <v-icon>mdi-dots-vertical</v-icon>
+      </v-btn>-->
     </v-main>
+    <!-- <menu-drawer></menu-drawer> -->
     <register-chicken-house-dialog :registerCH="registerCH"></register-chicken-house-dialog>
     <!-- Navigation Drawer -->
     <order-room-navigation-drawer :navDrawer="navDrawer"></order-room-navigation-drawer>
@@ -17,9 +21,8 @@
 </template>
 
 <script>
-import CreateRoomDialog from "./CreateRoomDialog";
-import OrderRoomNavigationDrawer from "./OrderRoomNavigationDrawer.vue";
-import RegisterChickenHouseDialog from "./RegisterChickenHouseDialog.vue";
+// Utilities
+import { mapState, mapMutations } from "vuex";
 
 // Instance 사용하기 위한 구문
 import ContractInstance from "../ContractInstance";
@@ -29,9 +32,11 @@ export default {
   name: "map",
   // store,
   components: {
-    CreateRoomDialog,
-    OrderRoomNavigationDrawer,
-    RegisterChickenHouseDialog,
+    CreateRoomDialog: () => import("./CreateRoomDialog"),
+    OrderRoomNavigationDrawer: () => import("./OrderRoomNavigationDrawer.vue"),
+    RegisterChickenHouseDialog: () =>
+      import("./RegisterChickenHouseDialog.vue"),
+    MenuDrawer: () => import("./MenuDrawer.vue"),
   },
   data() {
     return {
@@ -78,8 +83,13 @@ export default {
       },
     };
   },
-  computed: {},
+  computed: {
+    ...mapState(["drawer"]),
+  },
   methods: {
+    ...mapMutations({
+      setDrawer: "SET_DRAWER",
+    }),
     testContractInstance() {
       console.dir(this.AdminInstance);
       // AdminInstance.getStoreCount()
