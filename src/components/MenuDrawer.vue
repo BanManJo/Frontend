@@ -1,122 +1,139 @@
 <template>
-  <v-navigation-drawer
-    id="core-navigation-drawer"
-    v-model="drawer"
-    :dark="barColor !== 'rgba(228, 226, 226, 1), rgba(255, 255, 255, 0.7)'"
-    :expand-on-hover="expandOnHover"
-    :right="$vuetify.rtl"
-    :src="barImage"
-    mobile-break-point="960"
-    app
-    width="260"
-    v-bind="$attrs"
-  >
-    <template v-slot:img="props">
-      <v-img :gradient="`to bottom, ${barColor}`" v-bind="props" />
-    </template>
-
-    <v-divider class="mb-1" />
-
-    <v-list dense nav>
-      <v-list-item>
-        <v-list-item-avatar class="align-self-center" color="white" contain>
-          <v-img
-            src="https://demos.creative-tim.com/vuetify-material-dashboard/favicon.ico"
-            max-height="30"
-          />
-        </v-list-item-avatar>
-
-        <v-list-item-content>
-          <v-list-item-title class="display-1" v-text="profile.title" />
-        </v-list-item-content>
-      </v-list-item>
-    </v-list>
-
-    <v-divider class="mb-2" />
-
-    <v-list expand nav>
-      <!-- Style cascading bug  -->
-      <!-- https://github.com/vuetifyjs/vuetify/pull/8574 -->
-      <div />
-
-      <template v-for="(item, i) in computedItems">
-        <base-item-group v-if="item.children" :key="`group-${i}`" :item="item">
-          <!--  -->
-        </base-item-group>
-
-        <base-item v-else :key="`item-${i}`" :item="item" />
+  <div>
+    <v-navigation-drawer
+      v-model="drawer"
+      :dark="barColor !== 'rgba(228, 226, 226, 1), rgba(255, 255, 255, 0.7)'"
+      :expand-on-hover="expandOnHover"
+      :src="barImage"
+      mobile-breakpoint="960"
+      width="260"
+      v-bind="$attrs"
+      absolute
+      app
+      right
+    >
+      <template v-slot:img="props">
+        <v-img :gradient="`to bottom, ${barColor}`" v-bind="props" />
       </template>
 
-      <!-- Style cascading bug  -->
-      <!-- https://github.com/vuetifyjs/vuetify/pull/8574 -->
-      <div />
-    </v-list>
-  </v-navigation-drawer>
+      <v-divider class="mb-1" />
+
+      <v-list dense app>
+        <v-list-item>
+          <v-list-item-avatar class="align-self-center" color="white" contain>
+            <v-img
+              src="https://demos.creative-tim.com/vuetify-material-dashboard/favicon.ico"
+              max-height="30"
+            />
+          </v-list-item-avatar>
+
+          <v-list-item-content>
+            <v-list-item-title class="display-1" v-text="profile.title" />
+          </v-list-item-content>
+        </v-list-item>
+      </v-list>
+
+      <v-divider class="mb-2" />
+
+      <v-list expand app>
+        <!-- Style cascading bug  -->
+        <!-- https://github.com/vuetifyjs/vuetify/pull/8574 -->
+        <div />
+
+        <template v-for="(item, i) in computedItems">
+          <!--  <base-item-group
+            v-if="item.children"
+            :key="`group-${i}`"
+            :item="item"
+          >
+
+          </base-item-group>
+
+          <base-item
+            v-else
+            :key="`item-${i}`"
+            :item="item"
+            @click="item.method"
+          />-->
+          <v-list-item @click="item.method" :key="`item-${i}`" link>
+            <v-list-item-icon
+              v-if="item.text"
+              class="v-list-item__icon--text"
+              v-text="computedText"
+            />
+
+            <v-list-item-icon v-else-if="item.icon">
+              <v-icon v-text="item.icon" />
+            </v-list-item-icon>
+
+            <v-list-item-content v-if="item.title || item.subtitle">
+              <v-list-item-title v-text="item.title" />
+
+              <v-list-item-subtitle v-text="item.subtitle" />
+            </v-list-item-content>
+          </v-list-item>
+        </template>
+
+        <!-- Style cascading bug  -->
+        <!-- https://github.com/vuetifyjs/vuetify/pull/8574 -->
+        <div />
+      </v-list>
+    </v-navigation-drawer>
+    <register-chicken-house-dialog
+      :registerCH="registerCH"
+    ></register-chicken-house-dialog>
+  </div>
 </template>
 
 <script>
 // Utilities
 import { mapState } from "vuex";
 
+// Instance 사용하기 위한 구문
+import ContractInstance from "../ContractInstance";
+const contractInstance = new ContractInstance();
+
 export default {
   name: "DashboardCoreDrawer",
-
+  components: {
+    RegisterChickenHouseDialog: () => import("./RegisterChickenHouseDialog.vue")
+  },
   props: {
     expandOnHover: {
       type: Boolean,
-      default: false,
-    },
+      default: false
+    }
   },
 
-  data: () => ({
-    items: [
-      {
-        icon: "mdi-view-dashboard",
-        title: "dashboard",
-        to: "/",
+  data() {
+    return {
+      AdminInstance: contractInstance.getAdminInstance(), // Admin Instance data
+      registerCH: {
+        dialog: false,
+        notifications: false,
+        sound: true,
+        widgets: false
       },
-      {
-        icon: "mdi-account",
-        title: "user",
-        to: "/pages/user",
-      },
-      {
-        title: "rtables",
-        icon: "mdi-clipboard-outline",
-        to: "/tables/regular-tables",
-      },
-      {
-        title: "typography",
-        icon: "mdi-format-font",
-        to: "/components/typography",
-      },
-      {
-        title: "icons",
-        icon: "mdi-chart-bubble",
-        to: "/components/icons",
-      },
-      {
-        title: "google",
-        icon: "mdi-map-marker",
-        to: "/maps/google-maps",
-      },
-      {
-        title: "notifications",
-        icon: "mdi-bell",
-        to: "/components/notifications",
-      },
-      {
-        title: "buttons",
-        icon: "mdi-apple",
-        to: "/components/buttons",
-      },
-      {
-        title: "timeline",
-        icon: "mdi-apple",
-        to: "/pages/timeline",
-      },
-    ],
-  }),
+      items: [
+        {
+          // text: "it is text",
+          icon: "mdi-view-dashboard",
+          title: "Register Store",
+          subtitle: "register your chicken store",
+          method: () => {
+            this.openRegisterCHDialog();
+          }
+        },
+        {
+          icon: "mdi-account",
+          title: "Testing Button",
+          method: () => {
+            this.testContractInstance();
+          }
+        }
+      ]
+    };
+  },
 
   computed: {
     ...mapState(["barColor", "barImage"]),
@@ -126,7 +143,7 @@ export default {
       },
       set(val) {
         this.$store.commit("SET_DRAWER", val);
-      },
+      }
     },
     computedItems() {
       return this.items.map(this.mapItem);
@@ -134,20 +151,48 @@ export default {
     profile() {
       return {
         avatar: true,
-        title: this.$t("avatar"),
+        title: this.$t("avatar")
       };
     },
+    computedText() {
+      if (!this.items || !this.items.title) return "";
+
+      let text = "";
+
+      this.items.title.split(" ").forEach(val => {
+        text += val.substring(0, 1);
+      });
+
+      return text;
+    }
   },
 
   methods: {
+    testContractInstance() {
+      console.dir(this.AdminInstance);
+      // AdminInstance.getStoreCount()
+      this.AdminInstance.getStoreCount().then(count => {
+        // resolve
+        alert(`Store Counts : ${count}`);
+      });
+      // ${result.chickens} ${result.prices}
+      // (인자) => {내용} // 함수!
+      // function(인자){내용}
+    },
+    openRegisterCHDialog() {
+      this.registerCH.dialog = true;
+    },
     mapItem(item) {
       return {
         ...item,
         children: item.children ? item.children.map(this.mapItem) : undefined,
-        title: this.$t(item.title),
+        title: this.$t(item.title)
       };
-    },
+    }
   },
+  mounted() {
+    console.log(this.computedItems);
+  }
 };
 </script>
 
