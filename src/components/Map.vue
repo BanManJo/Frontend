@@ -5,16 +5,13 @@
     </v-main>
 
     <v-main id="contents">
-      <v-btn class="mr-3" elevation="1" fab small @click="setDrawer(!drawer)">
-        <v-icon>mdi-dots-vertical</v-icon>
       </v-btn>
     </v-main>
     <menu-speed-dial></menu-speed-dial>
+    <!-- Navigation Drawer -->
     <order-room-navigation-drawer
       :navDrawer="navDrawer"
     ></order-room-navigation-drawer>
-    <!-- Navigation Drawer -->
-    <menu-drawer></menu-drawer>
     <!-- modal -->
     <create-room-dialog :room="room"></create-room-dialog>
   </v-app>
@@ -34,7 +31,6 @@ export default {
   components: {
     CreateRoomDialog: () => import("./CreateRoomDialog"),
     OrderRoomNavigationDrawer: () => import("./OrderRoomNavigationDrawer"),
-    MenuDrawer: () => import("./MenuDrawer"),
     MenuSpeedDial: () => import("./MenuSpeedDial")
   },
   data() {
