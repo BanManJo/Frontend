@@ -159,7 +159,7 @@
           </v-container>
           &nbsp;
 
-          <!-- 주문했었던 기록 테이블 -->
+          <!-- 현수거 기록 테이블 -->
           <v-container>
             <base-material-card
               icon="mdi-clipboard-text"
@@ -223,6 +223,7 @@ const contractInstance = new ContractInstance();
 export default {
   data() {
     return {
+      AdminInstance: contractInstance.getAdminInstance(),
       headers: [
         {
           text: "가게이름 (storeName)",
@@ -230,70 +231,28 @@ export default {
           sortable: false,
           value: "name"
         },
-        { text: "치킨메뉴", value: "chicken" },
+        { text: "종류", value: "kind" },
+        { text: "치킨메뉴", value: "menu" },
         { text: "가격 (eth)", value: "price" },
-        { text: "주문상태 (성공/실패)", value: "state" }
+        { text: "주문상태 (성공/실패)", value: "state" },
+        { text: "방번호", value: "roomNumber" }
       ],
       desserts: [
         {
           name: "가산BHC",
-          chicken: "뿌링클",
+          kind: "순살",
+          menu: "뿌링클",
           price: 6.0,
-          state: "성공"
+          state: "성공",
+          roomNumber: 10
         },
         {
           name: "가산BHC",
-          chicken: "뿌링클",
-          price: 9.0,
-          state: "성공"
-        },
-        {
-          name: "부천BHC",
-          chicken: "뿌링클",
-          price: 16.0,
-          state: "성공"
-        },
-        {
-          name: "부천네네",
-          chicken: "양념",
-          price: 3.7,
-          state: "실패"
-        },
-        {
-          name: "가산호치킨",
-          chicken: "갈릭",
-          price: 16.0,
-          state: "실패"
-        },
-        {
-          name: "가산호치킨",
-          chicken: "어니언",
-          price: 0.0,
-          state: "실패"
-        },
-        {
-          name: "부천네네",
-          chicken: "간장",
-          price: 0.2,
-          state: "성공"
-        },
-        {
-          name: "가산호치킨",
-          chicken: "후라이드",
-          price: 3.2,
-          state: "성공"
-        },
-        {
-          name: "부천네네",
-          chicken: "후라이드",
-          price: 25.0,
-          state: "성공"
-        },
-        {
-          name: "부천BHC",
-          chicken: "뿌링클",
-          price: 26.0,
-          state: "성공"
+          kind: "순살",
+          menu: "뿌링클",
+          price: 6.0,
+          state: "성공",
+          roomNumber: 10
         }
       ]
     };
