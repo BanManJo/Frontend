@@ -1,9 +1,14 @@
 <template>
   <div>
-    <v-navigation-drawer v-model="navDrawer.drawer" absolute width="350" right>
+    <v-navigation-drawer v-model="navDrawer.drawer" absolute width="350">
       <v-list align="center" dense app>
         <v-spacer />
-        <v-text-field :label="$t('search')" color="secondary" hide-details style="max-width: 300px">
+        <v-text-field
+          :label="$t('search')"
+          color="secondary"
+          hide-details
+          style="max-width: 300px"
+        >
           <template v-if="$vuetify.breakpoint.mdAndUp" v-slot:append-outer>
             <v-btn class="mt-n2" elevation="12" fab small>
               <v-icon>mdi-magnify</v-icon>
@@ -13,27 +18,26 @@
       </v-list>
       <v-list dense app>
         <v-list-item>
-          <v-list-item-avatar class="align-self-center" color="white" contain>
+          <!-- <v-list-item-avatar class="align-self-center" color="white" contain>
             <v-img
               src="https://demos.creative-tim.com/vuetify-material-dashboard/favicon.ico"
-              max-height="30"
             />
-          </v-list-item-avatar>
+          </v-list-item-avatar> -->
           <v-list-item-content>
-            <v-list-item-title class="display-1">주문방 개수: {{ navDrawer.roomCount }}</v-list-item-title>
+            <component :is="'h3'" :class="small">
+              <template>
+                {{ navDrawer.storeName }}
+              </template>
+              <template>
+                <br />
+                <small>주문방 개수: {{ navDrawer.roomCount }}</small>
+              </template>
+            </component>
           </v-list-item-content>
           <v-btn class="ml-2" min-width="0" text :to="ownerPage">
             <v-icon>mdi-account</v-icon>
           </v-btn>
         </v-list-item>
-        <!-- <v-list-tile avatar>
-          <v-list-tile-content>
-            <v-list-tile-title
-              >주문방 개수: {{ navDrawer.roomCount }}</v-list-tile-title
-            >
-          </v-list-tile-content>
-          <router-link :to="ownerPage">Owner</router-link>
-        </v-list-tile>-->
       </v-list>
       <v-list dense app>
         <v-divider></v-divider>
@@ -46,63 +50,21 @@
             sub-icon="mdi-account-arrow-right"
             sub-icon-color="green"
             :sub-text="orderRoom.description"
+            :store-name="navDrawer.storeName"
+            :room-number="orderRoom.index"
+            @matchRoom="matchRoom"
           />
         </v-col>
-        <!-- <v-card v-for="(orderRoom, idx) in orderRooms" :key="idx" text> -->
-        <!-- <img
-          src="https://cdn.vuetifyjs.com/images/cards/sunshine.jpg"
-          height="100px"
-        >
-        </img>-->
-
-        <!-- <v-card-title primary-title>
-            <div>
-              <div class="headline">{{ orderRoom.headline }}</div>
-              <span class="grey--text">{{ orderRoom.subText }}</span>
-            </div>
-          </v-card-title>
-
-          <v-card-actions>
-            <v-btn text>Order</v-btn>
-            <v-btn text color="purple">Chatting</v-btn>
-            <v-spacer></v-spacer>
-            <v-btn icon @click="orderRoom.show = !orderRoom.show">
-              <v-icon>{{
-                orderRoom.show ? "mdi-arrow-down" : "mdi-arrow-up"
-              }}</v-icon>
-            </v-btn>
-          </v-card-actions>
-
-          <v-slide-y-transition>
-            <v-card-text v-show="orderRoom.show">
-              {{ orderRoom.description }}
-            </v-card-text>
-          </v-slide-y-transition>
-          <v-divider></v-divider>
-        </v-card>-->
       </v-list>
-      <!-- <v-navigation-drawer floating permanent stateless value="true">
-        <v-list dense>
-          <v-list-tile v-for="item in items" :key="item.title" @click="">
-            <v-list-tile-action>
-              <v-icon>{{ item.icon }}</v-icon>
-            </v-list-tile-action>
-
-            <v-list-tile-content>
-              <v-list-tile-title>{{ item.title }}</v-list-tile-title>
-            </v-list-tile-content>
-          </v-list-tile>
-        </v-list>
-      </v-navigation-drawer>-->
-      <!-- <div id="contents" style="right: 0%; z-index: 10">
-        <button>dkjdfkj</button>
-        <div style="width: 300px; height: 200px; background: white"></div>
-      </div>-->
     </v-navigation-drawer>
   </div>
 </template>
 
 <script>
+// Instance 사용하기 위한 구문
+import ContractInstance from "../ContractInstance";
+const contractInstance = new ContractInstance();
+
 export default {
   data() {
     return {
@@ -125,6 +87,21 @@ export default {
     },
     ownerPage() {
       return `/ownerPage2/${this.navDrawer.storeName}`;
+    }
+  },
+  methods: {
+    matchRoom(storeName, roomNumber) {
+      console.log(storeName, roomNumber);
+      console.log("=== Create Match Room ===");
+
+      let AdminInstance = contractInstance.getAdminInstance();
+      // menus
+      AdminInstance.matchRoom(storeName, roomNumber).then(result => {
+        console.log(result);
+      });
+
+      // storeIdx (if needed)
+      console.log("=== Done Create Match Room ===");
     }
   }
 };

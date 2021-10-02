@@ -2,7 +2,8 @@ const DemoRepository = require("./contracts/Demo");
 const AdminTestRepository = require("./contracts/AdminTest");
 
 //상일
-//address: 0x13c97ecd59d2fd674858C7396F900f2761C1A784
+//Admin: 0x13c97ecd59d2fd674858C7396F900f2761C1A784 / 0x573E38D657d27Ad561b03dfCd29E9dE8a2ca6d34 (mac / window)
+//Demo: 0x13c97ecd59d2fd674858C7396F900f2761C1A784 / 0xca0a70d46c03a54814d895cdE90F0c7E6B315Bdf (mac / window)
 //대영
 //address: 0xdA30f5B13De3f653e5FFC9c7C000692C5668328C
 //demo address : 0x9021Abc37CfA4AA4e533f5d5c1B2Bc8673aF2229
