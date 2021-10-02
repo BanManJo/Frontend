@@ -51,13 +51,6 @@ export default {
         storeName: null,
         roomCount: null,
         orderRooms: [
-          {
-            headline: "황금 올리브",
-            subText: "종료 시간: 15:23",
-            show: false,
-            description: "황금올리브 같이 먹을 분 구함!~",
-            index: 0
-          }
         ]
       },
       // Create Room Model
