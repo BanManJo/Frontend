@@ -55,6 +55,53 @@
             </v-layout>
           </div>
           &nbsp;
+          <!-- new 기록 테이블 -->
+
+          <v-container>
+            <base-material-card
+              icon="mdi-clipboard-text"
+              title="내가 주문한 목록"
+              class="px-5 py-3"
+              flat
+              outlined
+            >
+              <v-card
+                flat
+                v-for="orderedList in orderedLists"
+                :key="orderedList.title"
+              >
+                <v-row row wrap :class="`pa-3 orderedList ${orderedList.kind}`">
+                  <v-col xs12 md5>
+                    <div class="caption grey--text">주문 받은 시간</div>
+                    <div>{{ orderedList.time }}</div>
+                  </v-col>
+                  <v-flex xs6 sm4 md2>
+                    <div class="caption grey--text">종류</div>
+                    <div>{{ orderedList.kind }}</div>
+                  </v-flex>
+                  <v-flex xs6 sm4 md2>
+                    <div class="caption grey--text">메뉴</div>
+                    <div>{{ orderedList.menu }}</div>
+                  </v-flex>
+                  <v-flex xs6 sm4 md2>
+                    <div class="caption grey--text">방번호</div>
+                    <div>{{ orderedList.roomNumber }}</div>
+                  </v-flex>
+
+                  <div class="text-xs-center">
+                    <v-btn fab small color="green">
+                      <v-icon color="white" @click="finishCook"
+                        >mdi-minus</v-icon
+                      >
+                    </v-btn>
+                  </div>
+                </v-row>
+                <v-divider></v-divider>
+              </v-card>
+            </base-material-card>
+          </v-container>
+          &nbsp;
+
           <!-- 주문했었던 기록 테이블 -->
           <div id="app">
             <v-app id="inspire">
