@@ -105,7 +105,7 @@ export default {
           this.room.storeName,
           this.room.foodName
         );
-        this.DemoInstance.watchIfCreated((error, result) => {
+        this.DemoInstance.watchIfCreated2((error, result) => {
           if (!error) {
             this.room.isLoading = false;
             this.room.roomModal = false;
