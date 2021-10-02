@@ -55,7 +55,8 @@ export default {
             headline: "황금 올리브",
             subText: "종료 시간: 15:23",
             show: false,
-            description: "황금올리브 같이 먹을 분 구함!~"
+            description: "황금올리브 같이 먹을 분 구함!~",
+            index: 0
           }
         ]
       },
@@ -110,31 +111,37 @@ export default {
 
       event.preventDefault();
       this.navDrawer.drawer = !this.navDrawer.drawer;
+      if (!this.navDrawer.drawer){
+        this.navDrawer.orderRooms = [];
+        return;
+      }
 
       const storeName = event.target.id;
       this.navDrawer.storeName = storeName;
 
       const roomCount = await this.AdminInstance.getRoomsCount(storeName);
-      this.navDrawer.roomCount = roomCount;
-
+      // this.navDrawer.roomCount = roomCount;
+      let counts = 0;
       console.log(`---- get Order Rooms Info, Counts: ${roomCount}`);
-      this.navDrawer.orderRooms = [];
       for (let idx = 0; idx < roomCount; idx++) {
         await this.AdminInstance.getRoomInfo(storeName, idx)
           .then(result => {
             console.log(result);
             if (result.state === "1") {
+              counts++;
               this.navDrawer.orderRooms.push({
                 headline: result.chicken,
                 subText: `종료 시간: 15:23 | ${result.price}₩`,
                 show: false,
-                description: "황금올리브 같이 먹을 분 구함!~"
+                description: "황금올리브 같이 먹을 분 구함!~",
+                index: idx
               });
             }
           })
           .catch(error => {
             console.error(error);
           });
+      this.navDrawer.roomCount = counts;
       }
       console.log("=== Done Show Order Room ===");
     },
