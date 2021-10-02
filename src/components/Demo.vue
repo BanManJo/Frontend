@@ -110,9 +110,8 @@ export default {
             this.room.isLoading = false;
             this.room.roomModal = false;
             this.items.push({ hash: transaction });
-            console.log(this.items);
-            console.log(result);
           }
+          return true;
         });
       } catch (e) {
         this.error = e.message;
