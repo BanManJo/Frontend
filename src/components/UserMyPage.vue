@@ -1,35 +1,44 @@
 <template>
-  <div>
+  <v-app>
+    <v-toolbar dark color="primary">
+      <v-toolbar-title class="titleText">
+        User My Page
+      </v-toolbar-title>
+      <v-spacer></v-spacer>
+    </v-toolbar>
     <!-- 페이지 이름 -->
-    <h1 class="userMyPage">사용자 페이지</h1>
+
     <div id="app">
       <v-app id="inspire">
         <div>
-          <v-alert :value="true" type="info">
-            주문현황
-          </v-alert>
           <div>
             <v-layout>
               <v-flex xs12 sm6 offset-sm3>
-                <v-card>
-                  <v-content class="black--text" height="200px">
-                    <v-container fill-height fluid>
-                      <v-layout fill-height>
-                        <v-flex xs12 align-end flexbox>
-                          <!-- 방번호 받아와서 인자값넣기 -->
-                          <span class="roomNumber"
-                            >방번호 : No.{{ roomNumber }}</span
-                          >
+                <base-material-card
+                  color="success"
+                  title="This card is the current room information."
+                  class="px-5 py-3"
+                >
+                  <v-card>
+                    <v-row justify="space-around" class="mb-2">
+                      &nbsp; &nbsp; &nbsp; &nbsp;
+                      <v-chip
+                        class="ma-2"
+                        color="green"
+                        label
+                        text-color="white"
+                        x-large
+                      >
+                        <v-icon size="30" right>
+                          mdi-home
+                        </v-icon>
+                        &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+                        <span class="matching">
+                          방번호 &nbsp; :&nbsp; {{ roomNumber }}</span
+                        >
+                      </v-chip>
+                      <v-spacer></v-spacer>
 
-                          <!-- 진행현황 인자값받아서 클래스 나타내기 -->
-                          <span class="matching"> 매칭중</span>
-                          <span class="ordering"> 주문접수중</span>
-                          <span class="complete"> 완료</span>
-                          <!-- 시간 오른쪽정렬이 안먹힘.. -->
-                          <span class="time"> 시간 : {{ time }}</span>
-                        </v-flex>
-                      </v-layout>
-                    </v-container>
                   </v-content>
                   <v-card-title>
                     <div>
@@ -39,18 +48,66 @@
                       <span class="black--text"
                         >치킨메뉴 &nbsp; : &nbsp;{{ chickenName }} </span
                       ><br />
-                      <span class="black--text"
                         >가격 &nbsp; : &nbsp; {{ price }}</span
+                        color="green"
+                        label
+                        text-color="white"
+                        x-large
                       >
-                    </div>
-                  </v-card-title>
+                        <v-icon size="30" right>
+                          mdi-widgets
+                        </v-icon>
+                        &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+                        <span class="matching"> 매칭중</span>
+                      </v-chip>
+                      <v-spacer></v-spacer>
+                      <v-chip
+                        class="ma-2"
+                        color="green"
+                        label
+                        text-color="white"
+                        x-large
+                      >
+                        <v-icon size="30" right>
+                          mdi-clock
+                        </v-icon>
+                        &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+                        <span class="matching">
+                          만료시간 &nbsp; :&nbsp; {{ roomNumber }}</span
+                        >
+                      </v-chip>
+                      &nbsp; &nbsp; &nbsp; &nbsp;</v-row
+                    >
+                    <v-card-title>
+                      <div>
+                        <span class="blackText"
+                          >가게이름 &nbsp; : &nbsp;{{ storeNmae }} </span
+                        ><br />
+                        <v-spacer></v-spacer> <v-spacer></v-spacer>
+                        <span class="blackText"
+                          >치킨메뉴 &nbsp; : &nbsp;{{ chickenName }} </span
+                        ><br />
+                        <v-spacer></v-spacer><v-spacer></v-spacer>
+                        <span class="blackText"
+                          >가격 &nbsp; : &nbsp; {{ price }}</span
+                        >
+                      </div>
+                    </v-card-title>
+                  </v-card>
                   <v-card-actions>
-                    <v-btn flat color="orange">취소하기</v-btn>
-                    <v-btn @click="testInstance" value="left" color="blue">
-                      <v-icon>TEST</v-icon>
-                    </v-btn>
+                    <v-row justify="space-around" class="mb-2">
+                      <v-spacer></v-spacer>
+                      <v-btn
+                        class="ma-2 text-h4"
+                        color="orange"
+                        @click="deleteOrderRoom"
+                      >
+                        <v-icon left> mdi-cancel</v-icon>
+                        <span>주문취소</span>
+                      </v-btn></v-row
+                    >
                   </v-card-actions>
-                </v-card>
+                </base-material-card>
               </v-flex>
             </v-layout>
           </div>
@@ -72,7 +129,7 @@
               >
                 <v-row row wrap :class="`pa-3 orderedList ${orderedList.kind}`">
                   <v-col xs12 md5>
-                    <div class="caption grey--text">주문 받은 시간</div>
+                    <div class="caption grey--text">가게이름</div>
                     <div>{{ orderedList.time }}</div>
                   </v-col>
                   <v-flex xs6 sm4 md2>
@@ -82,6 +139,14 @@
                   <v-flex xs6 sm4 md2>
                     <div class="caption grey--text">메뉴</div>
                     <div>{{ orderedList.menu }}</div>
+                  </v-flex>
+                  <v-flex xs6 sm4 md2>
+                    <div class="caption grey--text">가격</div>
+                    <div>{{ orderedList.roomNumber }}</div>
+                  </v-flex>
+                  <v-flex xs6 sm4 md2>
+                    <div class="caption grey--text">주문상태</div>
+                    <div>{{ orderedList.roomNumber }}</div>
                   </v-flex>
                   <v-flex xs6 sm4 md2>
                     <div class="caption grey--text">방번호</div>
@@ -103,22 +168,30 @@
           &nbsp;
 
           <!-- 주문했었던 기록 테이블 -->
-          <div id="app">
-            <v-app id="inspire">
-              <v-data-table
-                :headers="headers"
-                :items="desserts"
-                class="elevation-1"
-              >
-                <template v-slot:items="props">
-                  <td>{{ props.item.name }}</td>
-                  <td class="text-xs-right">{{ props.item.chicken }}</td>
-                  <td class="text-xs-right">{{ props.item.price }}</td>
-                  <td class="text-xs-right">{{ props.item.state }}</td>
-                </template>
-              </v-data-table>
-            </v-app>
-            <!-- 풋터.. -->
+          <v-container>
+            <base-material-card
+              icon="mdi-clipboard-text"
+              title="내가 주문한 목록"
+              class="px-5 py-3"
+              flat
+              outlined
+            >
+              <div id="app">
+                <v-app id="inspire">
+                  <v-data-table
+                    :headers="headers"
+                    :items="desserts"
+                    class="elevation-1"
+                  >
+                    <template v-slot:items="props">
+                      <td>{{ props.item.name }}</td>
+                      <td class="text-xs-right">{{ props.item.chicken }}</td>
+                      <td class="text-xs-right">{{ props.item.price }}</td>
+                      <td class="text-xs-right">{{ props.item.state }}</td>
+                    </template>
+                  </v-data-table>
+                </v-app>
+                <!-- 풋터..
             <v-card height="200px" flat>
               <v-bottom-nav
                 :active.sync="bottomNav"
@@ -141,12 +214,14 @@
                   <v-icon>place</v-icon>
                 </v-btn>
               </v-bottom-nav>
-            </v-card>
-          </div>
+            </v-card> -->
+              </div>
+            </base-material-card></v-container
+          >
         </div>
       </v-app>
     </div>
-  </div>
+  </v-app>
 </template>
 
 <script>
@@ -231,6 +306,8 @@ export default {
       ]
     };
   },
+  computed: {},
+  props: {},
   methods: {
     testInstance() {
       this.AdminInstance.getStoreCount().then(count => {
@@ -253,13 +330,14 @@ export default {
   left: 50px;
 }
 .matching {
-  font-size: 30px;
+  font-size: 18px;
   text: center;
 }
-.ordering {
-  font-size: 30px;
-  text: center;
+.blackText {
+  font-size: 20px;
+  line-height: 2cm;
 }
+
 .complete {
   font-size: 30px;
   text: center;
