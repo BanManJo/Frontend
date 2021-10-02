@@ -21,10 +21,29 @@
             <td class="text-xs-center">{{ props.item.hash }}</td>
           </template>
         </v-data-table>
-        <v-btn color="gray" @click="room.roomModal = true"
-          >Create Order Room</v-btn
+        <v-btn style="margin-top:15px;" color="gray" @click="room.roomModal = true"
+        >Create Order Room
+        </v-btn
         >
+        <h1 style="padding-top:25px; line-height: 32px;">
+          Websocket Information
+        </h1>
+
+        <v-container>
+          <v-row>
+            <v-col
+              cols="24"
+              sm="12"
+            >
+              <v-text-field
+                v-model="this.$store.state.wsMessage"
+                outlined
+              ></v-text-field>
+            </v-col>
+          </v-row>
+        </v-container>
       </v-flex>
+
     </v-layout>
 
     <!-- modal -->
@@ -72,6 +91,7 @@
 <script>
 // Instance 사용하기 위한 구문
 import ContractInstance from "../ContractInstance";
+
 const contractInstance = new ContractInstance();
 export default {
   data: () => ({
@@ -98,7 +118,6 @@ export default {
   methods: {
     async createOrderRoom() {
       this.room.isLoading = true;
-      console.log("pass1");
       try {
         const transaction = await this.DemoInstance.createRoom(
           this.room.roomNumber,
@@ -107,9 +126,10 @@ export default {
         );
         this.DemoInstance.watchIfCreated2((error, result) => {
           if (!error) {
+            this.$socket.send(JSON.stringify(result));
             this.room.isLoading = false;
             this.room.roomModal = false;
-            this.items.push({ hash: transaction });
+            this.items.push({hash: transaction});
           }
           return true;
         });
