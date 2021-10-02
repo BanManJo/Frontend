@@ -72,7 +72,7 @@
                 <v-btn
                   class="ma-2 text-h4"
                   color="orange"
-                  @click="deleteOrderRoom"
+                  @click="orderReject(orderRoom.id)"
                 >
                   <v-icon left> mdi-cancel</v-icon>
                   <span>거절하기</span>
@@ -116,8 +116,13 @@
             </v-flex>
 
             <div class="text-xs-center">
-              <v-btn fab small color="green">
-                <v-icon color="white" @click="finishCook">mdi-minus</v-icon>
+              <v-btn
+                fab
+                small
+                color="green"
+                @click="finishCook(orderedList.id)"
+              >
+                <v-icon color="white">mdi-minus</v-icon>
               </v-btn>
             </div>
           </v-row>
@@ -163,13 +168,7 @@ export default {
       } else if (con_test == false) {
       }
     },
-    finishCook() {
-      var con_test = confirm("주의 : 두명의 손님들이 다 가져가셨나요?");
-      if (con_test == true) {
-        this.orderedLists.splice(0, 1);
-      } else if (con_test == false) {
-      }
-    },
+
     testInstance() {
       this.AdminInstance.getStoreCount().then(count => {
         // resolve
@@ -195,6 +194,27 @@ export default {
       if (con_test == true) {
         await this.AdminInstance.approveOrder(this.storeName, idx);
         this.getOrderRooms();
+        this.getOrderedLists();
+      } else if (con_test == false) {
+      }
+    },
+
+    async orderReject(idx) {
+      console.log("button IDX :" + idx);
+      var con_test = confirm("주의 : 한번 거절하시면 다시 받을 수 없습니다.");
+      if (con_test == true) {
+        await this.AdminInstance.orderReject(this.storeName, idx);
+        this.getOrderRooms();
+        this.getOrderedLists();
+      } else if (con_test == false) {
+      }
+    },
+
+    async finishCook(idx) {
+      console.log("button IDX :" + idx);
+      var con_test = confirm("주의 : 두명의 손님들이 다 가져가셨나요?");
+      if (con_test == true) {
+        await this.AdminInstance.orderReject(this.storeName, idx);
         this.getOrderedLists();
       } else if (con_test == false) {
       }
@@ -243,7 +263,8 @@ export default {
                 roomNumber: "500",
                 kind: "순살",
                 menu: result.chicken,
-                time: "5시 17분"
+                time: "5시 17분",
+                id: idx
               });
             }
           })
@@ -251,7 +272,7 @@ export default {
             console.error(error);
           });
       }
-      console.log("=== Done Show Order Room ===");
+      console.log("=== Done Show OrderedLists ===");
     }
   },
   created() {

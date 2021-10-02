@@ -146,6 +146,23 @@ export class AdminTestRepository {
     }
   }
 
+  async orderReject(storeName, roomIndex) {
+    try {
+      await this._checkAccountAvailable();
+      await this.contractInstance.methods
+        .orderReject(storeName, roomIndex)
+        .send({ from: this.account, gas: this.gas })
+        .on("transactionHash", function(hash) {
+          return hash;
+        })
+        .on("error", function(error, receipt) {
+          throw error;
+        });
+    } catch (e) {
+      throw e;
+    }
+  }
+
   async getChickenHouse(storeName) {
     return new Promise(async (resolve, reject) => {
       try {

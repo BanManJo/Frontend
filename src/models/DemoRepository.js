@@ -4,7 +4,7 @@ export class DemoRepository {
   web3 = null;
   contractInstance = null;
   account = "";
-  gas = 4476768;
+  gas = 54476768;
 
   constructor() {
     this.gas = Config.GAS_AMOUNT;
@@ -59,10 +59,11 @@ export class DemoRepository {
   // Create Room Event
   async watchIfCreated(cb) {
     const currentBlock = await this.getCurrentBlock();
-    const eventWatcher = this.contractInstance.events.RoomCreated(
-      { fromBlock: currentBlock, ToBlock: currentBlock },
+    const eventWatcher = await this.contractInstance.events.RoomCreated(
+      { fromBlock: currentBlock - 1, toBlock: "latest" },
       cb
     );
+    return true;
   }
 
   async createRoom(roomId, roomTitle, roomMenu) {
