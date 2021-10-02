@@ -86,6 +86,14 @@ export default {
           title: "메뉴를 넣자",
           color: "red",
           icon: "mdi-pencil"
+        },
+        {
+          title: "사용자 페이지",
+          color: "red",
+          icon: "mdi-account",
+          event: () => {
+            this.moveMyPage();
+          }
         }
       ],
       registerCH: {
@@ -107,6 +115,9 @@ export default {
       // ${result.chickens} ${result.prices}
       // (인자) => {내용} // 함수!
       // function(인자){내용}
+    },
+    moveMyPage() {
+      window.location.href = "/UserMyPage";
     }
   }
 };
