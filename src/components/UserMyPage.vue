@@ -39,16 +39,8 @@
                       </v-chip>
                       <v-spacer></v-spacer>
 
-                  </v-content>
-                  <v-card-title>
-                    <div>
-                      <span class="black--text"
-                        >가게이름 &nbsp; : &nbsp;{{ storeNmae }} </span
-                      ><br />
-                      <span class="black--text"
-                        >치킨메뉴 &nbsp; : &nbsp;{{ chickenName }} </span
-                      ><br />
-                        >가격 &nbsp; : &nbsp; {{ price }}</span
+                      <v-chip
+                        class="ma-2"
                         color="green"
                         label
                         text-color="white"
