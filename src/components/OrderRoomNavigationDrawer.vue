@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-navigation-drawer v-model="navDrawer.drawer" absolute width="350">
+    <v-navigation-drawer v-model="drawer" absolute width="350">
       <v-list align="center" dense app>
         <v-spacer />
         <v-text-field
@@ -87,6 +87,14 @@ export default {
     },
     ownerPage() {
       return `/ownerPage2/${this.navDrawer.storeName}`;
+    },
+    drawer: {
+      get() {
+        return this.$store.state.OrderRoomDrawer.drawer;
+      },
+      set(val) {
+        this.$store.commit("SET_DRAWER", val);
+      }
     }
   },
   methods: {

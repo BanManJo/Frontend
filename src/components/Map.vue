@@ -5,7 +5,14 @@
     </v-main>
 
     <v-main id="contents">
-      </v-btn>
+      <!-- </v-btn> -->
+      <textarea
+        name="test"
+        id=""
+        cols="30"
+        rows="10"
+        v-model="listener"
+      ></textarea>
     </v-main>
     <menu-speed-dial></menu-speed-dial>
     <!-- Navigation Drawer -->
@@ -35,7 +42,9 @@ export default {
   },
   data() {
     return {
+      listener: "sdsd",
       AdminInstance: contractInstance.getAdminInstance(), // Admin Instance data
+      DemoInstance: contractInstance.getDemoInstance(), // Admin Instance data
       map: null,
       markerDatas: [
         // {
@@ -47,11 +56,9 @@ export default {
         // },
       ],
       navDrawer: {
-        drawer: false,
         storeName: null,
         roomCount: null,
-        orderRooms: [
-        ]
+        orderRooms: []
       },
       // Create Room Model
       room: {
@@ -67,7 +74,9 @@ export default {
     };
   },
   computed: {
-    ...mapState(["drawer"])
+    ...mapState({
+      drawer: state => state.OrderRoomDrawer.drawer
+    })
   },
   methods: {
     ...mapMutations({
@@ -103,9 +112,9 @@ export default {
       console.log("=== Show Order Rooms ===");
 
       event.preventDefault();
-      this.navDrawer.drawer = !this.navDrawer.drawer;
-      if (!this.navDrawer.drawer){
-        this.navDrawer.orderRooms = [];
+      this.setDrawer(!this.drawer);
+      this.navDrawer.orderRooms = [];
+      if (!this.drawer) {
         return;
       }
 
@@ -134,7 +143,7 @@ export default {
           .catch(error => {
             console.error(error);
           });
-      this.navDrawer.roomCount = counts;
+        this.navDrawer.roomCount = counts;
       }
       console.log("=== Done Show Order Room ===");
     },
@@ -227,6 +236,10 @@ export default {
               content: iwContent,
               removable: iwRemoveable
             });
+            // console.log(infowindow.getContent().children[0].innerText);
+            // infowindow.getContent().children[0].innerText = "testing ";
+            // infowindow.getContent().children[2].id = "testing ";
+            // console.log(infowindow.getContent());
             console.log("---- Add click event on marker ----");
             // 마커에 마우스오버 이벤트를 등록합니다
             kakao.maps.event.addListener(marker, "click", () => {
@@ -274,6 +287,12 @@ export default {
   mounted() {
     console.log("=== Mounted Map.vue ===");
     console.log("---- Set Window Size ----");
+    this.DemoInstance.watchIfCreated((error, result) => {
+      if (!error) {
+        console.log("passing event");
+        this.listener = "test succeed";
+      }
+    });
     document.body.style.width = `${window.screen.width}px`;
     document.body.style.height = `${window.innerHeight ||
       document.documentElement.clientHeight ||
