@@ -2,14 +2,16 @@ const DemoRepository = require("./contracts/Demo");
 const AdminTestRepository = require("./contracts/AdminTest");
 
 //상일
-//address: 0x13c97ecd59d2fd674858C7396F900f2761C1A784
+//Admin: 0x13c97ecd59d2fd674858C7396F900f2761C1A784 / 0x573E38D657d27Ad561b03dfCd29E9dE8a2ca6d34 (mac / window)
+//Demo: 0x13c97ecd59d2fd674858C7396F900f2761C1A784 / 0xca0a70d46c03a54814d895cdE90F0c7E6B315Bdf (mac / window)
 //대영
-//address:
+//address: 0xdA30f5B13De3f653e5FFC9c7C000692C5668328C
+//demo address : 0x9021Abc37CfA4AA4e533f5d5c1B2Bc8673aF2229
 // 성구
 //address: 0xba9be9d17Bc8FC3097F134Cf4F06ca8810621f0b
 //현수
-//Admin: 0xF35479e6a8FFEdaF62459EE0107009815e88730F
-//Demo : 0x562cF047d2c1682CdBAbc777C675B6d6c8De5313
+//Admin: 0xb480fFA7CAE23D224986920C74290003A25DD4b3
+//Demo : 0x6fa5604AfE6BE30f5435797D2bB860Ba476A8F6D
 module.exports = {
   DEMO_ADDRESS: "0xBd35004C405e8975fbBeF379a1d5bA984A82d956",
   DEMO_ABI: DemoRepository.abi,

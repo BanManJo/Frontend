@@ -5,18 +5,9 @@
     </v-main>
 
     <v-main id="contents">
-      <v-btn @click="registerCH.dialog = !registerCH.dialog" depressed
-        >Register Chicken House</v-btn
-      >
-      <v-btn @click="testContractInstance">Testing Button</v-btn>
-      <!-- <v-btn class="mr-3" elevation="1" fab small @click="setDrawer(!drawer)">
-        <v-icon>mdi-dots-vertical</v-icon>
-      </v-btn>-->
+      </v-btn>
     </v-main>
-    <!-- <menu-drawer></menu-drawer> -->
-    <register-chicken-house-dialog
-      :registerCH="registerCH"
-    ></register-chicken-house-dialog>
+    <menu-speed-dial></menu-speed-dial>
     <!-- Navigation Drawer -->
     <order-room-navigation-drawer
       :navDrawer="navDrawer"
@@ -39,20 +30,12 @@ export default {
   // store,
   components: {
     CreateRoomDialog: () => import("./CreateRoomDialog"),
-    OrderRoomNavigationDrawer: () => import("./OrderRoomNavigationDrawer.vue"),
-    RegisterChickenHouseDialog: () =>
-      import("./RegisterChickenHouseDialog.vue"),
-    MenuDrawer: () => import("./MenuDrawer.vue")
+    OrderRoomNavigationDrawer: () => import("./OrderRoomNavigationDrawer"),
+    MenuSpeedDial: () => import("./MenuSpeedDial")
   },
   data() {
     return {
       AdminInstance: contractInstance.getAdminInstance(), // Admin Instance data
-      registerCH: {
-        dialog: false,
-        notifications: false,
-        sound: true,
-        widgets: false
-      },
       map: null,
       markerDatas: [
         // {
@@ -68,12 +51,6 @@ export default {
         storeName: null,
         roomCount: null,
         orderRooms: [
-          {
-            headline: "황금 올리브",
-            subText: "종료 시간: 15:23",
-            show: false,
-            description: "황금올리브 같이 먹을 분 구함!~"
-          }
         ]
       },
       // Create Room Model
@@ -96,17 +73,6 @@ export default {
     ...mapMutations({
       setDrawer: "SET_DRAWER"
     }),
-    testContractInstance() {
-      console.dir(this.AdminInstance);
-      // AdminInstance.getStoreCount()
-      this.AdminInstance.getStoreCount().then(count => {
-        // resolve
-        alert(`Store Counts : ${count}`);
-      });
-      // ${result.chickens} ${result.prices}
-      // (인자) => {내용} // 함수!
-      // function(인자){내용}
-    },
     createOrderRoom(event) {
       console.log("=== Create Order Room ===");
 
@@ -138,31 +104,37 @@ export default {
 
       event.preventDefault();
       this.navDrawer.drawer = !this.navDrawer.drawer;
+      if (!this.navDrawer.drawer){
+        this.navDrawer.orderRooms = [];
+        return;
+      }
 
       const storeName = event.target.id;
       this.navDrawer.storeName = storeName;
 
       const roomCount = await this.AdminInstance.getRoomsCount(storeName);
-      this.navDrawer.roomCount = roomCount;
-
+      // this.navDrawer.roomCount = roomCount;
+      let counts = 0;
       console.log(`---- get Order Rooms Info, Counts: ${roomCount}`);
-      this.navDrawer.orderRooms = [];
       for (let idx = 0; idx < roomCount; idx++) {
         await this.AdminInstance.getRoomInfo(storeName, idx)
           .then(result => {
             console.log(result);
             if (result.state === "1") {
+              counts++;
               this.navDrawer.orderRooms.push({
                 headline: result.chicken,
                 subText: `종료 시간: 15:23 | ${result.price}₩`,
                 show: false,
-                description: "황금올리브 같이 먹을 분 구함!~"
+                description: "황금올리브 같이 먹을 분 구함!~",
+                index: idx
               });
             }
           })
           .catch(error => {
             console.error(error);
           });
+      this.navDrawer.roomCount = counts;
       }
       console.log("=== Done Show Order Room ===");
     },

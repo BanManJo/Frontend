@@ -1,10 +1,11 @@
 import Config from "../config";
+import * as events from "events";
 
 export class DemoRepository {
   web3 = null;
   contractInstance = null;
   account = "";
-  gas = 4476768;
+  gas = 54476768;
 
   constructor() {
     this.gas = Config.GAS_AMOUNT;
@@ -47,21 +48,6 @@ export class DemoRepository {
     });
   }
 
-  async createRoom(roomId, roomTitle, roomMenu) {
-    return new Promise(async (resolve, reject) => {
-      try {
-        this.contractInstance.methods
-          .createRoom(roomId, roomTitle, roomMenu)
-          .send({ from: this.account, gas: this.gas }, (err, transaction) => {
-            if (!err) resolve(transaction);
-            reject(err);
-          });
-      } catch (e) {
-        reject(e);
-      }
-    });
-  }
-
   getCurrentBlock() {
     return new Promise((resolve, reject) => {
       this.web3.eth.getBlockNumber((err, blocknumber) => {
@@ -74,9 +60,33 @@ export class DemoRepository {
   // Create Room Event
   async watchIfCreated(cb) {
     const currentBlock = await this.getCurrentBlock();
-    const eventWatcher = this.contractInstance.events.RoomCreated(
-      { fromBlock: currentBlock - 1 },
+    const eventWatcher = await this.contractInstance.events.RoomCreated(
+      {fromBlock: currentBlock - 1, toBlock: "latest"},
       cb
     );
+    return true;
+  }
+
+  async watchIfCreated2(cb) {
+    const currentBlock = await this.getCurrentBlock();
+    this.contractInstance.getPastEvents('RoomCreated', {
+      fromBlock: currentBlock - 1,
+      toBlock: 'latest'
+    }, cb)
+  }
+
+  async createRoom(roomId, roomTitle, roomMenu) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        this.contractInstance.methods
+          .createRoom(roomId, roomTitle, roomMenu)
+          .send({from: this.account, gas: this.gas}, (err, transaction) => {
+            if (!err) resolve(transaction);
+            reject(err);
+          });
+      } catch (e) {
+        reject(e);
+      }
+    });
   }
 }
