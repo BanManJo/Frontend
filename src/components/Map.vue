@@ -46,15 +46,7 @@ export default {
       AdminInstance: contractInstance.getAdminInstance(), // Admin Instance data
       DemoInstance: contractInstance.getDemoInstance(), // Admin Instance data
       map: null,
-      markerDatas: [
-        // {
-        //   latitude: 37.4814,
-        //   longitude: 126.881,
-        //   removed: true,
-        //   storeName: "가산디지털 단지 역",
-        //   orderCount: 3,
-        // },
-      ],
+      markerDatas: [],
       navDrawer: {
         storeName: null,
         roomCount: null,
@@ -90,20 +82,30 @@ export default {
       this.room.storeName = event.target.id;
       // menus
       this.room.menus = [];
-      this.AdminInstance.getStoreMenu(this.room.storeName).then(result => {
-        console.log("---- get store menus from ETH ----");
-        const chickens = result[0];
-        const prices = result[1];
-        for (let i = 0; i < chickens.length; i++) {
-          console.log(chickens[i], prices[i]);
-          this.room.menus.push({
-            chicken: chickens[i],
-            price: `${prices[i]}`,
-            description: "고소한 올리브유로 티킨 바삭한 프라이드 치킨!",
-            selected: false
+
+      /**** 새롭게 구조화 된 부분 *****/
+      this.AdminInstance.findChickenHouse(this.room.storeName).then(
+        contract_address => {
+          // console.log(contract);
+          const ChickenHouseInstance = contractInstance.getChickenHouseInstance(
+            contract_address
+          );
+          ChickenHouseInstance.getStoreMenu().then(result => {
+            console.log("---- get store menus from ETH ----");
+            const chickens = result[0];
+            const prices = result[1];
+            for (let i = 0; i < chickens.length; i++) {
+              console.log(chickens[i], prices[i]);
+              this.room.menus.push({
+                chicken: chickens[i],
+                price: `${prices[i]}`,
+                description: "고소한 올리브유로 티킨 바삭한 프라이드 치킨!",
+                selected: false
+              });
+            }
           });
         }
-      });
+      );
 
       // storeIdx (if needed)
       console.log("=== Done Create Order Room ===");
@@ -121,19 +123,37 @@ export default {
       const storeName = event.target.id;
       this.navDrawer.storeName = storeName;
 
-      const roomCount = await this.AdminInstance.getRoomsCount(storeName);
-      // this.navDrawer.roomCount = roomCount;
-      let counts = 0;
+      /**** 새롭게 구조화 된 부분 *****/
+      // 1. Chicken House 주소를 가져옴
+      const CHAddress = await this.AdminInstance.findChickenHouse(storeName);
+      // 2. Chicken House 인스턴스 생성
+      const ChickenHouseInstance = contractInstance.getChickenHouseInstance(
+        CHAddress
+      );
+
+      // 3. 해당 Chicken House의 방 개수를 가져옴
+      const roomCount = await ChickenHouseInstance.getRoomsCount();
+
+      // 4. 같은 로직 실행
       console.log(`---- get Order Rooms Info, Counts: ${roomCount}`);
+
+      let counts = 0;
       for (let idx = 0; idx < roomCount; idx++) {
-        await this.AdminInstance.getRoomInfo(storeName, idx)
+        // 5. OrderRoom 주소를 가져옴
+        const ORAddress = await ChickenHouseInstance.findOrderRoom(idx);
+        // 6. OrderRoom 인스턴스 생성
+        const OrderRoomInstance = contractInstance.getOrderRoomInstance(
+          ORAddress
+        );
+
+        await OrderRoomInstance.getRoomInfo()
           .then(result => {
             console.log(result);
-            if (result.state === "1") {
+            if (result._state === "1") {
               counts++;
               this.navDrawer.orderRooms.push({
-                headline: result.chicken,
-                subText: `종료 시간: 15:23 | ${result.price}₩`,
+                headline: result._chickenName,
+                subText: `종료 시간: 15:23 | ${result._price}₩`,
                 show: false,
                 description: "황금올리브 같이 먹을 분 구함!~",
                 index: idx
@@ -191,28 +211,36 @@ export default {
       // // // setting chicken houses
       console.log("=== Create Marker ===");
       console.log("---- get Store Counts from ETH ----");
+
+      /**** 새롭게 구조화 된 부분 *****/
       this.AdminInstance.getStoreCount()
         .then(async val => {
           console.log(
             `---- get Each Chicken House Infos by idx, Counts: ${val} ----`
           );
           for (let idx = 0; idx < val; idx++) {
-            await this.AdminInstance.getChickenHouseByIndex(idx).then(
-              async result => {
-                const _orderCount = await this.AdminInstance.getRoomsCount(
-                  result.storeName
-                );
-                this.markerDatas.push({
-                  latitude: Number(result.latitude),
-                  longitude: Number(result.longitude),
-                  removed: true,
-                  storeName: result.storeName,
-                  orderCount: _orderCount
-                });
-              }
+            // idx를 통해 chicken House를 바로 가져옴..
+            const CHAddress = await this.AdminInstance.findChickenHouseByIndex(
+              idx
             );
+            const ChickenHouseInstance = contractInstance.getChickenHouseInstance(
+              CHAddress
+            );
+
+            await ChickenHouseInstance.getChickenHouse().then(async result => {
+              const _orderCount = await ChickenHouseInstance.getRoomsCount();
+              console.log(result);
+              this.markerDatas.push({
+                latitude: Number(result._latitude),
+                longitude: Number(result._longitude),
+                removed: true,
+                storeName: result._storeName,
+                orderCount: _orderCount
+              });
+            });
           }
           console.log("---- markerDatas setting on map ----");
+          console.log(this.markerDatas);
           this.markerDatas.forEach(markerData => {
             const markerPosition = new kakao.maps.LatLng(
               markerData.latitude,

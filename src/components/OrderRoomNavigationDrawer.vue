@@ -98,13 +98,24 @@ export default {
     }
   },
   methods: {
-    matchRoom(storeName, roomNumber) {
+    async matchRoom(storeName, roomNumber) {
       console.log(storeName, roomNumber);
       console.log("=== Create Match Room ===");
 
-      let AdminInstance = contractInstance.getAdminInstance();
-      // menus
-      AdminInstance.matchRoom(storeName, roomNumber).then(result => {
+      const AdminInstance = contractInstance.getAdminInstance();
+      // find Chicken House address and get instance
+      const CHAddress = await AdminInstance.findChickenHouse(storeName);
+      const ChickenHouseInstance = contractInstance.getChickenHouseInstance(
+        CHAddress
+      );
+
+      // find Room Address and get instnace
+      const ORAddress = await ChickenHouseInstance.findOrderRoom(roomNumber);
+      const OrderRoomInstance = contractInstance.getOrderRoomInstance(
+        ORAddress
+      );
+
+      await OrderRoomInstance.matchRoom(roomNumber).then(result => {
         console.log(result);
       });
 

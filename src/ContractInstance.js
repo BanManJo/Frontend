@@ -1,4 +1,6 @@
 import { AdminTestRepository } from "./models/AdminTestRepository";
+import { ChickenHouseRepository } from "./models/ChickenHouseRepository";
+import { OrderRoomRepository } from "./models/OrderRoomRepository";
 import { DemoRepository } from "./models/DemoRepository";
 
 const Web3 = require("web3");
@@ -46,6 +48,22 @@ export default class ContractInstance {
     } else {
       throw new Error("Create Instance of Admin First");
     }
+  }
+
+  getChickenHouseInstance(contract_address) {
+    const ChickenHouseInstance = new ChickenHouseRepository();
+    const web3 = new Web3(window.ethereum);
+    console.log(`well setting web3 ${web3}`);
+    ChickenHouseInstance.setWeb3(web3, contract_address);
+    return ChickenHouseInstance;
+  }
+
+  getOrderRoomInstance(contract_address) {
+    const OrderRoomInstance = new OrderRoomRepository();
+    const web3 = new Web3(window.ethereum);
+    console.log(`well setting web3 ${web3}`);
+    OrderRoomInstance.setWeb3(web3, contract_address);
+    return OrderRoomInstance;
   }
 }
 // Instance 객체 -> export

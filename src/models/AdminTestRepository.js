@@ -3,7 +3,7 @@ import Config from "../config";
 export class AdminTestRepository {
   web3 = null;
   contractInstance = null;
-  account = "";
+  account = null;
   gas = 4476768;
 
   constructor() {
@@ -35,17 +35,26 @@ export class AdminTestRepository {
     }
   }
 
-  async getBalanceOfRomm(storeName, roomNumber) {
-    return new Promise(async (resolve, reject) => {
-      try {
-        var result = await this.contractInstance.methods
-          .getBalanceOfRomm(storeName, roomNumber)
-          .call();
-        resolve(result);
-      } catch (e) {
-        reject(e);
-      }
-    });
+  async findChickenHouse(storeName) {
+    try {
+      const result = await this.contractInstance.methods
+        .findChickenHouse(storeName)
+        .call();
+      return result;
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  async findChickenHouseByIndex(index) {
+    try {
+      const result = await this.contractInstance.methods
+        .findChickenHouseByIndex(index)
+        .call();
+      return result;
+    } catch (e) {
+      throw e;
+    }
   }
 
   async registerChickenHouse(
@@ -58,6 +67,14 @@ export class AdminTestRepository {
   ) {
     try {
       await this._checkAccountAvailable();
+      console.log(
+        storeName,
+        latitude,
+        longitude,
+        chickenNames,
+        prices,
+        sunsals
+      );
       await this.contractInstance.methods
         .registerChickenHouse(
           storeName,
@@ -85,110 +102,6 @@ export class AdminTestRepository {
     }
   }
 
-  async createRoom(storeName, price, finishTime, chicken) {
-    try {
-      await this._checkAccountAvailable();
-      const tx = await this.contractInstance.methods
-        .createRoom(storeName, price, finishTime, chicken)
-        .send({ from: this.account, gas: this.gas })
-        .on("transactionHash", function(hash) {
-          // return hash;
-        })
-        // .on('receipt', function(receipt){
-        //     ...
-        // })
-        // .on('confirmation', function(confirmationNumber, receipt){
-        //     ...
-        // })
-        .on("error", function(error, receipt) {
-          throw error;
-        });
-      return tx;
-    } catch (e) {
-      throw e;
-    }
-  }
-
-  async matchRoom(storeName, roomIndex) {
-    try {
-      await this._checkAccountAvailable();
-      let tx;
-      await this.contractInstance.methods
-        .matchRoom(storeName, roomIndex)
-        .send({ from: this.account, gas: this.gas })
-        .on("transactionHash", function(hash) {
-          tx = hash;
-        })
-        .on("error", function(error, receipt) {
-          throw error;
-        });
-      return tx;
-    } catch (e) {
-      throw e;
-    }
-  }
-
-  async approveOrder(storeName, roomIndex) {
-    try {
-      await this._checkAccountAvailable();
-
-      await this.contractInstance.methods
-        .approveOrder(storeName, roomIndex)
-        .send({ from: this.account, gas: this.gas })
-        .on("transactionHash", function(hash) {
-          return hash;
-        })
-        .on("error", function(error, receipt) {
-          throw error;
-        });
-    } catch (e) {
-      throw e;
-    }
-  }
-
-  async orderReject(storeName, roomIndex) {
-    try {
-      await this._checkAccountAvailable();
-      await this.contractInstance.methods
-        .orderReject(storeName, roomIndex)
-        .send({ from: this.account, gas: this.gas })
-        .on("transactionHash", function(hash) {
-          return hash;
-        })
-        .on("error", function(error, receipt) {
-          throw error;
-        });
-    } catch (e) {
-      throw e;
-    }
-  }
-
-  async getChickenHouse(storeName) {
-    return new Promise(async (resolve, reject) => {
-      try {
-        const result = await this.contractInstance.methods
-          .getChickenHouse(storeName)
-          .call();
-        resolve(result);
-      } catch (e) {
-        reject(e);
-      }
-    });
-  }
-
-  async getChickenHouseByIndex(idx) {
-    return new Promise(async (resolve, reject) => {
-      try {
-        const result = await this.contractInstance.methods
-          .getChickenHouse2(idx)
-          .call();
-        resolve(result);
-      } catch (e) {
-        reject(e);
-      }
-    });
-  }
-
   async getStoreCount() {
     try {
       const result = await this.contractInstance.methods
@@ -198,66 +111,6 @@ export class AdminTestRepository {
     } catch (e) {
       throw e;
     }
-  }
-
-  async getStoreMenu(storeName) {
-    return new Promise(async (resolve, reject) => {
-      try {
-        const result = await this.contractInstance.methods
-          .getStoreMenu(storeName)
-          .call();
-        resolve(result);
-      } catch (e) {
-        reject(e);
-      }
-    });
-  }
-
-  async changeOnOff(storeName) {
-    const accounts = await window.ethereum.request({
-      method: "eth_requestAccounts"
-    });
-    console.log("changeOnOff");
-    return new Promise(async (resolve, reject) => {
-      try {
-        this.contractInstance.methods.changeOnOff(storeName).send(
-          { from: accounts[0], gas: 4476768 },
-
-          (err, transaction) => {
-            if (!err) resolve(transaction);
-            reject(err);
-          }
-        );
-      } catch (e) {
-        reject(e);
-      }
-    });
-  }
-
-  async getRoomInfo(storeName, roomIdx) {
-    return new Promise(async (resolve, reject) => {
-      try {
-        const result = await this.contractInstance.methods
-          .getRoomInfo(storeName, roomIdx)
-          .call();
-        resolve(result);
-      } catch (e) {
-        reject(e);
-      }
-    });
-  }
-
-  async getRoomsCount(storeName) {
-    return new Promise(async (resolve, reject) => {
-      try {
-        const result = await this.contractInstance.methods
-          .getRoomsCount(storeName)
-          .call();
-        resolve(result);
-      } catch (e) {
-        reject(e);
-      }
-    });
   }
 
   getCurrentBlock() {
