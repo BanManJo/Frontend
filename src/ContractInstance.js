@@ -6,6 +6,7 @@ const Web3 = require("web3");
 export default class ContractInstance {
   AdminTestRepoInstance = null;
   DemoTestRepoInstance = null;
+  orderRoomRepoInstance = null;
 
   constructor() {
     if (ContractInstance._instance) {
@@ -32,6 +33,13 @@ export default class ContractInstance {
     this.DemoTestRepoInstance.setWeb3(web3);
   }
 
+  // setOrderRoomInstance() {
+  //   this.DemoTestRepoInstance = new DemoRepository();
+  //   const web3 = new Web3(window.ethereum);
+  //   console.log(`well setting web3 ${web3}`);
+  //   this.DemoTestRepoInstance.setWeb3(web3);
+  // }
+
   getAdminInstance() {
     if (this.AdminTestRepoInstance !== null) {
       return this.AdminTestRepoInstance;
@@ -47,5 +55,12 @@ export default class ContractInstance {
       throw new Error("Create Instance of Admin First");
     }
   }
+  // getOrderRoomInstance() {
+  //   if (this.DemoTestRepoInstance !== null) {
+  //     return this.DemoTestRepoInstance;
+  //   } else {
+  //     throw new Error("Create Instance of Admin First");
+  //   }
+  // }
 }
 // Instance 객체 -> export

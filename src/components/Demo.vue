@@ -21,20 +21,19 @@
             <td class="text-xs-center">{{ props.item.hash }}</td>
           </template>
         </v-data-table>
-        <v-btn style="margin-top:15px;" color="gray" @click="room.roomModal = true"
-        >Create Order Room
-        </v-btn
-        >
+        <v-btn
+          style="margin-top:15px;"
+          color="gray"
+          @click="room.roomModal = true"
+          >Create Order Room
+        </v-btn>
         <h1 style="padding-top:25px; line-height: 32px;">
           Websocket Information
         </h1>
 
         <v-container>
           <v-row>
-            <v-col
-              cols="24"
-              sm="12"
-            >
+            <v-col cols="24" sm="12">
               <v-text-field
                 v-model="this.$store.state.wsMessage"
                 outlined
@@ -43,7 +42,6 @@
           </v-row>
         </v-container>
       </v-flex>
-
     </v-layout>
 
     <!-- modal -->
@@ -129,7 +127,7 @@ export default {
             this.$socket.send(JSON.stringify(result));
             this.room.isLoading = false;
             this.room.roomModal = false;
-            this.items.push({hash: transaction});
+            this.items.push({ hash: transaction });
           }
           return true;
         });

@@ -61,7 +61,7 @@ export class DemoRepository {
   async watchIfCreated(cb) {
     const currentBlock = await this.getCurrentBlock();
     const eventWatcher = await this.contractInstance.events.RoomCreated(
-      {fromBlock: currentBlock - 1, toBlock: "latest"},
+      { fromBlock: currentBlock - 1, toBlock: "latest" },
       cb
     );
     return true;
@@ -69,10 +69,14 @@ export class DemoRepository {
 
   async watchIfCreated2(cb) {
     const currentBlock = await this.getCurrentBlock();
-    this.contractInstance.getPastEvents('RoomCreated', {
-      fromBlock: currentBlock - 1,
-      toBlock: 'latest'
-    }, cb)
+    this.contractInstance.getPastEvents(
+      "RoomCreated",
+      {
+        fromBlock: currentBlock - 1,
+        toBlock: "latest"
+      },
+      cb
+    );
   }
 
   async createRoom(roomId, roomTitle, roomMenu) {
@@ -80,7 +84,7 @@ export class DemoRepository {
       try {
         this.contractInstance.methods
           .createRoom(roomId, roomTitle, roomMenu)
-          .send({from: this.account, gas: this.gas}, (err, transaction) => {
+          .send({ from: this.account, gas: this.gas }, (err, transaction) => {
             if (!err) resolve(transaction);
             reject(err);
           });
