@@ -96,6 +96,14 @@
                       >
                         <v-icon left> mdi-cancel</v-icon>
                         <span>주문취소</span>
+                      </v-btn>
+                      <v-btn
+                        class="ma-2 text-h4"
+                        color="orange"
+                        @click="readRoomInfo"
+                      >
+                        <v-icon left> mdi-cancel</v-icon>
+                        <span>테스트</span>
                       </v-btn></v-row
                     >
                   </v-card-actions>
@@ -103,60 +111,6 @@
               </v-flex>
             </v-layout>
           </div>
-          &nbsp;
-          <!-- new 기록 테이블 -->
-
-          <v-container>
-            <base-material-card
-              icon="mdi-clipboard-text"
-              title="내가 주문한 목록"
-              class="px-5 py-3"
-              flat
-              outlined
-            >
-              <v-card
-                flat
-                v-for="orderedList in orderedLists"
-                :key="orderedList.title"
-              >
-                <v-row row wrap :class="`pa-3 orderedList ${orderedList.kind}`">
-                  <v-col xs12 md5>
-                    <div class="caption grey--text">가게이름</div>
-                    <div>{{ orderedList.time }}</div>
-                  </v-col>
-                  <v-flex xs6 sm4 md2>
-                    <div class="caption grey--text">종류</div>
-                    <div>{{ orderedList.kind }}</div>
-                  </v-flex>
-                  <v-flex xs6 sm4 md2>
-                    <div class="caption grey--text">메뉴</div>
-                    <div>{{ orderedList.menu }}</div>
-                  </v-flex>
-                  <v-flex xs6 sm4 md2>
-                    <div class="caption grey--text">가격</div>
-                    <div>{{ orderedList.roomNumber }}</div>
-                  </v-flex>
-                  <v-flex xs6 sm4 md2>
-                    <div class="caption grey--text">주문상태</div>
-                    <div>{{ orderedList.roomNumber }}</div>
-                  </v-flex>
-                  <v-flex xs6 sm4 md2>
-                    <div class="caption grey--text">방번호</div>
-                    <div>{{ orderedList.roomNumber }}</div>
-                  </v-flex>
-
-                  <div class="text-xs-center">
-                    <v-btn fab small color="green">
-                      <v-icon color="white" @click="finishCook"
-                        >mdi-minus</v-icon
-                      >
-                    </v-btn>
-                  </div>
-                </v-row>
-                <v-divider></v-divider>
-              </v-card>
-            </base-material-card>
-          </v-container>
           &nbsp;
 
           <!--대영 기록 테이블 -->
@@ -202,6 +156,8 @@ export default {
   data() {
     return {
       AdminInstance: contractInstance.getAdminInstance(),
+      orderedLists: [],
+
       headers: [
         {
           text: "가게이름 (storeName)",
@@ -238,11 +194,16 @@ export default {
   computed: {},
   props: {},
   methods: {
-    testInstance() {
-      this.AdminInstance.getStoreCount().then(count => {
-        // resolve
-        alert(`Store Counts : ${count}`);
-      });
+    async readRoomInfo() {
+      try {
+        this.AdminInstance.watchIfCreated2((error, result) => {
+          //if (result._ownedby == myaddress)
+          console.log(result[0].returnValues[0]);
+          return true;
+        });
+      } catch (e) {
+        this.error = e.message;
+      }
     }
   },
   created() {

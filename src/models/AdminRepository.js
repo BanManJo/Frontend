@@ -13,8 +13,8 @@ export class AdminRepository {
   setWeb3(web3) {
     this.web3 = web3;
     this.contractInstance = new this.web3.eth.Contract(
-      Config.ADMIN_TEST_ABI,
-      Config.ADMIN_TEST_ADDRESS
+      Config.ADMIN_ABI,
+      Config.ADMIN_ADDRESS
     );
   }
 
