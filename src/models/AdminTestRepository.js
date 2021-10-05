@@ -111,6 +111,7 @@ export class AdminTestRepository {
 
   async matchRoom(storeName, roomIndex) {
     try {
+      console.log("pass1");
       await this._checkAccountAvailable();
       let tx;
       await this.contractInstance.methods
@@ -118,6 +119,7 @@ export class AdminTestRepository {
         .send({ from: this.account, gas: this.gas })
         .on("transactionHash", function(hash) {
           tx = hash;
+          console.log("pass2");
         })
         .on("error", function(error, receipt) {
           throw error;
@@ -268,4 +270,29 @@ export class AdminTestRepository {
       });
     });
   }
+
+  async watchIfMatched(cb) {
+    // const currentBlock = await this.getCurrentBlock();
+    console.log("event1");
+    this.contractInstance.events.matchFinish(
+      {
+        fromBlock: "latest",
+        ToBlock: "latest"
+      },
+      cb
+    );
+  }
+
+  // async watchIfCreated(cb) {
+  //   const currentBlock = await this.getCurrentBlock();
+  //   console.log("pass3");
+  //   this.contractInstance.getPastEvents(
+  //     "matchFinish",
+  //     {
+  //       fromBlock: currentBlock - 1,
+  //       toBlock: "latest"
+  //     },
+  //     cb
+  //   );
+  // }
 }

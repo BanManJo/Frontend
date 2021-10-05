@@ -32,6 +32,27 @@
       </v-btn>
     </v-toolbar>
 
+    <!-- <v-data-table
+      :headers="headers"
+      :items="items"
+      :items-per-page="5"
+      class="elevation-1"
+    >
+      <template v-slot:items="props">
+        <td class="text-xs-center">{{ props.item.hash }}</td>
+      </template>
+    </v-data-table> -->
+
+    <!-- <v-btn
+      class="text-h3 text--white"
+      x-large
+      @click="matchRoomEvent"
+      value="left"
+      color="blue"
+    >
+      event test button
+    </v-btn> -->
+
     <v-container>
       <base-material-card
         icon="mdi-clipboard-text"
@@ -46,7 +67,7 @@
             sm6
             md4
             lg3
-            v-for="orderRoom in orderRoom"
+            v-for="orderRoom in orderRooms"
             :key="orderRoom.roomNumber"
           >
             <v-card flat outlined class="text-center">
@@ -142,17 +163,28 @@ export default {
   data() {
     return {
       AdminInstance: contractInstance.getAdminInstance(), // Admin Instance data
+      // OrderRoomInstance: contractInstance.getOrderRoomInstance(),
 
-      text: "center",
-      icon: "justify",
-      toggle_none: null,
-      toggle_one: 0,
-      toggle_exclusive: 2,
-      toggle_multiple: [0, 1, 2],
+      // text: "center",
+      // icon: "justify",
+      // toggle_none: null,
+      // toggle_one: 0,
+      // toggle_exclusive: 2,
+      // toggle_multiple: [0, 1, 2],
 
-      orderRoom: [],
+      orderRooms: [],
 
-      orderedLists: []
+      orderedLists: [],
+
+      headers: [
+        {
+          text: "result",
+          align: "center",
+          sortable: false,
+          value: "hash"
+        }
+      ],
+      items: []
     };
   },
   computed: {
@@ -167,6 +199,41 @@ export default {
         this.orderRoom.splice(0, 1);
       } else if (con_test == false) {
       }
+    },
+
+    matchRoomEvent() {
+      let self = this;
+      this.AdminInstance.watchIfMatched((error, result) => {
+        if (!error) {
+          console.log("event2");
+          console.log(result.returnValues._storeName);
+          console.log(result);
+
+          // 방법 1 (card 부분 전체 새로고침)
+          // if (self.storeName == result.returnValues._storeName) {
+          //   this.getOrderRooms();
+          // }
+
+          // 방법 3 (이벤트에서 치킨집 이름이랑, 방의 번호만을 이용해서 블록체인에서 원하는 방의 데이터를 가져오는 방법)
+          let preResult = result;
+          self.AdminInstance.getRoomInfo(
+            self.storeName,
+            preResult.returnValues._roomIndex
+          )
+            .then(result => {
+              console.log(result);
+              self.orderRooms.push({
+                roomNumber: preResult.returnValues._roomIndex,
+                menu: result.chicken,
+                price: result.price,
+                id: preResult.returnValues._roomIndex
+              });
+            })
+            .catch(error => {
+              console.error(error);
+            });
+        }
+      });
     },
 
     testInstance() {
@@ -226,14 +293,14 @@ export default {
       const roomCount = await this.AdminInstance.getRoomsCount(this.storeName);
 
       console.log(`---- get Order Rooms Info, Counts: ${roomCount}`);
-      this.orderRoom = [];
+      this.orderRooms = [];
       for (let idx = 0; idx < roomCount; idx++) {
         await this.AdminInstance.getRoomInfo(this.storeName, idx)
           .then(result => {
-            console.log(result);
-            if (result.state === "1") {
-              this.orderRoom.push({
-                roomNumber: "1",
+            // console.log(result);
+            if (result.state === "2") {
+              this.orderRooms.push({
+                roomNumber: idx,
                 menu: result.chicken,
                 price: result.price,
                 id: idx
@@ -257,10 +324,10 @@ export default {
       for (let idx = 0; idx < roomCount; idx++) {
         await this.AdminInstance.getRoomInfo(this.storeName, idx)
           .then(result => {
-            console.log(result);
+            // console.log(result);
             if (result.state === "3") {
               this.orderedLists.push({
-                roomNumber: "500",
+                roomNumber: idx,
                 kind: "순살",
                 menu: result.chicken,
                 time: "5시 17분",
@@ -274,6 +341,24 @@ export default {
       }
       console.log("=== Done Show OrderedLists ===");
     }
+
+    // async matchRoomEvent5() {
+    //   alert("김현수");
+    //   try {
+    //     this.AdminInstance.watchIfmatched((error, result) => {
+    //       if (!error) {
+    //         console.log("event2");
+    //         console.log(result);
+    //         console.log(result.returnValues);
+    //         this.items.push({ hash: result.returnValues._chickenName });
+    //         this.$socket.send(JSON.stringify(result));
+    //       }
+    //     });
+    //     await this.AdminInstance.matchRoom("가산점", 0);
+    //   } catch (e) {
+    //     this.error = e.message;
+    //   }
+    // }
   },
   created() {
     console.log(`=== Created OwnerPage2 ${this.storeName} ===`);
@@ -281,7 +366,9 @@ export default {
     this.getOrderedLists();
   },
 
-  mounted() {}
+  mounted() {
+    this.matchRoomEvent();
+  }
 };
 </script>
 
