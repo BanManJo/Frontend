@@ -268,4 +268,25 @@ export class AdminTestRepository {
       });
     });
   }
+
+  // 대영 실험
+  async watchIfCreated(cb) {
+    const currentBlock = await this.getCurrentBlock();
+    const eventWatcher = await this.contractInstance.events.RoomCreated(
+      { fromBlock: currentBlock - 1, toBlock: "latest" },
+      cb
+    );
+    return true;
+  }
+
+  async watchIfCreated2(cb) {
+    this.contractInstance.getPastEvents(
+      "userPage",
+      {
+        fromBlock: 0,
+        toBlock: "latest"
+      },
+      cb
+    );
+  }
 }
