@@ -5,6 +5,8 @@ import Map from "@/components/Map";
 import OwnerPage1 from "@/components/OwnerPage1";
 import OwnerPage2 from "@/components/OwnerPage2";
 import UserMyPage from "@/components/UserMyPage";
+import OwnerMyPage from "@/components/OwnerMyPage";
+import Index from "@/components/Index";
 Vue.use(Router);
 
 export default new Router({
@@ -96,6 +98,16 @@ export default new Router({
       path: "/userMyPage",
       name: "UserMyPage",
       component: UserMyPage
+    },
+    {
+      path: "/ownerMyPage/:storeName",
+      name: "OwnerMyPage",
+      component: OwnerMyPage
+    },
+    {
+      path: "/index",
+      name: "Index",
+      component: Index
     }
   ]
 });

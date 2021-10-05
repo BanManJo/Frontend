@@ -3,7 +3,12 @@
     <v-navigation-drawer v-model="navDrawer.drawer" absolute width="350" right>
       <v-list align="center" dense app>
         <v-spacer />
-        <v-text-field :label="$t('search')" color="secondary" hide-details style="max-width: 300px">
+        <v-text-field
+          :label="$t('search')"
+          color="secondary"
+          hide-details
+          style="max-width: 300px"
+        >
           <template v-if="$vuetify.breakpoint.mdAndUp" v-slot:append-outer>
             <v-btn class="mt-n2" elevation="12" fab small>
               <v-icon>mdi-magnify</v-icon>
@@ -20,7 +25,9 @@
             />
           </v-list-item-avatar>
           <v-list-item-content>
-            <v-list-item-title class="display-1">주문방 개수: {{ navDrawer.roomCount }}</v-list-item-title>
+            <v-list-item-title class="display-1"
+              >주문방 개수: {{ navDrawer.roomCount }}</v-list-item-title
+            >
           </v-list-item-content>
           <v-btn class="ml-2" min-width="0" text :to="ownerPage">
             <v-icon>mdi-account</v-icon>
