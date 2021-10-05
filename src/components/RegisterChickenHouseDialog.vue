@@ -73,11 +73,21 @@
             <v-subheader>메뉴 등록</v-subheader>
           </v-flex>
           <v-flex xs2>
-            <v-text-field v-model="chicken" color="purple darken-2" label="치킨 이름" required></v-text-field>
+            <v-text-field
+              v-model="chicken"
+              color="purple darken-2"
+              label="치킨 이름"
+              required
+            ></v-text-field>
           </v-flex>
           <v-flex xs1></v-flex>
           <v-flex xs2>
-            <v-text-field v-model="price" color="blue darken-2" label="가격" required></v-text-field>
+            <v-text-field
+              v-model="price"
+              color="blue darken-2"
+              label="가격"
+              required
+            ></v-text-field>
           </v-flex>
           <v-flex xs1>
             <v-checkbox v-model="sunsal" label="순살?"></v-checkbox>
@@ -95,7 +105,8 @@
               <template mb4 v-for="(menu, idx) in menus">
                 <v-chip :key="idx" v-model="menu.appended" close>
                   <span>{{ menu.chicken }}</span> / 가격:
-                  <span>{{ menu.price }}</span>원
+                  <span>{{ menu.price }}</span
+                  >원
                 </v-chip>
               </template>
             </v-layout>
@@ -123,12 +134,12 @@ export default {
       menus: [],
       address: "",
       map: null,
-      required: (value) => !!value || "Required.",
+      required: value => !!value || "Required."
     };
   },
   computed: {},
   props: {
-    registerCH: Object,
+    registerCH: Object
   },
   methods: {
     async registerChickenHouse() {
@@ -139,14 +150,14 @@ export default {
       // }
       // make lists of chicke and price
       const chickens = this.menus
-        .filter((menu) => menu.appended)
-        .map((menu) => menu.chicken);
+        .filter(menu => menu.appended)
+        .map(menu => menu.chicken);
       const prices = this.menus
-        .filter((menu) => menu.appended)
-        .map((menu) => menu.price);
+        .filter(menu => menu.appended)
+        .map(menu => menu.price);
       const isSunsals = this.menus
-        .filter((menu) => menu.appended)
-        .map((menu) => (menu.sunsal ? 2 : 1));
+        .filter(menu => menu.appended)
+        .map(menu => (menu.sunsal ? 2 : 1));
 
       console.log(`---- Chicken Admin Set Menu: ${chickens}, ${prices} ----`);
       try {
@@ -186,7 +197,7 @@ export default {
         chicken: this.chicken,
         price: parseInt(this.price),
         appended: true,
-        sunsal: this.sunsal,
+        sunsal: this.sunsal
       });
       this.chicken = "";
       this.price = "";
@@ -194,7 +205,6 @@ export default {
       console.log(this.menus);
     },
     setAddress(data) {
-      console.log("setData");
       this.address = data.address; // 최종 주소 변수
       // 주소 정보를 해당 필드에 넣는다.
       // 주소로 상세 정보를 검색
@@ -212,7 +222,7 @@ export default {
         let mapContainer = document.getElementById("map-chicken-house"); // 지도를 표시할 div
         let mapOption = {
           center: coords,
-          level: 5,
+          level: 5
         };
 
         //지도를 미리 생성
@@ -222,7 +232,7 @@ export default {
         //마커를 미리 생성
         let marker = new kakao.maps.Marker({
           position: coords,
-          map: this.map,
+          map: this.map
         });
         mapContainer.style.display = "block";
         // 해당 주소에 대한 좌표를 받아서
@@ -238,17 +248,17 @@ export default {
       //   let _address = this.address;
 
       new daum.Postcode({
-        oncomplete: this.setAddress,
+        oncomplete: this.setAddress
       }).open();
       //   console.log(_address);
-    },
+    }
   },
   mounted() {
     const postCodeScript = document.createElement("script");
     postCodeScript.src =
       "//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js";
     document.head.appendChild(postCodeScript);
-  },
+  }
 };
 </script>
 

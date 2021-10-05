@@ -110,14 +110,17 @@ export default {
 
       this.room.isLoading = true;
       try {
-        const tsc = await this.AdminInstance.createRoom(
-          _storeName,
+        /* 새롭게 구조화 된 부분 */
+        const CHAddress = await this.AdminInstance.findChickenHouse(_storeName);
+        const ChickenHouseInstance = contractInstance.getChickenHouseInstance(
+          CHAddress
+        );
+        const tsc = await ChickenHouseInstance.createRoom(
           _price,
           _timer,
           _chicken
         );
         console.log(`---- Create Order Room Succeed : ${tsc}`);
-        console.dir(tsc);
         this.room.isLoading = false;
         this.room.roomModal = false;
         this.succeed = true;

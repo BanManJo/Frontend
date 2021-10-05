@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-navigation-drawer v-model="navDrawer.drawer" absolute width="350">
+    <v-navigation-drawer v-model="drawer" absolute width="350">
       <v-list align="center" dense app>
         <v-spacer />
         <v-text-field
@@ -87,16 +87,35 @@ export default {
     },
     ownerPage() {
       return `/ownerPage2/${this.navDrawer.storeName}`;
+    },
+    drawer: {
+      get() {
+        return this.$store.state.OrderRoomDrawer.drawer;
+      },
+      set(val) {
+        this.$store.commit("SET_DRAWER", val);
+      }
     }
   },
   methods: {
-    matchRoom(storeName, roomNumber) {
+    async matchRoom(storeName, roomNumber) {
       console.log(storeName, roomNumber);
       console.log("=== Create Match Room ===");
 
-      let AdminInstance = contractInstance.getAdminInstance();
-      // menus
-      AdminInstance.matchRoom(storeName, roomNumber).then(result => {
+      const AdminInstance = contractInstance.getAdminInstance();
+      // find Chicken House address and get instance
+      const CHAddress = await AdminInstance.findChickenHouse(storeName);
+      const ChickenHouseInstance = contractInstance.getChickenHouseInstance(
+        CHAddress
+      );
+
+      // find Room Address and get instnace
+      const ORAddress = await ChickenHouseInstance.findOrderRoom(roomNumber);
+      const OrderRoomInstance = contractInstance.getOrderRoomInstance(
+        ORAddress
+      );
+
+      await OrderRoomInstance.matchRoom(roomNumber).then(result => {
         console.log(result);
       });
 
