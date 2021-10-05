@@ -159,7 +159,7 @@
           </v-container>
           &nbsp;
 
-          <!-- 현수거 기록 테이블 -->
+          <!--대영 기록 테이블 -->
           <v-container>
             <base-material-card
               icon="mdi-clipboard-text"
@@ -177,36 +177,14 @@
                   >
                     <template v-slot:items="props">
                       <td>{{ props.item.name }}</td>
-                      <td class="text-xs-right">{{ props.item.chicken }}</td>
+                      <td class="text-xs-right">{{ props.item.kind }}</td>
+                      <td class="text-xs-right">{{ props.item.menu }}</td>
                       <td class="text-xs-right">{{ props.item.price }}</td>
                       <td class="text-xs-right">{{ props.item.state }}</td>
+                      <td class="text-xs-right">{{ props.item.roomNumber }}</td>
                     </template>
                   </v-data-table>
                 </v-app>
-                <!-- 풋터..
-            <v-card height="200px" flat>
-              <v-bottom-nav
-                :active.sync="bottomNav"
-                :value="true"
-                absolute
-                color="transparent"
-              >
-                <v-btn color="teal" flat value="recent">
-                  <span>Recent</span>
-                  <v-icon>history</v-icon>
-                </v-btn>
-
-                <v-btn color="teal" flat value="favorites">
-                  <span>Favorites</span>
-                  <v-icon>favorite</v-icon>
-                </v-btn>
-
-                <v-btn color="teal" flat value="nearby">
-                  <span>Nearby</span>
-                  <v-icon>place</v-icon>
-                </v-btn>
-              </v-bottom-nav>
-            </v-card> -->
               </div>
             </base-material-card></v-container
           >
