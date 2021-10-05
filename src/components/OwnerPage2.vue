@@ -27,9 +27,20 @@
         </v-btn>
       </v-btn-toggle>
       <v-spacer></v-spacer>
-      <v-btn class="text-h4 text--white" color="light-green">
+      <div id="app">
+        <div id="nav">
+          <router-link :to="`/ownerMyPage/${storeName}`">
+            <v-icon>OwnerMyPage</v-icon>
+          </router-link>
+        </div>
+      </div>
+      <!-- <v-btn
+        class="text-h4 text--white"
+        color="light-green"
+        @click="registerChickenHouse"
+      >
         My Page
-      </v-btn>
+      </v-btn> -->
     </v-toolbar>
 
     <!-- <v-data-table

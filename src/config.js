@@ -14,7 +14,6 @@ const AdminTestRepository = require("./contracts/AdminTest");
 //Admin: 0x056c25C23DF1A23b8f1A93CdE6e9dCF01a55C187
 //OrderRoom:
 module.exports = {
-
   DEMO_ADDRESS: "0x3E2D8d4967A23B84d2A92ec9D3e3c7ffCc3CA57F",
   DEMO_ABI: DemoRepository.abi,
   ADMIN_TEST_ADDRESS: "0x1fDA3Caa5c1443ea8c6f95f53206eE5312E64237",

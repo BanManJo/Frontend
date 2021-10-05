@@ -248,6 +248,18 @@ export class AdminTestRepository {
       }
     });
   }
+  // async getStoreMenu(storeName, price) {
+  //   return new Promise(async (resolve, reject) => {
+  //     try {
+  //       const result = await this.contractInstance.methods
+  //         .getStoreMenu(storeName, price)
+  //         .call();
+  //       resolve(result);
+  //     } catch (e) {
+  //       reject(e);
+  //     }
+  //   });
+  // }
 
   async getRoomsCount(storeName) {
     return new Promise(async (resolve, reject) => {
