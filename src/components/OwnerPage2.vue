@@ -212,40 +212,40 @@ export default {
       }
     },
 
-    matchRoomEvent() {
-      let self = this;
-      this.AdminInstance.watchIfMatched((error, result) => {
-        if (!error) {
-          console.log("event2");
-          console.log(result.returnValues._storeName);
-          console.log(result);
+    // matchRoomEvent() {
+    //   let self = this;
+    //   this.AdminInstance.watchIfMatched((error, result) => {
+    //     if (!error) {
+    //       console.log("event2");
+    //       console.log(result.returnValues._storeName);
+    //       console.log(result);
 
-          // 방법 1 (card 부분 전체 새로고침)
-          // if (self.storeName == result.returnValues._storeName) {
-          //   this.getOrderRooms();
-          // }
+    //       // 방법 1 (card 부분 전체 새로고침)
+    //       // if (self.storeName == result.returnValues._storeName) {
+    //       //   this.getOrderRooms();
+    //       // }
 
-          // 방법 3 (이벤트에서 치킨집 이름이랑, 방의 번호만을 이용해서 블록체인에서 원하는 방의 데이터를 가져오는 방법)
-          let preResult = result;
-          self.AdminInstance.getRoomInfo(
-            self.storeName,
-            preResult.returnValues._roomIndex
-          )
-            .then(result => {
-              console.log(result);
-              self.orderRooms.push({
-                roomNumber: preResult.returnValues._roomIndex,
-                menu: result.chicken,
-                price: result.price,
-                id: preResult.returnValues._roomIndex
-              });
-            })
-            .catch(error => {
-              console.error(error);
-            });
-        }
-      });
-    },
+    //       // 방법 3 (이벤트에서 치킨집 이름이랑, 방의 번호만을 이용해서 블록체인에서 원하는 방의 데이터를 가져오는 방법)
+    //       let preResult = result;
+    //       self.AdminInstance.getRoomInfo(
+    //         self.storeName,
+    //         preResult.returnValues._roomIndex
+    //       )
+    //         .then(result => {
+    //           console.log(result);
+    //           self.orderRooms.push({
+    //             roomNumber: preResult.returnValues._roomIndex,
+    //             menu: result.chicken,
+    //             price: result.price,
+    //             id: preResult.returnValues._roomIndex
+    //           });
+    //         })
+    //         .catch(error => {
+    //           console.error(error);
+    //         });
+    //     }
+    //   });
+    // },
 
     testInstance() {
       this.AdminInstance.getStoreCount().then(count => {
@@ -270,6 +270,12 @@ export default {
         "주의 : 주문을 받으시면 받으신 주문을 취소할수가 없습니다."
       );
       if (con_test == true) {
+        const CHAddress = await this.AdminInstance.findChickenHouse(
+          this.storeName
+        );
+        const ChickenHouseInstance = contractInstance.getChickenHouseInstance(
+          CHAddress
+        );
         await this.AdminInstance.approveOrder(this.storeName, idx);
         this.getOrderRooms();
         this.getOrderedLists();
@@ -299,17 +305,30 @@ export default {
     },
 
     async getOrderRooms() {
-      console.log("=== Show Order Rooms ===");
+      console.log("=== Show OrderRooms (state = 2) ===");
 
-      const roomCount = await this.AdminInstance.getRoomsCount(this.storeName);
+      const CHAddress = await this.AdminInstance.findChickenHouse(
+        this.storeName
+      );
+      const ChickenHouseInstance = contractInstance.getChickenHouseInstance(
+        CHAddress
+      );
 
-      console.log(`---- get Order Rooms Info, Counts: ${roomCount}`);
+      const roomCount = await ChickenHouseInstance.getRoomsCount();
+
+      console.log(`---- get OrderRooms Info (state = 2), Counts: ${roomCount}`);
       this.orderRooms = [];
       for (let idx = 0; idx < roomCount; idx++) {
-        await this.AdminInstance.getRoomInfo(this.storeName, idx)
+        const ORAddress = await ChickenHouseInstance.findOrderRoom(idx);
+        const OrderRoomInstance = contractInstance.getOrderRoomInstance(
+          ORAddress
+        );
+
+        await OrderRoomInstance.getRoomInfo()
           .then(result => {
-            // console.log(result);
-            if (result.state === "2") {
+            console.log("pass1");
+            console.log(result);
+            if (result._state === "1") {
               this.orderRooms.push({
                 roomNumber: idx,
                 menu: result.chicken,
@@ -322,21 +341,32 @@ export default {
             console.error(error);
           });
       }
-      console.log("=== Done Show Order Room ===");
+      console.log("=== Done Show OrderRoom (state = 2) ===");
     },
     async getOrderedLists() {
-      console.log("=== Show Order Rooms ===");
+      console.log("=== Show OrderedLists (state = 3) ===");
+      const CHAddress = await this.AdminInstance.findChickenHouse(
+        this.storeName
+      );
+      const ChickenHouseInstance = contractInstance.getChickenHouseInstance(
+        CHAddress
+      );
+      const roomCount = await ChickenHouseInstance.getRoomsCount();
 
-      const roomCount = await this.AdminInstance.getRoomsCount(this.storeName);
-
-      console.log(`---- get Order Rooms Info, Counts: ${roomCount}`);
+      console.log(
+        `---- get OrderedLists Info (state = 3), Counts: ${roomCount}`
+      );
       this.orderedLists = [];
 
       for (let idx = 0; idx < roomCount; idx++) {
-        await this.AdminInstance.getRoomInfo(this.storeName, idx)
+        const ORAddress = await ChickenHouseInstance.findOrderRoom(idx);
+        const OrderRoomInstance = contractInstance.getOrderRoomInstance(
+          ORAddress
+        );
+        await OrderRoomInstance.getRoomInfo()
           .then(result => {
             // console.log(result);
-            if (result.state === "3") {
+            if (result._state === "3") {
               this.orderedLists.push({
                 roomNumber: idx,
                 kind: "순살",
@@ -350,7 +380,7 @@ export default {
             console.error(error);
           });
       }
-      console.log("=== Done Show OrderedLists ===");
+      console.log("=== Done Show OrderedLists (state = 3) ===");
     }
 
     // async matchRoomEvent5() {
