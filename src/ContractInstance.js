@@ -1,10 +1,12 @@
-import { AdminTestRepository } from "./models/AdminTestRepository";
+import { AdminRepository } from "./models/AdminRepository";
+import { ChickenHouseRepository } from "./models/ChickenHouseRepository";
+import { OrderRoomRepository } from "./models/OrderRoomRepository";
 import { DemoRepository } from "./models/DemoRepository";
 
 const Web3 = require("web3");
 
 export default class ContractInstance {
-  AdminTestRepoInstance = null;
+  AdminRepoInstance = null;
   DemoTestRepoInstance = null;
   orderRoomRepoInstance = null;
 
@@ -20,10 +22,10 @@ export default class ContractInstance {
   }
 
   setAdminInstance() {
-    this.AdminTestRepoInstance = new AdminTestRepository();
+    this.AdminRepoInstance = new AdminRepository();
     const web3 = new Web3(window.ethereum);
     console.log(`well setting web3 ${web3}`);
-    this.AdminTestRepoInstance.setWeb3(web3);
+    this.AdminRepoInstance.setWeb3(web3);
   }
 
   setDemoInstance() {
@@ -41,8 +43,8 @@ export default class ContractInstance {
   // }
 
   getAdminInstance() {
-    if (this.AdminTestRepoInstance !== null) {
-      return this.AdminTestRepoInstance;
+    if (this.AdminRepoInstance !== null) {
+      return this.AdminRepoInstance;
     } else {
       throw new Error("Create Instance of Admin First");
     }
@@ -55,12 +57,21 @@ export default class ContractInstance {
       throw new Error("Create Instance of Admin First");
     }
   }
-  // getOrderRoomInstance() {
-  //   if (this.DemoTestRepoInstance !== null) {
-  //     return this.DemoTestRepoInstance;
-  //   } else {
-  //     throw new Error("Create Instance of Admin First");
-  //   }
-  // }
+
+  getChickenHouseInstance(contract_address) {
+    const ChickenHouseInstance = new ChickenHouseRepository();
+    const web3 = new Web3(window.ethereum);
+    console.log(`well setting web3 ${web3}`);
+    ChickenHouseInstance.setWeb3(web3, contract_address);
+    return ChickenHouseInstance;
+  }
+
+  getOrderRoomInstance(contract_address) {
+    const OrderRoomInstance = new OrderRoomRepository();
+    const web3 = new Web3(window.ethereum);
+    console.log(`well setting web3 ${web3}`);
+    OrderRoomInstance.setWeb3(web3, contract_address);
+    return OrderRoomInstance;
+  }
 }
 // Instance 객체 -> export

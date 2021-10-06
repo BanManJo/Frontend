@@ -1,11 +1,13 @@
 const DemoRepository = require("./contracts/Demo");
-const AdminTestRepository = require("./contracts/AdminTest");
+const AdminRepository = require("./contracts/Admin");
+const ChickenHouseRepository = require("./contracts/ChickenHouse");
+const OrderRoomRepository = require("./contracts/OrderRoom");
 
 //상일
-//Admin: 0x13c97ecd59d2fd674858C7396F900f2761C1A784 / 0x573E38D657d27Ad561b03dfCd29E9dE8a2ca6d34 (mac / window)
-//Demo: 0x13c97ecd59d2fd674858C7396F900f2761C1A784 / 0xca0a70d46c03a54814d895cdE90F0c7E6B315Bdf (mac / window)
+//Admin: 0x13c97ecd59d2fd674858C7396F900f2761C1A784 / 0xeA439a8FAae31a6b73dC8aa9c016b81fdEa00f97 (mac / window)
+//Demo: 0x13c97ecd59d2fd674858C7396F900f2761C1A784 / 0x0C0989bdC8c053598BCBfeD5c0A1D597f649008A (mac / window)
 //대영
-//address: 0xdA30f5B13De3f653e5FFC9c7C000692C5668328C
+//address:   0x4c53a7C1101900d1d8bBE112747401EB7eccb41e
 //demo address : 0x9021Abc37CfA4AA4e533f5d5c1B2Bc8673aF2229
 // 성구
 //Address: 0x313FBdf4A59accfB75D2de26947c0D446BD3BB73

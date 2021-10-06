@@ -5,7 +5,14 @@
     </v-main>
 
     <v-main id="contents">
-      </v-btn>
+      <!-- </v-btn> -->
+      <textarea
+        name="test"
+        id=""
+        cols="30"
+        rows="10"
+        v-model="listener"
+      ></textarea>
     </v-main>
     <menu-speed-dial></menu-speed-dial>
     <!-- Navigation Drawer -->
@@ -35,23 +42,15 @@ export default {
   },
   data() {
     return {
+      listener: "sdsd",
       AdminInstance: contractInstance.getAdminInstance(), // Admin Instance data
+      DemoInstance: contractInstance.getDemoInstance(), // Admin Instance data
       map: null,
-      markerDatas: [
-        // {
-        //   latitude: 37.4814,
-        //   longitude: 126.881,
-        //   removed: true,
-        //   storeName: "가산디지털 단지 역",
-        //   orderCount: 3,
-        // },
-      ],
+      markerDatas: [],
       navDrawer: {
-        drawer: false,
         storeName: null,
         roomCount: null,
-        orderRooms: [
-        ]
+        orderRooms: []
       },
       // Create Room Model
       room: {
@@ -67,7 +66,9 @@ export default {
     };
   },
   computed: {
-    ...mapState(["drawer"])
+    ...mapState({
+      drawer: state => state.OrderRoomDrawer.drawer
+    })
   },
   methods: {
     ...mapMutations({
@@ -81,20 +82,29 @@ export default {
       this.room.storeName = event.target.id;
       // menus
       this.room.menus = [];
-      this.AdminInstance.getStoreMenu(this.room.storeName).then(result => {
-        console.log("---- get store menus from ETH ----");
-        const chickens = result[0];
-        const prices = result[1];
-        for (let i = 0; i < chickens.length; i++) {
-          console.log(chickens[i], prices[i]);
-          this.room.menus.push({
-            chicken: chickens[i],
-            price: `${prices[i]}`,
-            description: "고소한 올리브유로 티킨 바삭한 프라이드 치킨!",
-            selected: false
+
+      /**** 새롭게 구조화 된 부분 *****/
+      this.AdminInstance.findChickenHouse(this.room.storeName).then(
+        CHAddress => {
+          // console.log(contract);
+          const ChickenHouseInstance = contractInstance.getChickenHouseInstance(
+            CHAddress
+          );
+          ChickenHouseInstance.getStoreMenu().then(result => {
+            console.log("---- get store menus from ETH ----");
+            console.log(result);
+
+            for (let i = 0; i < result._chickens.length; i++) {
+              this.room.menus.push({
+                chicken: result._chickens[i],
+                price: `${result._prices[i]}`,
+                description: "고소한 올리브유로 티킨 바삭한 프라이드 치킨!",
+                selected: false
+              });
+            }
           });
         }
-      });
+      );
 
       // storeIdx (if needed)
       console.log("=== Done Create Order Room ===");
@@ -103,28 +113,46 @@ export default {
       console.log("=== Show Order Rooms ===");
 
       event.preventDefault();
-      this.navDrawer.drawer = !this.navDrawer.drawer;
-      if (!this.navDrawer.drawer){
-        this.navDrawer.orderRooms = [];
+      this.setDrawer(!this.drawer);
+      this.navDrawer.orderRooms = [];
+      if (!this.drawer) {
         return;
       }
 
       const storeName = event.target.id;
       this.navDrawer.storeName = storeName;
 
-      const roomCount = await this.AdminInstance.getRoomsCount(storeName);
-      // this.navDrawer.roomCount = roomCount;
-      let counts = 0;
+      /**** 새롭게 구조화 된 부분 *****/
+      // 1. Chicken House 주소를 가져옴
+      const CHAddress = await this.AdminInstance.findChickenHouse(storeName);
+      // 2. Chicken House 인스턴스 생성
+      const ChickenHouseInstance = contractInstance.getChickenHouseInstance(
+        CHAddress
+      );
+
+      // 3. 해당 Chicken House의 방 개수를 가져옴
+      const roomCount = await ChickenHouseInstance.getRoomsCount();
+
+      // 4. 같은 로직 실행
       console.log(`---- get Order Rooms Info, Counts: ${roomCount}`);
+
+      let counts = 0;
       for (let idx = 0; idx < roomCount; idx++) {
-        await this.AdminInstance.getRoomInfo(storeName, idx)
+        // 5. OrderRoom 주소를 가져옴
+        const ORAddress = await ChickenHouseInstance.findOrderRoom(idx);
+        // 6. OrderRoom 인스턴스 생성
+        const OrderRoomInstance = contractInstance.getOrderRoomInstance(
+          ORAddress
+        );
+
+        await OrderRoomInstance.getRoomInfo()
           .then(result => {
             console.log(result);
-            if (result.state === "1") {
+            if (result._state === "1") {
               counts++;
               this.navDrawer.orderRooms.push({
-                headline: result.chicken,
-                subText: `종료 시간: 15:23 | ${result.price}₩`,
+                headline: result._chickenName,
+                subText: `종료 시간: 15:23 | ${result._price}₩`,
                 show: false,
                 description: "황금올리브 같이 먹을 분 구함!~",
                 index: idx
@@ -134,7 +162,7 @@ export default {
           .catch(error => {
             console.error(error);
           });
-      this.navDrawer.roomCount = counts;
+        this.navDrawer.roomCount = counts;
       }
       console.log("=== Done Show Order Room ===");
     },
@@ -182,28 +210,36 @@ export default {
       // // // setting chicken houses
       console.log("=== Create Marker ===");
       console.log("---- get Store Counts from ETH ----");
+
+      /**** 새롭게 구조화 된 부분 *****/
       this.AdminInstance.getStoreCount()
         .then(async val => {
           console.log(
             `---- get Each Chicken House Infos by idx, Counts: ${val} ----`
           );
           for (let idx = 0; idx < val; idx++) {
-            await this.AdminInstance.getChickenHouseByIndex(idx).then(
-              async result => {
-                const _orderCount = await this.AdminInstance.getRoomsCount(
-                  result.storeName
-                );
-                this.markerDatas.push({
-                  latitude: Number(result.latitude),
-                  longitude: Number(result.longitude),
-                  removed: true,
-                  storeName: result.storeName,
-                  orderCount: _orderCount
-                });
-              }
+            // idx를 통해 chicken House를 바로 가져옴..
+            const CHAddress = await this.AdminInstance.findChickenHouseByIndex(
+              idx
             );
+            const ChickenHouseInstance = contractInstance.getChickenHouseInstance(
+              CHAddress
+            );
+
+            await ChickenHouseInstance.getChickenHouse().then(async result => {
+              const _orderCount = await ChickenHouseInstance.getRoomsCount();
+              console.log(result);
+              this.markerDatas.push({
+                latitude: Number(result._latitude),
+                longitude: Number(result._longitude),
+                removed: true,
+                storeName: result._storeName,
+                orderCount: _orderCount
+              });
+            });
           }
           console.log("---- markerDatas setting on map ----");
+          console.log(this.markerDatas);
           this.markerDatas.forEach(markerData => {
             const markerPosition = new kakao.maps.LatLng(
               markerData.latitude,
@@ -227,6 +263,10 @@ export default {
               content: iwContent,
               removable: iwRemoveable
             });
+            // console.log(infowindow.getContent().children[0].innerText);
+            // infowindow.getContent().children[0].innerText = "testing ";
+            // infowindow.getContent().children[2].id = "testing ";
+            // console.log(infowindow.getContent());
             console.log("---- Add click event on marker ----");
             // 마커에 마우스오버 이벤트를 등록합니다
             kakao.maps.event.addListener(marker, "click", () => {
@@ -274,6 +314,12 @@ export default {
   mounted() {
     console.log("=== Mounted Map.vue ===");
     console.log("---- Set Window Size ----");
+    this.DemoInstance.watchIfCreated((error, result) => {
+      if (!error) {
+        console.log("passing event");
+        this.listener = "test succeed";
+      }
+    });
     document.body.style.width = `${window.screen.width}px`;
     document.body.style.height = `${window.innerHeight ||
       document.documentElement.clientHeight ||

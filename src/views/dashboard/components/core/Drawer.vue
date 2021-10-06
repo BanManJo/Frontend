@@ -64,8 +64,8 @@ export default {
   props: {
     expandOnHover: {
       type: Boolean,
-      default: false,
-    },
+      default: false
+    }
   },
 
   data: () => ({
@@ -73,60 +73,60 @@ export default {
       {
         icon: "mdi-view-dashboard",
         title: "dashboard",
-        to: "/",
+        to: "/"
       },
       {
         icon: "mdi-account",
         title: "user",
-        to: "/pages/user",
+        to: "/pages/user"
       },
       {
         title: "rtables",
         icon: "mdi-clipboard-outline",
-        to: "/tables/regular-tables",
+        to: "/tables/regular-tables"
       },
       {
         title: "typography",
         icon: "mdi-format-font",
-        to: "/components/typography",
+        to: "/components/typography"
       },
       {
         title: "icons",
         icon: "mdi-chart-bubble",
-        to: "/components/icons",
+        to: "/components/icons"
       },
       {
         title: "google",
         icon: "mdi-map-marker",
-        to: "/maps/google-maps",
+        to: "/maps/google-maps"
       },
       {
         title: "notifications",
         icon: "mdi-bell",
-        to: "/components/notifications",
+        to: "/components/notifications"
       },
       {
         title: "buttons",
         icon: "mdi-apple",
-        to: "/components/buttons",
+        to: "/components/buttons"
       },
       {
         title: "timeline",
         icon: "mdi-apple",
-        to: "/pages/timeline",
-      },
-    ],
+        to: "/pages/timeline"
+      }
+    ]
   }),
 
   computed: {
     ...mapState(["barColor", "barImage"]),
     drawer: {
       get() {
-        return this.$store.state.drawer;
+        return this.$store.state.OrderRoomDrawer.drawer;
       },
       set(val) {
         this.$store.commit("SET_DRAWER", val);
-      },
+      }
     },
     computedItems() {
       return this.items.map(this.mapItem);
@@ -134,9 +134,9 @@ export default {
     profile() {
       return {
         avatar: true,
-        title: this.$t("avatar"),
+        title: this.$t("avatar")
       };
-    },
+    }
   },
 
   methods: {
@@ -144,10 +144,10 @@ export default {
       return {
         ...item,
         children: item.children ? item.children.map(this.mapItem) : undefined,
-        title: this.$t(item.title),
+        title: this.$t(item.title)
       };
-    },
-  },
+    }
+  }
 };
 </script>
 
