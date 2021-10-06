@@ -6,18 +6,12 @@
 
     <v-main id="contents">
       <!-- </v-btn> -->
-      <textarea
-        name="test"
-        id=""
-        cols="30"
-        rows="10"
-        v-model="listener"
-      ></textarea>
     </v-main>
     <menu-speed-dial></menu-speed-dial>
     <!-- Navigation Drawer -->
     <order-room-navigation-drawer
       :navDrawer="navDrawer"
+      @createOrderRoom="createOrderRoom"
     ></order-room-navigation-drawer>
     <!-- modal -->
     <create-room-dialog :room="room"></create-room-dialog>
@@ -31,6 +25,9 @@ import { mapState, mapMutations } from "vuex";
 // Instance 사용하기 위한 구문
 import ContractInstance from "../ContractInstance";
 const contractInstance = new ContractInstance();
+
+// Info Window
+import MakeInfoWindow from "../utils/info_window";
 
 export default {
   name: "map",
@@ -74,12 +71,16 @@ export default {
     ...mapMutations({
       setDrawer: "SET_DRAWER"
     }),
-    createOrderRoom(event) {
+    createOrderRoom(event, flag = false) {
       console.log("=== Create Order Room ===");
-
-      event.preventDefault();
+      console.log(event);
       this.room.roomModal = !this.room.roomModal;
-      this.room.storeName = event.target.id;
+      if (flag) {
+        this.room.storeName = event; // 변경해야 함.. (marker의 title로 대체 할 수 있다면?)
+      } else {
+        event.preventDefault();
+        this.room.storeName = event.target.id; // 변경해야 함.. (marker의 title로 대체 할 수 있다면?)
+      }
       // menus
       this.room.menus = [];
 
@@ -166,45 +167,49 @@ export default {
       }
       console.log("=== Done Show Order Room ===");
     },
-    makeInfoWindow(marker) {
-      console.log("=== Make Info Window ===");
-      const content = document.createElement("div");
-      content.style.padding = "5px";
-
-      const storeName = document.createElement("div");
-      const storeNameText = document.createTextNode(
-        `가게: ${marker.storeName} `
+    createMarker(markerData) {
+      const markerPosition = new kakao.maps.LatLng(
+        markerData.latitude,
+        markerData.longitude
       );
-      storeName.appendChild(storeNameText);
-      content.appendChild(storeName);
 
-      const orderRoomCount = document.createElement("div");
-      const orderRoomCountText = document.createTextNode(
-        `주문방: ${marker.orderCount}`
+      // 마커를 생성합니다
+      const marker = new kakao.maps.Marker({
+        position: markerPosition
+      });
+
+      // 마커가 지도 위에 표시되도록 설정합니다
+      marker.setMap(this.map);
+
+      // 마커에 커서가 오버됐을 때 마커 위에 표시할 인포윈도우를 생성합니다
+      console.log("---- call make Info Window func ----");
+      const iwContent = MakeInfoWindow(
+        markerData,
+        this.createOrderRoom,
+        this.showOrderRooms
       );
-      orderRoomCount.appendChild(orderRoomCountText);
-      content.appendChild(orderRoomCount);
-
-      const linkCreateRoom = document.createElement("a");
-      linkCreateRoom.style.color = "blue";
-      linkCreateRoom.target = "_blank";
-      linkCreateRoom.id = marker.storeName;
-      linkCreateRoom.addEventListener("click", this.createOrderRoom);
-      linkCreateRoom.appendChild(document.createTextNode("방만들기 "));
-      content.appendChild(linkCreateRoom);
-
-      const linkShowOrderRooms = document.createElement("a");
-      linkShowOrderRooms.style.color = "blue";
-      linkShowOrderRooms.target = "_blank";
-      linkShowOrderRooms.id = marker.storeName;
-      linkShowOrderRooms.addEventListener("click", this.showOrderRooms);
-      linkShowOrderRooms.appendChild(document.createTextNode("주문방 보기"));
-      content.appendChild(linkShowOrderRooms);
-
-      console.log("=== Done Mark Info Window ===");
-      return content;
+      const iwRemoveable = false;
+      // 인포윈도우를 생성합니다
+      const infowindow = new kakao.maps.InfoWindow({
+        content: iwContent,
+        removable: iwRemoveable
+      });
+      console.log("---- Add click event on marker ----");
+      // 마커에 마우스오버 이벤트를 등록합니다
+      kakao.maps.event.addListener(marker, "click", () => {
+        // let removed = true;
+        // console.log(this);
+        if (markerData.removed) {
+          // 마커에 마우스오버 이벤트가 발생하면 인포윈도우를 마커위에 표시합니다
+          infowindow.open(this.map, marker);
+          markerData.removed = false;
+        } else {
+          infowindow.close();
+          markerData.removed = true;
+        }
+      });
     },
-    async createMarker() {
+    async createMarkers() {
       // get chicken houses number
       // // get chicken house info
       // // // setting chicken houses
@@ -241,46 +246,7 @@ export default {
           console.log("---- markerDatas setting on map ----");
           console.log(this.markerDatas);
           this.markerDatas.forEach(markerData => {
-            const markerPosition = new kakao.maps.LatLng(
-              markerData.latitude,
-              markerData.longitude
-            );
-
-            // 마커를 생성합니다
-            const marker = new kakao.maps.Marker({
-              position: markerPosition
-            });
-
-            // 마커가 지도 위에 표시되도록 설정합니다
-            marker.setMap(this.map);
-
-            // 마커에 커서가 오버됐을 때 마커 위에 표시할 인포윈도우를 생성합니다
-            console.log("---- call make Info Window func ----");
-            const iwContent = this.makeInfoWindow(markerData);
-            const iwRemoveable = false;
-            // 인포윈도우를 생성합니다
-            const infowindow = new kakao.maps.InfoWindow({
-              content: iwContent,
-              removable: iwRemoveable
-            });
-            // console.log(infowindow.getContent().children[0].innerText);
-            // infowindow.getContent().children[0].innerText = "testing ";
-            // infowindow.getContent().children[2].id = "testing ";
-            // console.log(infowindow.getContent());
-            console.log("---- Add click event on marker ----");
-            // 마커에 마우스오버 이벤트를 등록합니다
-            kakao.maps.event.addListener(marker, "click", () => {
-              // let removed = true;
-              // console.log(this);
-              if (markerData.removed) {
-                // 마커에 마우스오버 이벤트가 발생하면 인포윈도우를 마커위에 표시합니다
-                infowindow.open(this.map, marker);
-                markerData.removed = false;
-              } else {
-                infowindow.close();
-                markerData.removed = true;
-              }
-            });
+            this.createMarker(markerData);
           });
         })
         .catch();
@@ -288,6 +254,7 @@ export default {
     },
     initMap() {
       console.log("=== Init Map ===");
+      // 어떤 컨테이너 뷰에 맵을 띄울 것인가..
       const container = document.getElementById("map");
       navigator.geolocation.getCurrentPosition(position => {
         const lat = position.coords.latitude;
@@ -306,7 +273,7 @@ export default {
           orderCount: 3
         });
         console.log("---- call create marker func ----");
-        this.createMarker();
+        this.createMarkers();
       }, console.log);
       console.log("=== Done Init Map ===");
     }
@@ -314,16 +281,40 @@ export default {
   mounted() {
     console.log("=== Mounted Map.vue ===");
     console.log("---- Set Window Size ----");
-    this.DemoInstance.watchIfCreated((error, result) => {
+    this.AdminInstance.watchIfRegistered((error, result) => {
       if (!error) {
-        console.log("passing event");
-        this.listener = "test succeed";
+        console.log(result);
+        console.log(result.returnValues.storeAddress);
+        const storeName = result.returnValues.storeName;
+        const storeAddress = result.returnValues.storeAddress;
+        const latitude = result.returnValues.latitude;
+        const longitude = result.returnValues.longitude;
+        const markerData = {
+          latitude: Number(latitude),
+          longitude: Number(longitude),
+          removed: true,
+          storeName: storeName,
+          orderCount: 0
+        };
+        this.markerDatas.push(markerData);
+        this.createMarker(markerData);
+      } else {
+        throw error;
       }
     });
-    document.body.style.width = `${window.screen.width}px`;
-    document.body.style.height = `${window.innerHeight ||
-      document.documentElement.clientHeight ||
-      document.body.clientHeight}px`;
+
+    console.log("=== Done Mounted Map.vue ===");
+  },
+  created() {
+    console.log("=== Created Map.vue ===");
+    const resizeWindow = function() {
+      document.body.style.width = `${window.screen.width}px`;
+      document.body.style.height = `${window.innerHeight ||
+        document.documentElement.clientHeight ||
+        document.body.clientHeight}px`;
+    };
+    resizeWindow();
+    window.addEventListener("resize", resizeWindow);
     console.log("---- Initialize kakao Object and Map Object ----");
     if (window.kakao && window.kakao.maps) {
       this.initMap();
@@ -335,12 +326,6 @@ export default {
         "http://dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=f16dcaffdef9152c39799852d826d9c4&libraries=services";
       document.head.appendChild(script);
     }
-    console.log("=== Done Mounted Map.vue ===");
-  },
-  created() {
-    console.log("=== Created Map.vue ===");
-    console.log("---- Set Admin Instance ----");
-
     console.log("=== Done Created Map.vue ===");
   },
   watch: {
