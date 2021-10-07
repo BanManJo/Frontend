@@ -199,7 +199,6 @@ export class ChickenHouseRepository {
   }
 
   watchIfCreated(cb) {
-    console.log("event1");
     const emitter = this.contractInstance.events
       .roomCreated(
         {
@@ -222,15 +221,16 @@ export class ChickenHouseRepository {
     });
   }
 
-  async watchIfMatched(cb) {
-    await this._checkAccountAvailable();
-    console.log("event1");
-    this.contractInstance.events.matchFinish(
-      {
-        fromBlock: "latest",
-        ToBlock: "latest"
-      },
-      cb
-    );
+  watchIfMatched(cb) {
+    const emitter = this.contractInstance.events
+      .matchFinish(
+        {
+          fromBlock: "latest",
+          ToBlock: "latest"
+        },
+        cb
+      )
+      .on("data", console.log);
+    return emitter;
   }
 }

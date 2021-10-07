@@ -28,6 +28,7 @@ const contractInstance = new ContractInstance();
 import MakeInfoWindow from "../utils/info_window";
 
 let roomCreatedEmitter;
+let roomMatchedEmitter;
 export default {
   name: "map",
   // store,
@@ -193,19 +194,38 @@ export default {
         roomCreatedEmitter.removeListener();
       }
 
+      if (roomMatchedEmitter) {
+        console.log(roomMatchedEmitter);
+        roomMatchedEmitter.removeListener();
+      }
+
       roomCreatedEmitter = ChickenHouseInstance.watchIfCreated(
         (error, result) => {
           if (!error && this.drawer) {
-            console.log(result);
             // this.addOrderRooms(result);
             this.navDrawer.orderRooms.push({
               headline: result.returnValues._chickenName,
               subText: `종료 시간: ${result.returnValues._finish} | ${result.returnValues._price}₩`,
               show: false,
               description: "황금올리브 같이 먹을 분 구함!~",
-              index: result.returnValues._roomNumber
+              index: Number(result.returnValues._roomNumber)
             });
             this.navDrawer.roomCount += 1;
+          }
+        }
+      );
+      roomMatchedEmitter = ChickenHouseInstance.watchIfMatched(
+        (error, result) => {
+          if (!error && this.drawer) {
+            const roomIndex = result.returnValues._roomIndex;
+            const length = this.navDrawer.orderRooms.length;
+            for (let i = 0; i < length; i++) {
+              if (this.navDrawer.orderRooms[i].index == roomIndex) {
+                this.navDrawer.orderRooms.splice(i, 1);
+                break;
+              }
+            }
+            this.navDrawer.roomCount -= 1;
           }
         }
       );
