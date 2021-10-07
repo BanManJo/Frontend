@@ -70,6 +70,25 @@ export class ChickenHouseRepository {
     }
   }
 
+  async matchRoom(roomIndex) {
+    try {
+      await this._checkAccountAvailable();
+      let tx;
+      await this.contractInstance.methods
+        .matchRoom(roomIndex)
+        .send({ from: this.account, gas: this.gas })
+        .on("transactionHash", function(hash) {
+          tx = hash;
+        })
+        .on("error", function(error, receipt) {
+          throw error;
+        });
+      return tx;
+    } catch (e) {
+      throw e;
+    }
+  }
+
   async approveOrder(storeName, roomIndex) {
     try {
       await this._checkAccountAvailable();
@@ -88,11 +107,29 @@ export class ChickenHouseRepository {
     }
   }
 
-  async orderReject(storeName, roomIndex) {
+  async refund2(roomIndex) {
     try {
       await this._checkAccountAvailable();
       await this.contractInstance.methods
-        .orderReject(storeName, roomIndex)
+        .refund2(roomIndex)
+        .send({ from: this.account, gas: this.gas })
+        .on("transactionHash", function(hash) {
+          return hash;
+        })
+        .on("error", function(error, receipt) {
+          throw error;
+        });
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  async finishCook(roomIndex) {
+    try {
+      console.log("pass1");
+      await this._checkAccountAvailable();
+      await this.contractInstance.methods
+        .finishCook(roomIndex)
         .send({ from: this.account, gas: this.gas })
         .on("transactionHash", function(hash) {
           return hash;
@@ -131,14 +168,14 @@ export class ChickenHouseRepository {
     });
   }
 
-  async changeOnOff(storeName) {
+  async changeOnOff() {
     const accounts = await window.ethereum.request({
       method: "eth_requestAccounts"
     });
     console.log("changeOnOff");
     return new Promise(async (resolve, reject) => {
       try {
-        this.contractInstance.methods.changeOnOff(storeName).send(
+        this.contractInstance.methods.changeOnOff().send(
           { from: accounts[0], gas: 4476768 },
 
           (err, transaction) => {
@@ -168,5 +205,17 @@ export class ChickenHouseRepository {
         reject(err);
       });
     });
+  }
+
+  async watchIfMatched(cb) {
+    await this._checkAccountAvailable();
+    console.log("event1");
+    this.contractInstance.events.matchFinish(
+      {
+        fromBlock: "latest",
+        ToBlock: "latest"
+      },
+      cb
+    );
   }
 }

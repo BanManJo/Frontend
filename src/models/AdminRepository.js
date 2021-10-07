@@ -122,18 +122,6 @@ export class AdminRepository {
     });
   }
 
-  async watchIfMatched(cb) {
-    // const currentBlock = await this.getCurrentBlock();
-    console.log("event1");
-    this.contractInstance.events.matchFinish(
-      {
-        fromBlock: "latest",
-        ToBlock: "latest"
-      },
-      cb
-    );
-  }
-
   // async watchIfCreated(cb) {
   //   const currentBlock = await this.getCurrentBlock();
   //   console.log("pass3");

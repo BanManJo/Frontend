@@ -6,11 +6,11 @@
       }}</v-toolbar-title>
       <v-spacer></v-spacer>
 
-      <v-btn-toggle v-model="toggle_one">
+      <v-btn-toggle>
         <v-btn
           class="text-h3 text--white"
           x-large
-          @click="getOnOff"
+          @click="changeOnOff"
           value="left"
           color="blue"
         >
@@ -18,7 +18,7 @@
         </v-btn>
         <v-btn
           class="text-h3 text--white"
-          @click="changeOnOff"
+          @click="getOnOff"
           x-large
           value="center"
           color="red"
@@ -27,20 +27,17 @@
         </v-btn>
       </v-btn-toggle>
       <v-spacer></v-spacer>
-      <div id="app">
-        <div id="nav">
-          <router-link :to="`/ownerMyPage/${storeName}`">
-            <v-icon>OwnerMyPage</v-icon>
-          </router-link>
-        </div>
+      <div>
+        <router-link :to="`/ownerMyPage/${storeName}`">
+          <v-btn
+            class="text-h4 text--white"
+            color="light-green"
+            @click="registerChickenHouse"
+          >
+            메뉴 수정 페이지
+          </v-btn>
+        </router-link>
       </div>
-      <!-- <v-btn
-        class="text-h4 text--white"
-        color="light-green"
-        @click="registerChickenHouse"
-      >
-        My Page
-      </v-btn> -->
     </v-toolbar>
 
     <!-- <v-data-table
@@ -74,14 +71,13 @@
       >
         <v-row row wrap>
           <v-col
-            xs12
-            sm6
-            md4
-            lg3
             v-for="orderRoom in orderRooms"
             :key="orderRoom.roomNumber"
+            sm="8"
+            md="4"
+            lg="4"
           >
-            <v-card flat outlined class="text-center">
+            <v-card flat outlined class="text-center" width="381">
               <v-card-text>
                 <div class="text-h3">방번호 : {{ orderRoom.roomNumber }}</div>
                 <br />
@@ -104,7 +100,7 @@
                 <v-btn
                   class="ma-2 text-h4"
                   color="orange"
-                  @click="orderReject(orderRoom.id)"
+                  @click="refund2(orderRoom.id)"
                 >
                   <v-icon left> mdi-cancel</v-icon>
                   <span>거절하기</span>
@@ -174,7 +170,6 @@ export default {
   data() {
     return {
       AdminInstance: contractInstance.getAdminInstance(), // Admin Instance data
-      // OrderRoomInstance: contractInstance.getOrderRoomInstance(),
 
       // text: "center",
       // icon: "justify",
@@ -212,40 +207,44 @@ export default {
       }
     },
 
-    // matchRoomEvent() {
-    //   let self = this;
-    //   this.AdminInstance.watchIfMatched((error, result) => {
-    //     if (!error) {
-    //       console.log("event2");
-    //       console.log(result.returnValues._storeName);
-    //       console.log(result);
+    async matchRoomEvent() {
+      const CHAddress = await this.AdminInstance.findChickenHouse(
+        this.storeName
+      );
+      const ChickenHouseInstance = await contractInstance.getChickenHouseInstance(
+        CHAddress
+      );
+      let self = this;
+      ChickenHouseInstance.watchIfMatched(async (error, result) => {
+        if (!error) {
+          console.log("event2");
+          console.log(result);
 
-    //       // 방법 1 (card 부분 전체 새로고침)
-    //       // if (self.storeName == result.returnValues._storeName) {
-    //       //   this.getOrderRooms();
-    //       // }
+          // 방법 3 (이벤트에서 치킨집 이름이랑, 방의 번호만을 이용해서 블록체인에서 원하는 방의 데이터를 가져오는 방법)
 
-    //       // 방법 3 (이벤트에서 치킨집 이름이랑, 방의 번호만을 이용해서 블록체인에서 원하는 방의 데이터를 가져오는 방법)
-    //       let preResult = result;
-    //       self.AdminInstance.getRoomInfo(
-    //         self.storeName,
-    //         preResult.returnValues._roomIndex
-    //       )
-    //         .then(result => {
-    //           console.log(result);
-    //           self.orderRooms.push({
-    //             roomNumber: preResult.returnValues._roomIndex,
-    //             menu: result.chicken,
-    //             price: result.price,
-    //             id: preResult.returnValues._roomIndex
-    //           });
-    //         })
-    //         .catch(error => {
-    //           console.error(error);
-    //         });
-    //     }
-    //   });
-    // },
+          let preResult = result;
+
+          const ORAddress = await ChickenHouseInstance.findOrderRoom(
+            preResult.returnValues._roomIndex
+          );
+          const OrderRoomInstance = await contractInstance.getOrderRoomInstance(
+            ORAddress
+          );
+          OrderRoomInstance.getRoomInfo()
+            .then(result => {
+              self.orderRooms.push({
+                roomNumber: preResult.returnValues._roomIndex,
+                menu: result.chicken,
+                price: result.price,
+                id: preResult.returnValues._roomIndex
+              });
+            })
+            .catch(error => {
+              console.error(error);
+            });
+        }
+      });
+    },
 
     testInstance() {
       this.AdminInstance.getStoreCount().then(count => {
@@ -253,14 +252,28 @@ export default {
         alert(`Store Counts : ${count}`);
       });
     },
-    changeOnOff() {
+    async changeOnOff() {
       alert("확인을 누르시면 가게가 활성화 됩니다.");
-      this.AdminInstance.changeOnOff(this.storeName);
+      const CHAddress = await this.AdminInstance.findChickenHouse(
+        this.storeName
+      );
+      const ChickenHouseInstance = contractInstance.getChickenHouseInstance(
+        CHAddress
+      );
+      ChickenHouseInstance.changeOnOff();
     },
-    getOnOff() {
-      alert("확인을 누르시면 가게가 활성화 됩니다.");
-      this.AdminInstance.getChickenHouse(this.storeName).then(number => {
-        alert(`store switch : ${number.closed}`);
+    async getOnOff() {
+      alert("현재 장사 상태.");
+
+      const CHAddress = await this.AdminInstance.findChickenHouse(
+        this.storeName
+      );
+      const ChickenHouseInstance = contractInstance.getChickenHouseInstance(
+        CHAddress
+      );
+
+      ChickenHouseInstance.getChickenHouse(this.storeName).then(number => {
+        alert(`store switch : ${number._onOff}`);
       });
     },
 
@@ -276,18 +289,27 @@ export default {
         const ChickenHouseInstance = contractInstance.getChickenHouseInstance(
           CHAddress
         );
-        await this.AdminInstance.approveOrder(this.storeName, idx);
+        await ChickenHouseInstance.approveOrder(this.storeName, idx);
         this.getOrderRooms();
         this.getOrderedLists();
       } else if (con_test == false) {
       }
     },
 
-    async orderReject(idx) {
+    async refund2(idx) {
       console.log("button IDX :" + idx);
-      var con_test = confirm("주의 : 한번 거절하시면 다시 받을 수 없습니다.");
+
+      var con_test = confirm(
+        "주의 : 거절하시면 자동으로 환불되며 다시 같은 주문을 받을 수 없습니다."
+      );
       if (con_test == true) {
-        await this.AdminInstance.orderReject(this.storeName, idx);
+        const CHAddress = await this.AdminInstance.findChickenHouse(
+          this.storeName
+        );
+        const ChickenHouseInstance = await contractInstance.getChickenHouseInstance(
+          CHAddress
+        );
+        await ChickenHouseInstance.refund2(idx);
         this.getOrderRooms();
         this.getOrderedLists();
       } else if (con_test == false) {
@@ -298,7 +320,14 @@ export default {
       console.log("button IDX :" + idx);
       var con_test = confirm("주의 : 두명의 손님들이 다 가져가셨나요?");
       if (con_test == true) {
-        await this.AdminInstance.orderReject(this.storeName, idx);
+        const CHAddress = await this.AdminInstance.findChickenHouse(
+          this.storeName
+        );
+        const ChickenHouseInstance = contractInstance.getChickenHouseInstance(
+          CHAddress
+        );
+
+        await ChickenHouseInstance.finishCook(idx);
         this.getOrderedLists();
       } else if (con_test == false) {
       }
@@ -326,13 +355,11 @@ export default {
 
         await OrderRoomInstance.getRoomInfo()
           .then(result => {
-            console.log("pass1");
-            console.log(result);
-            if (result._state === "1") {
+            if (result._state === "2") {
               this.orderRooms.push({
                 roomNumber: idx,
-                menu: result.chicken,
-                price: result.price,
+                menu: result._chickenName,
+                price: result._price,
                 id: idx
               });
             }
@@ -370,8 +397,8 @@ export default {
               this.orderedLists.push({
                 roomNumber: idx,
                 kind: "순살",
-                menu: result.chicken,
-                time: "5시 17분",
+                menu: result._chickenName,
+                time: now,
                 id: idx
               });
             }

@@ -110,12 +110,8 @@ export default {
       );
 
       // find Room Address and get instnace
-      const ORAddress = await ChickenHouseInstance.findOrderRoom(roomNumber);
-      const OrderRoomInstance = contractInstance.getOrderRoomInstance(
-        ORAddress
-      );
 
-      await OrderRoomInstance.matchRoom(roomNumber).then(result => {
+      await ChickenHouseInstance.matchRoom(roomNumber).then(result => {
         console.log(result);
       });
 
