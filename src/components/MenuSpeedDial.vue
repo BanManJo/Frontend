@@ -33,6 +33,7 @@
           style="text"
           rounded
           large
+          :to="menuItem.to"
           @click="menuItem.event"
         >
           <v-icon left>{{ menuItem.icon }}</v-icon>
@@ -85,15 +86,15 @@ export default {
         {
           title: "메뉴를 넣자",
           color: "red",
-          icon: "mdi-pencil"
+          icon: "mdi-pencil",
+          event: null
         },
         {
           title: "사용자 페이지",
           color: "red",
           icon: "mdi-account",
-          event: () => {
-            this.moveMyPage();
-          }
+          event: null,
+          to: "/UserMyPage"
         }
       ],
       registerCH: {

@@ -38,7 +38,6 @@ export default {
   },
   data() {
     return {
-      listener: "sdsd",
       AdminInstance: contractInstance.getAdminInstance(), // Admin Instance data
       DemoInstance: contractInstance.getDemoInstance(), // Admin Instance data
       map: null,
@@ -338,6 +337,7 @@ export default {
     /* ============= 지도 초기화 하기 ============= */
     initMap() {
       console.log("=== Init Map ===");
+
       // 어떤 컨테이너 뷰에 맵을 띄울 것인가..
       const container = document.getElementById("map");
       navigator.geolocation.getCurrentPosition(position => {
@@ -364,7 +364,18 @@ export default {
   },
   mounted() {
     console.log("=== Mounted Map.vue ===");
-    console.log("---- Set Window Size ----");
+    console.log("---- Initialize kakao Object and Map Object ----");
+    if (window.kakao && window.kakao.maps) {
+      this.initMap();
+    } else {
+      const script = document.createElement("script");
+      /* global kakao */
+      script.onload = () => kakao.maps.load(this.initMap);
+      script.src =
+        "http://dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=f16dcaffdef9152c39799852d826d9c4&libraries=services";
+      document.head.appendChild(script);
+    }
+    console.log("--- listen event register store ---");
     this.AdminInstance.watchIfRegistered((error, result) => {
       if (!error) {
         console.log(result);
@@ -390,7 +401,9 @@ export default {
     console.log("=== Done Mounted Map.vue ===");
   },
   created() {
+    this.setDrawer(false);
     console.log("=== Created Map.vue ===");
+    console.log("---- Set Window Size ----");
     const resizeWindow = function() {
       document.body.style.width = `${window.screen.width}px`;
       document.body.style.height = `${window.innerHeight ||
@@ -399,17 +412,17 @@ export default {
     };
     resizeWindow();
     window.addEventListener("resize", resizeWindow);
-    console.log("---- Initialize kakao Object and Map Object ----");
-    if (window.kakao && window.kakao.maps) {
-      this.initMap();
-    } else {
-      const script = document.createElement("script");
-      /* global kakao */
-      script.onload = () => kakao.maps.load(this.initMap);
-      script.src =
-        "http://dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=f16dcaffdef9152c39799852d826d9c4&libraries=services";
-      document.head.appendChild(script);
-    }
+    // console.log("---- Initialize kakao Object and Map Object ----");
+    // if (window.kakao && window.kakao.maps) {
+    //   this.initMap();
+    // } else {
+    //   const script = document.createElement("script");
+    //   /* global kakao */
+    //   script.onload = () => kakao.maps.load(this.initMap);
+    //   script.src =
+    //     "http://dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=f16dcaffdef9152c39799852d826d9c4&libraries=services";
+    //   document.head.appendChild(script);
+    // }
     console.log("=== Done Created Map.vue ===");
   },
   watch: {

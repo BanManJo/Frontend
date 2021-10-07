@@ -29,11 +29,7 @@
       <v-spacer></v-spacer>
       <div>
         <router-link :to="`/ownerMyPage/${storeName}`">
-          <v-btn
-            class="text-h4 text--white"
-            color="light-green"
-            @click="registerChickenHouse"
-          >
+          <v-btn class="text-h4 text--white" color="light-green">
             메뉴 수정 페이지
           </v-btn>
         </router-link>
