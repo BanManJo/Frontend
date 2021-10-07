@@ -114,6 +114,7 @@ export default {
       console.log("=== Show Order Rooms ===");
 
       event.preventDefault();
+
       this.setDrawer(!this.drawer);
       this.navDrawer.orderRooms = [];
       if (!this.drawer) {
@@ -165,6 +166,21 @@ export default {
           });
         this.navDrawer.roomCount = counts;
       }
+
+      ChickenHouseInstance.watchIfCreated((error, result) => {
+        if (!error && this.drawer) {
+          console.log(result);
+          // this.addOrderRooms(result);
+          this.navDrawer.orderRooms.push({
+            headline: result.returnValues._chickenName,
+            subText: `종료 시간: ${result.returnValues._finish} | ${result.returnValues._price}₩`,
+            show: false,
+            description: "황금올리브 같이 먹을 분 구함!~",
+            index: result.returnValues._roomNumber
+          });
+          this.navDrawer.roomCount += 1;
+        }
+      });
       console.log("=== Done Show Order Room ===");
     },
     createMarker(markerData) {

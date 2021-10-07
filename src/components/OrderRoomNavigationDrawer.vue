@@ -28,7 +28,14 @@
             style="max-width: 70%"
           >
             <template v-if="$vuetify.breakpoint.mdAndUp" v-slot:append-outer>
-              <v-btn class="mt-n2" elevation="1" color="orange" fab x-small>
+              <v-btn
+                @click="addOrderRooms"
+                class="mt-n2"
+                elevation="1"
+                color="orange"
+                fab
+                x-small
+              >
                 <v-icon>mdi-magnify</v-icon>
               </v-btn>
             </template>
@@ -58,7 +65,7 @@
         </v-row>
       </v-list>
       <v-divider class="mt-3"></v-divider>
-      <v-list style="height: 100%; overflow: scroll" app>
+      <v-list style="height: 80%; overflow-y: scroll" app>
         <v-btn
           @click="$emit('createOrderRoom', navDrawer.storeName, true)"
           fab
@@ -154,7 +161,22 @@ export default {
     },
     ...mapMutations({
       setDrawer: "SET_DRAWER"
-    })
+    }),
+    addOrderRooms(chickenName, price, finish) {
+      this.navDrawer.orderRooms.push({
+        headline: chickenName,
+        subText: `종료 시간: ${finish} | ${price}₩`,
+        show: false,
+        description: "황금올리브 같이 먹을 분 구함!~",
+        index: 2
+      });
+    }
+  },
+  async mounted() {
+    console.log("=== Mounted Navigation Drawer ===");
+  },
+  updated() {
+    console.log("=== Updated Navigation Drawer ===");
   }
 };
 </script>
@@ -165,9 +187,5 @@ export default {
   overflow: hidden;
   /* overflow-y: auto;
   overflow-x: hidden; */
-}
-
-.v-list__content #order-rooms {
-  overflow: scroll;
 }
 </style>

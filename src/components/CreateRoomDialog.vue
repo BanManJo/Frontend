@@ -1,6 +1,11 @@
 <template>
   <div>
-    <v-dialog v-model="room.roomModal" scrollable max-width="400">
+    <v-dialog
+      v-model="room.roomModal"
+      scrollable
+      max-width="400"
+      :persistent="isCreating"
+    >
       <v-card>
         <v-card-title class="headline">{{ room.storeName }}</v-card-title>
         <v-divider></v-divider>
@@ -22,11 +27,7 @@
         <v-expansion-panels v-for="(menu, idx) in room.menus" :key="idx">
           <v-expansion-panel>
             <v-expansion-panel-header>
-              <span
-                >치킨이름: {{ menu.chicken }}, 가격: d34343{{
-                  menu.price
-                }}₩</span
-              >
+              <span>치킨이름: {{ menu.chicken }}, 가격: {{ menu.price }}₩</span>
               <template v-slot:actions>
                 <v-icon color="primary">
                   {{ menu.selected ? "mdi-check" : "$expand" }}
@@ -81,7 +82,8 @@ export default {
   data() {
     return {
       AdminInstance: contractInstance.getAdminInstance(), // Admin Instance data,
-      succeed: false
+      succeed: false,
+      isCreating: false
       // not loaded on map page
       // isLoading: false,
     };
@@ -110,12 +112,14 @@ export default {
 
       this.room.isLoading = true;
       try {
+        this.isCreating = true;
         /* 새롭게 구조화 된 부분 */
         const CHAddress = await this.AdminInstance.findChickenHouse(_storeName);
         const ChickenHouseInstance = contractInstance.getChickenHouseInstance(
           CHAddress
         );
         const tsc = await ChickenHouseInstance.createRoom(
+          _storeName,
           _price,
           _timer,
           _chicken
@@ -123,6 +127,7 @@ export default {
         console.log(`---- Create Order Room Succeed : ${tsc}`);
         this.room.isLoading = false;
         this.room.roomModal = false;
+        this.isCreating = false;
         this.succeed = true;
       } catch (error) {
         console.log(error);

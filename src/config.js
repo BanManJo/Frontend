@@ -4,7 +4,7 @@ const ChickenHouseRepository = require("./contracts/ChickenHouse");
 const OrderRoomRepository = require("./contracts/OrderRoom");
 
 //상일
-//Admin: 0x13c97ecd59d2fd674858C7396F900f2761C1A784 / 0x0Bd2793ADecb58f3102C6B77ad94060527ca9C22 (mac / window)
+//Admin: 0x13c97ecd59d2fd674858C7396F900f2761C1A784 / 0x112A67EC5781071406eeeF09EBd7C8C20561a3bD (mac / window)
 //Demo: 0x13c97ecd59d2fd674858C7396F900f2761C1A784 / 0x0C0989bdC8c053598BCBfeD5c0A1D597f649008A (mac / window)
 //대영
 //address:   0x4c53a7C1101900d1d8bBE112747401EB7eccb41e
@@ -18,7 +18,7 @@ const OrderRoomRepository = require("./contracts/OrderRoom");
 module.exports = {
   DEMO_ADDRESS: "0x0C0989bdC8c053598BCBfeD5c0A1D597f649008A",
   DEMO_ABI: DemoRepository.abi,
-  ADMIN_ADDRESS: "0x0Bd2793ADecb58f3102C6B77ad94060527ca9C22",
+  ADMIN_ADDRESS: "0x112A67EC5781071406eeeF09EBd7C8C20561a3bD",
   ADMIN_ABI: AdminRepository.abi,
   CHICKEN_HOUSE_ABI: ChickenHouseRepository.abi,
   ORDER_ROOM_ABI: OrderRoomRepository.abi,
