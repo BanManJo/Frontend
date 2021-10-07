@@ -48,13 +48,55 @@
 </template>
 
 <script>
+// Instance 사용하기 위한 구문
+import ContractInstance from "../ContractInstance";
+const contractInstance = new ContractInstance();
+
 export default {
   props: ["owner"],
   data() {
-    return {};
+    return {
+      AdminInstance: contractInstance.getAdminInstance(), // Admin Instance data,
+      succeed: false
+      // not loaded on map page
+      // isLoading: false,
+    };
   },
+  computed: {},
+
   mounted() {
     console.log("aa");
+  },
+  methods: {
+    async changeMenu() {
+      console.log("=== Create Order Room ===");
+      const menu = this.information.menus.filter(data => data.selected)[0];
+      console.log(`---- get Menu and Create Room, menu: ${menu}`);
+      if (menu === undefined) {
+        alert("메뉴를 선택해 주세요.");
+        return;
+      }
+      // storeName
+      const _storeName = this.information.storeName;
+      // price
+      const _price = menu.price;
+      // chicken
+      const _chicken = menu.chicken;
+
+      this.information.isLoading = true;
+      try {
+        /* 새롭게 구조화 된 부분 */
+        const CHAddress = await this.AdminInstance.findChickenHouse(_storeName);
+        const ChickenHouseInstance = contractInstance.getChickenHouseInstance(
+          CHAddress
+        );
+        const tsc = await ChickenHouseInstance.createRoom(_price, _chicken);
+        console.log(`---- Create Order Room Succeed : ${tsc}`);
+      } catch (error) {
+        console.log(error);
+      }
+      console.log("=== Doen Create Order Room ===");
+    }
   }
 };
 </script>

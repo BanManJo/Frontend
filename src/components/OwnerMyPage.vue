@@ -92,12 +92,15 @@ const contractInstance = new ContractInstance();
 
 export default {
   components: {
-    OwnerDialog: () => import("./OwnerDialog")
+    OwnerDialog: () => import("./OwnerDialog"),
+    OrderRoomNavigationDrawer: () => import("./OrderRoomNavigationDrawer"),
+    MenuSpeedDial: () => import("./MenuSpeedDial")
   },
 
   data() {
     return {
       AdminInstance: contractInstance.getAdminInstance(),
+      DemoInstance: contractInstance.getDemoInstance(),
       owner: {
         isLoading: false,
         ownerModal: false
@@ -132,10 +135,10 @@ export default {
       console.log("ownerModal : " + this.ownerModal);
     },
     testInstance() {
-      this.AdminInstance.getStoreCount().then(count => {
-        // resolve
-        alert(`Store Counts : ${count}`);
-      });
+      // this.AdminInstance.getStoreCount().then(count => {
+      //   // resolve
+      //   alert(`Store Counts : ${count}`);
+      // });
     },
     getMenus: function() {
       // 컨트랙트에서 메뉴 데이터 가져오기
@@ -145,46 +148,78 @@ export default {
       // console.log("MENUDATA :", data);
       // menu = data;
     },
-    async getResiterMenu() {
+    async changeMenu() {
       console.log("=== Show Order Rooms ===");
 
-      const roomCount = await this.AdminInstance.getRoomsCount(
-        this.storeName
-        // this.owner.price
-      );
+      // const roomCount = await this.AdminInstance.getRoomsCount(
+      //   this.storeName
+      // this.owner.price
+      // );
 
-      console.log(`---- get Order Rooms Info, Counts: ${roomCount}`);
-      this.information = [];
-      for (let idx = 0; idx < roomCount; idx++) {
-        await this.AdminInstance.getStoreMenu(this.storeName, idx).then(
-          result => {
-            console.log("result:::");
-            const chickens = result[0];
-            const prices = result[1];
-            // console.dir(result[0][0]);
-            // console.dir(result[1][0]);
-            for (let i = 0; i < chickens.length; i++) {
-              console.log(chickens[i], prices[i]);
-              this.information.push({
-                chicken: chickens[i],
-                price: `${prices[i]}`
+      // this.information = [];
+      /**** 새롭게 구조화 된 부분 *****/
+      this.AdminInstance.findChickenHouse(this.information.storeName).then(
+        CHAddress => {
+          // console.log(contract);
+          const ChickenHouseInstance = contractInstance.getChickenHouseInstance(
+            CHAddress
+          );
+          ChickenHouseInstance.getStoreMenu().then(result => {
+            console.log("---- get store menus from ETH ----");
+            console.log(result);
+
+            for (let i = 0; i < result._chickens.length; i++) {
+              this.information.menus.push({
+                chicken: result._chickens[i],
+                price: `${result._prices[i]}`
               });
             }
+          });
+        }
+      );
+      const CHAddress = await this.AdminInstance.findChickenHouse(storeName);
+      // 2. Chicken House 인스턴스 생성
+      const ChickenHouseInstance = contractInstance.getChickenHouseInstance(
+        CHAddress
+      );
+      // 3. 해당 Chicken House의 방 개수를 가져옴
+      const roomCount = await ChickenHouseInstance.getRoomsCount();
 
-            // for (let i = 0; i < result[i].length; i++) {
-            //   for (let j = 0; j < result[i][j].length; j++) {
-            //     this.information.push({
-            //       menu: result[i][j],
-            //       price: result[i][j]
-            //     });
-            //   }
-            // }
-          }
-        );
-        // .catch(error => {
-        //   console.error(error);
-        // });
-      }
+      // 4. 같은 로직 실행
+      console.log(`---- get Order Rooms Info, Counts: ${roomCount}`);
+
+      // console.log(`---- get Order Rooms Info, Counts: ${roomCount}`);
+      // this.information = [];
+      // for (let idx = 0; idx < roomCount; idx++) {
+      //   await this.AdminInstance.getStoreMenu(this.storeName, idx).then(
+      //     result => {
+      //       console.log("result:::");
+      //       const chickens = result[0];
+      //       const prices = result[1];
+      //       // console.dir(result[0][0]);
+      //       // console.dir(result[1][0]);
+      //       for (let i = 0; i < chickens.length; i++) {
+      //         console.log(chickens[i], prices[i]);
+      //         this.information.push({
+      //           chicken: chickens[i],
+      //           price: `${prices[i]}`
+      //         });
+      //       }
+
+      // for (let i = 0; i < result[i].length; i++) {
+      //   for (let j = 0; j < result[i][j].length; j++) {
+      //     this.information.push({
+      //       menu: result[i][j],
+      //       price: result[i][j]
+      //     });
+      //   }
+      // }
+      //   }
+      // );
+      // .catch(error => {
+      //   console.error(error);
+      // });
+      // }
       console.log("=== Done Show Order Room ===");
       console.log(">>>>>>>>");
       console.dir(this.information);
@@ -193,7 +228,7 @@ export default {
 
   created() {
     console.log(`=== Created OwnerMyPage ${this.owner.storeName} ===`);
-    this.getResiterMenu();
+    this.changeMenu();
     console.log("ASASAS");
   },
   mounted() {}
