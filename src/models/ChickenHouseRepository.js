@@ -161,15 +161,19 @@ export class ChickenHouseRepository {
     }
   }
 
-  async watchIfCreated(cb) {
+  watchIfCreated(cb) {
     console.log("event1");
-    this.contractInstance.events.roomCreated(
-      {
-        fromBlock: "latest",
-        ToBlock: "latest"
-      },
-      cb
-    );
+    const emitter = this.contractInstance.events
+      .roomCreated(
+        {
+          fromBlock: "latest",
+          ToBlock: "latest"
+        },
+        cb
+      )
+      .on("data", console.log);
+
+    return emitter;
   }
 
   getCurrentBlock() {

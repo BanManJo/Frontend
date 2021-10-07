@@ -204,26 +204,4 @@ export default {
 };
 </script>
 
-<style>
-html {
-  margin: 0;
-  padding: 0;
-}
-body {
-  position: relative;
-  overflow: hidden; /* Hide scrollbars */
-}
-
-#map {
-  z-index: 1;
-  width: 100%;
-  height: 100%;
-  opacity: 0.7;
-}
-
-#contents {
-  position: absolute;
-  top: 0%;
-  z-index: 2;
-}
-</style>
+<style></style>
