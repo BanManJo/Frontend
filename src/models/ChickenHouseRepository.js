@@ -46,11 +46,11 @@ export class ChickenHouseRepository {
     }
   }
 
-  async createRoom(price, finishTime, chicken) {
+  async createRoom(storeName, price, finishTime, chicken) {
     try {
       await this._checkAccountAvailable();
       const tx = await this.contractInstance.methods
-        .createRoom(price, finishTime, chicken)
+        .createRoom(storeName, chicken, price, finishTime)
         .send({ from: this.account, gas: this.gas })
         .on("transactionHash", function(hash) {
           // return hash;
@@ -196,6 +196,21 @@ export class ChickenHouseRepository {
     } catch (e) {
       throw e;
     }
+  }
+
+  watchIfCreated(cb) {
+    console.log("event1");
+    const emitter = this.contractInstance.events
+      .roomCreated(
+        {
+          fromBlock: "latest",
+          ToBlock: "latest"
+        },
+        cb
+      )
+      .on("data", console.log);
+
+    return emitter;
   }
 
   getCurrentBlock() {

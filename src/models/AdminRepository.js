@@ -134,4 +134,14 @@ export class AdminRepository {
   //     cb
   //   );
   // }
+
+  async watchIfRegistered(cb) {
+    this.contractInstance.events.registerStore(
+      {
+        fromBlock: "latest",
+        ToBlock: "latest"
+      },
+      cb
+    );
+  }
 }

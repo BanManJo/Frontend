@@ -1,23 +1,15 @@
 <template>
   <v-app>
     <v-main>
-      <v-container id="map" style="padding: 0px" fluid></v-container>
+      <v-container id="map" fluid></v-container>
     </v-main>
 
-    <v-main id="contents">
-      <!-- </v-btn> -->
-      <textarea
-        name="test"
-        id=""
-        cols="30"
-        rows="10"
-        v-model="listener"
-      ></textarea>
-    </v-main>
+    <v-main id="contents"> </v-main>
     <menu-speed-dial></menu-speed-dial>
     <!-- Navigation Drawer -->
     <order-room-navigation-drawer
       :navDrawer="navDrawer"
+      @createOrderRoom="createOrderRoom"
     ></order-room-navigation-drawer>
     <!-- modal -->
     <create-room-dialog :room="room"></create-room-dialog>
@@ -32,6 +24,10 @@ import { mapState, mapMutations } from "vuex";
 import ContractInstance from "../ContractInstance";
 const contractInstance = new ContractInstance();
 
+// Info Window
+import MakeInfoWindow from "../utils/info_window";
+
+let roomCreatedEmitter;
 export default {
   name: "map",
   // store,
@@ -47,6 +43,7 @@ export default {
       DemoInstance: contractInstance.getDemoInstance(), // Admin Instance data
       map: null,
       markerDatas: [],
+      infowindows: [],
       navDrawer: {
         storeName: null,
         roomCount: null,
@@ -74,12 +71,17 @@ export default {
     ...mapMutations({
       setDrawer: "SET_DRAWER"
     }),
-    createOrderRoom(event) {
+    /* ============= 주문방 만들기 함수 ============= */
+    createOrderRoom(event, flag = false) {
       console.log("=== Create Order Room ===");
-
-      event.preventDefault();
+      console.log(event);
       this.room.roomModal = !this.room.roomModal;
-      this.room.storeName = event.target.id;
+      if (flag) {
+        this.room.storeName = event; // 변경해야 함.. (marker의 title로 대체 할 수 있다면?)
+      } else {
+        event.preventDefault();
+        this.room.storeName = event.target.id; // 변경해야 함.. (marker의 title로 대체 할 수 있다면?)
+      }
       // menus
       this.room.menus = [];
 
@@ -109,22 +111,42 @@ export default {
       // storeIdx (if needed)
       console.log("=== Done Create Order Room ===");
     },
-    async showOrderRooms(event) {
+    /* ============= 주문방 보여주기 함수 ============= */
+    async showOrderRooms(event, flag = false) {
       console.log("=== Show Order Rooms ===");
 
+      // if (flag) {
+      //   this.navDrawer.storeName = event;
+      // } else {
+      //   event.preventDefault();
+      //   this.setDrawer(true);
+      //   this.navDrawer.storeName = event.target.id;
+      // }
       event.preventDefault();
-      this.setDrawer(!this.drawer);
-      this.navDrawer.orderRooms = [];
-      if (!this.drawer) {
+      // 이미 열려있는가게일 경우...
+      if (this.drawer && event.target.id === this.navDrawer.storeName) {
         return;
       }
+      this.setDrawer(true);
+      this.navDrawer.orderRooms = [];
 
-      const storeName = event.target.id;
-      this.navDrawer.storeName = storeName;
+      // 주문방보기 요청, 이전에 존재한 iw 는 지운다.
+      if (this.navDrawer.storeName) {
+        this.markerDatas.forEach((markerData, idx) => {
+          if (markerData.storeName === this.navDrawer.storeName) {
+            this.infowindows[idx].close();
+            return;
+          }
+        });
+      }
+
+      this.navDrawer.storeName = event.target.id;
 
       /**** 새롭게 구조화 된 부분 *****/
       // 1. Chicken House 주소를 가져옴
-      const CHAddress = await this.AdminInstance.findChickenHouse(storeName);
+      const CHAddress = await this.AdminInstance.findChickenHouse(
+        this.navDrawer.storeName
+      );
       // 2. Chicken House 인스턴스 생성
       const ChickenHouseInstance = contractInstance.getChickenHouseInstance(
         CHAddress
@@ -162,49 +184,115 @@ export default {
           .catch(error => {
             console.error(error);
           });
-        this.navDrawer.roomCount = counts;
       }
+      this.navDrawer.roomCount = counts;
+
+      // Create Room Event Listener
+      // 기존의 존재하는 리스너 해제
+      if (roomCreatedEmitter) {
+        console.log(roomCreatedEmitter);
+        roomCreatedEmitter.removeListener();
+      }
+
+      roomCreatedEmitter = ChickenHouseInstance.watchIfCreated(
+        (error, result) => {
+          if (!error && this.drawer) {
+            console.log(result);
+            // this.addOrderRooms(result);
+            this.navDrawer.orderRooms.push({
+              headline: result.returnValues._chickenName,
+              subText: `종료 시간: ${result.returnValues._finish} | ${result.returnValues._price}₩`,
+              show: false,
+              description: "황금올리브 같이 먹을 분 구함!~",
+              index: result.returnValues._roomNumber
+            });
+            this.navDrawer.roomCount += 1;
+          }
+        }
+      );
       console.log("=== Done Show Order Room ===");
     },
-    makeInfoWindow(marker) {
-      console.log("=== Make Info Window ===");
-      const content = document.createElement("div");
-      content.style.padding = "5px";
-
-      const storeName = document.createElement("div");
-      const storeNameText = document.createTextNode(
-        `가게: ${marker.storeName} `
+    /* ============= 치킨집 지도 마커 생성 함수 ============= */
+    createMarker(markerData) {
+      const markerPosition = new kakao.maps.LatLng(
+        markerData.latitude,
+        markerData.longitude
       );
-      storeName.appendChild(storeNameText);
-      content.appendChild(storeName);
 
-      const orderRoomCount = document.createElement("div");
-      const orderRoomCountText = document.createTextNode(
-        `주문방: ${marker.orderCount}`
+      // 마커를 생성합니다
+      const marker = new kakao.maps.Marker({
+        position: markerPosition
+      });
+
+      // 마커가 지도 위에 표시되도록 설정합니다
+      marker.setMap(this.map);
+
+      // 마커에 커서가 오버됐을 때 마커 위에 표시할 인포윈도우를 생성합니다
+      console.log("---- call make Info Window func ----");
+      const iwContent = MakeInfoWindow(
+        markerData,
+        this.createOrderRoom,
+        this.showOrderRooms
       );
-      orderRoomCount.appendChild(orderRoomCountText);
-      content.appendChild(orderRoomCount);
+      const iwRemoveable = false;
+      // 인포윈도우를 생성합니다
+      const infowindow = new kakao.maps.InfoWindow({
+        content: iwContent,
+        removable: iwRemoveable
+      });
 
-      const linkCreateRoom = document.createElement("a");
-      linkCreateRoom.style.color = "blue";
-      linkCreateRoom.target = "_blank";
-      linkCreateRoom.id = marker.storeName;
-      linkCreateRoom.addEventListener("click", this.createOrderRoom);
-      linkCreateRoom.appendChild(document.createTextNode("방만들기 "));
-      content.appendChild(linkCreateRoom);
-
-      const linkShowOrderRooms = document.createElement("a");
-      linkShowOrderRooms.style.color = "blue";
-      linkShowOrderRooms.target = "_blank";
-      linkShowOrderRooms.id = marker.storeName;
-      linkShowOrderRooms.addEventListener("click", this.showOrderRooms);
-      linkShowOrderRooms.appendChild(document.createTextNode("주문방 보기"));
-      content.appendChild(linkShowOrderRooms);
-
-      console.log("=== Done Mark Info Window ===");
-      return content;
+      this.infowindows.push(infowindow);
+      console.log("---- Add click event on marker ----");
+      // 마커에 마우스클릭 이벤트를 등록합니다
+      kakao.maps.event.addListener(marker, "click", () => {
+        if (this.drawer) {
+          // drawer가 열려 있다.
+          this.markerDatas.forEach((_markerData, index) => {
+            // 현재 열린 치킨집 이외에 마커 적용
+            if (_markerData.storeName !== this.navDrawer.storeName) {
+              // 열려있는 건 닫고, 눌린게 연다.
+              if (_markerData.storeName === markerData.storeName) {
+                // 열려있는 것은 닫고, 눌린게 열린다.
+                if (markerData.removed) {
+                  infowindow.open(this.map, marker);
+                  markerData.removed = false;
+                } else {
+                  infowindow.close();
+                  markerData.removed = true;
+                }
+              } else {
+                if (!_markerData.removed) {
+                  this.infowindows[index].close();
+                  _markerData.removed = true;
+                }
+              }
+            }
+          });
+        } else {
+          // drawer가 닫혀 있다.
+          this.markerDatas.forEach((_markerData, index) => {
+            if (_markerData.storeName === markerData.storeName) {
+              // 열려있는 것은 닫고, 눌린게 열린다.
+              if (markerData.removed) {
+                infowindow.open(this.map, marker);
+                markerData.removed = false;
+              } else {
+                infowindow.close();
+                markerData.removed = true;
+              }
+            } else {
+              if (!_markerData.removed) {
+                this.infowindows[index].close();
+                _markerData.removed = true;
+              }
+            }
+          });
+        }
+        this.map.panTo(markerPosition);
+      });
     },
-    async createMarker() {
+    /* ============= 마커 초기화 하기 ============= */
+    async initMarkers() {
       // get chicken houses number
       // // get chicken house info
       // // // setting chicken houses
@@ -241,53 +329,16 @@ export default {
           console.log("---- markerDatas setting on map ----");
           console.log(this.markerDatas);
           this.markerDatas.forEach(markerData => {
-            const markerPosition = new kakao.maps.LatLng(
-              markerData.latitude,
-              markerData.longitude
-            );
-
-            // 마커를 생성합니다
-            const marker = new kakao.maps.Marker({
-              position: markerPosition
-            });
-
-            // 마커가 지도 위에 표시되도록 설정합니다
-            marker.setMap(this.map);
-
-            // 마커에 커서가 오버됐을 때 마커 위에 표시할 인포윈도우를 생성합니다
-            console.log("---- call make Info Window func ----");
-            const iwContent = this.makeInfoWindow(markerData);
-            const iwRemoveable = false;
-            // 인포윈도우를 생성합니다
-            const infowindow = new kakao.maps.InfoWindow({
-              content: iwContent,
-              removable: iwRemoveable
-            });
-            // console.log(infowindow.getContent().children[0].innerText);
-            // infowindow.getContent().children[0].innerText = "testing ";
-            // infowindow.getContent().children[2].id = "testing ";
-            // console.log(infowindow.getContent());
-            console.log("---- Add click event on marker ----");
-            // 마커에 마우스오버 이벤트를 등록합니다
-            kakao.maps.event.addListener(marker, "click", () => {
-              // let removed = true;
-              // console.log(this);
-              if (markerData.removed) {
-                // 마커에 마우스오버 이벤트가 발생하면 인포윈도우를 마커위에 표시합니다
-                infowindow.open(this.map, marker);
-                markerData.removed = false;
-              } else {
-                infowindow.close();
-                markerData.removed = true;
-              }
-            });
+            this.createMarker(markerData);
           });
         })
         .catch();
       console.log("=== Done Create Marker ===");
     },
+    /* ============= 지도 초기화 하기 ============= */
     initMap() {
       console.log("=== Init Map ===");
+      // 어떤 컨테이너 뷰에 맵을 띄울 것인가..
       const container = document.getElementById("map");
       navigator.geolocation.getCurrentPosition(position => {
         const lat = position.coords.latitude;
@@ -306,7 +357,7 @@ export default {
           orderCount: 3
         });
         console.log("---- call create marker func ----");
-        this.createMarker();
+        this.initMarkers();
       }, console.log);
       console.log("=== Done Init Map ===");
     }
@@ -314,16 +365,40 @@ export default {
   mounted() {
     console.log("=== Mounted Map.vue ===");
     console.log("---- Set Window Size ----");
-    this.DemoInstance.watchIfCreated((error, result) => {
+    this.AdminInstance.watchIfRegistered((error, result) => {
       if (!error) {
-        console.log("passing event");
-        this.listener = "test succeed";
+        console.log(result);
+        console.log(result.returnValues.storeAddress);
+        const storeName = result.returnValues.storeName;
+        const storeAddress = result.returnValues.storeAddress;
+        const latitude = result.returnValues.latitude;
+        const longitude = result.returnValues.longitude;
+        const markerData = {
+          latitude: Number(latitude),
+          longitude: Number(longitude),
+          removed: true,
+          storeName: storeName,
+          orderCount: 0
+        };
+        this.markerDatas.push(markerData);
+        this.createMarker(markerData);
+      } else {
+        throw error;
       }
     });
-    document.body.style.width = `${window.screen.width}px`;
-    document.body.style.height = `${window.innerHeight ||
-      document.documentElement.clientHeight ||
-      document.body.clientHeight}px`;
+
+    console.log("=== Done Mounted Map.vue ===");
+  },
+  created() {
+    console.log("=== Created Map.vue ===");
+    const resizeWindow = function() {
+      document.body.style.width = `${window.screen.width}px`;
+      document.body.style.height = `${window.innerHeight ||
+        document.documentElement.clientHeight ||
+        document.body.clientHeight}px`;
+    };
+    resizeWindow();
+    window.addEventListener("resize", resizeWindow);
     console.log("---- Initialize kakao Object and Map Object ----");
     if (window.kakao && window.kakao.maps) {
       this.initMap();
@@ -335,19 +410,14 @@ export default {
         "http://dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=f16dcaffdef9152c39799852d826d9c4&libraries=services";
       document.head.appendChild(script);
     }
-    console.log("=== Done Mounted Map.vue ===");
-  },
-  created() {
-    console.log("=== Created Map.vue ===");
-    console.log("---- Set Admin Instance ----");
-
     console.log("=== Done Created Map.vue ===");
   },
   watch: {
-    room: roomState => {
-      console.log(roomState);
-      if (roomState.roomModal === false) {
-        console.log("close close");
+    drawer(drawerState) {
+      if (!drawerState) {
+        console.log(drawerState);
+        this.infowindows.forEach(iw => iw.close());
+        this.markerDatas.forEach(md => (md.removed = true));
       }
     }
   }
@@ -358,6 +428,7 @@ export default {
 html {
   margin: 0;
   padding: 0;
+  overflow-y: auto;
 }
 body {
   position: relative;
@@ -369,6 +440,17 @@ body {
   width: 100%;
   height: 100%;
   opacity: 0.7;
+  padding: 0;
+  margin: 0;
+  overflow: hidden; /* Hide scrollbars */
+}
+
+.container {
+  width: 100%;
+  /* padding: 12px; */
+  padding: 0px;
+  margin-right: auto;
+  margin-left: auto;
 }
 
 #contents {

@@ -6,15 +6,21 @@ Vue.use(Vuex);
 export const SET_BAR_IMAGE = "SET_BAR_IMAGE";
 export const SET_DRAWER = "SET_DRAWER";
 
-const moduleMap = {
-  // state: () => ({ ... }),
-  // mutations: { ... },
-  // actions: { ... },
-  // getters: { ... }
-};
+// const moduleMap = {
+//   state: () => ({ map: null })
+//   // mutations: { ... },
+
+//   // map을 등록함
+//   // 마커를 등록함
+//   // 인포인도우를 등록함
+//   // 마커를 보여줌
+
+//   // actions: { ... },
+//   // getters: { ... }
+// };
 
 const moduleDrawer = {
-  state: () => ({ drawer: null }),
+  state: () => ({ drawer: false }),
   mutations: {
     SET_DRAWER(state, payload) {
       state.drawer = payload;
