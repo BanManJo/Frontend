@@ -116,9 +116,10 @@ export default {
           CHAddress
         );
         const tsc = await ChickenHouseInstance.createRoom(
+          _storeName,
+          _chicken,
           _price,
-          _timer,
-          _chicken
+          _timer
         );
         console.log(`---- Create Order Room Succeed : ${tsc}`);
         this.room.isLoading = false;

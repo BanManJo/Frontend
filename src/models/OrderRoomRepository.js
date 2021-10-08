@@ -93,6 +93,15 @@ export class OrderRoomRepository {
     }
   }
 
+  async getStateRoom() {
+    try {
+      const result = await this.contractInstance.methods.getStateRoom().call();
+      return result;
+    } catch (e) {
+      throw e;
+    }
+  }
+
   getCurrentBlock() {
     return new Promise((resolve, reject) => {
       this.web3.eth.getBlockNumber((err, blocknumber) => {
