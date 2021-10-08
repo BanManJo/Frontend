@@ -176,7 +176,7 @@ export class ChickenHouseRepository {
     return new Promise(async (resolve, reject) => {
       try {
         const result = await this.contractInstance.methods
-          .getStoreMenu2()
+          .getStoreMenu()
           .call();
         resolve(result);
       } catch (e) {
