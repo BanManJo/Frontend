@@ -34,7 +34,9 @@
                         </v-icon>
                         &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
                         <span class="matching">
-                          방번호 &nbsp; :&nbsp; {{ roomNumber }}</span
+                          방번호 &nbsp; :&nbsp;
+                          {{ orderedLists1.roomNumber
+                          }}{{ orderedLists2.roomNumber }}</span
                         >
                       </v-chip>
                       <v-spacer></v-spacer>
@@ -50,7 +52,9 @@
                           mdi-widgets
                         </v-icon>
                         &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
-                        <span class="matching"> 매칭중</span>
+                        <span class="matching">
+                          {{ orderedLists1.state }}{{ orderedLists2.state }}
+                        </span>
                       </v-chip>
                       <v-spacer></v-spacer>
                       <v-chip
@@ -65,7 +69,9 @@
                         </v-icon>
                         &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
                         <span class="matching">
-                          만료시간 &nbsp; :&nbsp; {{ roomNumber }}</span
+                          만료시간 &nbsp; :&nbsp;
+                          {{ orderedLists1.finish
+                          }}{{ orderedLists2.finish }}</span
                         >
                       </v-chip>
                       &nbsp; &nbsp; &nbsp; &nbsp;</v-row
@@ -74,16 +80,19 @@
                       <div>
                         <span class="blackText"
                           >가게이름 &nbsp; : &nbsp;{{
-                            orderedLists1[0].storeName
-                          }} </span
+                            orderedLists1.storeName
+                          }}
+                          {{ orderedLists2.storeName }}</span
                         ><br />
                         <v-spacer></v-spacer> <v-spacer></v-spacer>
                         <span class="blackText"
-                          >치킨메뉴 &nbsp; : &nbsp;{{ chickenName }} </span
+                          >치킨메뉴 &nbsp; : &nbsp;{{ orderedLists1.menu
+                          }}{{ orderedLists2.menu }} </span
                         ><br />
                         <v-spacer></v-spacer><v-spacer></v-spacer>
                         <span class="blackText"
-                          >가격 &nbsp; : &nbsp; {{ price }}</span
+                          >가격 &nbsp; : &nbsp; {{ orderedLists1.price
+                          }}{{ orderedLists2.price }}</span
                         >
                       </div>
                     </v-card-title>
@@ -136,7 +145,7 @@
                 <v-app id="inspire">
                   <v-data-table
                     :headers="headers"
-                    :items="desserts"
+                    :items="orderedLists3"
                     class="elevation-1"
                   >
                     <template v-slot:items="props">
@@ -166,11 +175,8 @@ export default {
   data() {
     return {
       AdminInstance: contractInstance.getAdminInstance(),
-      orderedLists1: [],
-      orderedLists2: [],
-      orderedLists3: [],
-      orderedLists4: [],
-
+      orderedLists1: {},
+      orderedLists2: {},
       headers: [
         {
           text: "가게이름 (storeName)",
@@ -184,24 +190,8 @@ export default {
         { text: "주문상태 (성공/실패)", value: "state" },
         { text: "방번호", value: "roomNumber" }
       ],
-      desserts: [
-        {
-          name: "가산BHC",
-          kind: "순살",
-          menu: "뿌링클",
-          price: 6.0,
-          state: "성공",
-          roomNumber: 10
-        },
-        {
-          name: "가산BHC",
-          kind: "순살",
-          menu: "뿌링클",
-          price: 6.0,
-          state: "성공",
-          roomNumber: 10
-        }
-      ]
+      orderedLists3: [],
+      orderedLists4: []
     };
   },
   computed: {},
@@ -238,16 +228,42 @@ export default {
                 console.log(result);
                 this.orderedLists1 = [];
                 if (result === "1") {
-                  self.orderedLists1.push({
+                  this.orderedLists1 = {
                     storeName: result2[idx].returnValues._storeName,
                     menu: result2[idx].returnValues._chickenName,
                     price: result2[idx].returnValues._price,
                     roomNumber: result2[idx].returnValues._roomNumber,
-                    state: result,
+                    state: "매칭중입니다",
                     finish: result2[idx].returnValues._finish
+                  };
+                } else if (result === "2") {
+                  this.orderedLists2 = {
+                    storeName: result2[idx].returnValues._storeName,
+                    menu: result2[idx].returnValues._chickenName,
+                    price: result2[idx].returnValues._price,
+                    roomNumber: result2[idx].returnValues._roomNumber,
+                    state: "주문 접수중입니다",
+                    finish: result2[idx].returnValues._finish
+                  };
+                  console.log(this.orderedLists2);
+                } else if (result === "3") {
+                  this.orderedLists3.push({
+                    name: result2[idx].returnValues._storeName,
+                    menu: result2[idx].returnValues._chickenName,
+                    price: result2[idx].returnValues._price,
+                    roomNumber: result2[idx].returnValues._roomNumber,
+                    state: "성공"
                   });
+                } else if (result === "4") {
+                  this.orderedLists3.push({
+                    name: result2[idx].returnValues._storeName,
+                    menu: result2[idx].returnValues._chickenName,
+                    price: result2[idx].returnValues._price,
+                    roomNumber: result2[idx].returnValues._roomNumber,
+                    state: "실패"
+                  });
+                  console.log(this.orderedLists4);
                 }
-                console.log(this.orderedLists1);
               }
             });
           }
@@ -258,7 +274,8 @@ export default {
     }
   },
   created() {
-    console.log(`=== Created OwnerPage1 ${this.storeName} ===`);
+    console.log(`=== Created userMyPage  ===`);
+    this.readRoomInfo();
   }
 };
 </script>
