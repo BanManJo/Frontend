@@ -168,6 +168,17 @@ export class ChickenHouseRepository {
     });
   }
 
+  async setMenu() {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const result = await this.contractInstance.methods.setMenu().call();
+        resolve(result);
+      } catch (e) {
+        reject(e);
+      }
+    });
+  }
+
   async changeOnOff() {
     const accounts = await window.ethereum.request({
       method: "eth_requestAccounts"
