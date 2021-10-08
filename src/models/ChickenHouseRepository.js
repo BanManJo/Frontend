@@ -197,6 +197,16 @@ export class ChickenHouseRepository {
       throw e;
     }
   }
+  //대영 roomCreated event
+  async watchIfCreated2(cb) {
+    const currentBlock = await this.getCurrentBlock();
+    await this._checkAccountAvailable();
+    this.contractInstance.getPastEvents(
+      "roomCreated",
+      { filter: { _Ownedby: [this.account] }, fromBlock: 0, toBlock: "latest" },
+      cb
+    );
+  }
 
   watchIfCreated(cb) {
     const emitter = this.contractInstance.events

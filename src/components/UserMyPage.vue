@@ -73,7 +73,9 @@
                     <v-card-title>
                       <div>
                         <span class="blackText"
-                          >가게이름 &nbsp; : &nbsp;{{ storeNmae }} </span
+                          >가게이름 &nbsp; : &nbsp;{{
+                            orderedLists1[0].storeName
+                          }} </span
                         ><br />
                         <v-spacer></v-spacer> <v-spacer></v-spacer>
                         <span class="blackText"
@@ -104,6 +106,14 @@
                       >
                         <v-icon left> mdi-cancel</v-icon>
                         <span>테스트</span>
+                      </v-btn>
+                      <v-btn
+                        class="ma-2 text-h4"
+                        color="orange"
+                        @click="getStateRoom"
+                      >
+                        <v-icon left> mdi-cancel</v-icon>
+                        <span>테스트2</span>
                       </v-btn></v-row
                     >
                   </v-card-actions>
@@ -156,7 +166,10 @@ export default {
   data() {
     return {
       AdminInstance: contractInstance.getAdminInstance(),
-      orderedLists: [],
+      orderedLists1: [],
+      orderedLists2: [],
+      orderedLists3: [],
+      orderedLists4: [],
 
       headers: [
         {
@@ -196,10 +209,48 @@ export default {
   methods: {
     async readRoomInfo() {
       try {
-        this.AdminInstance.watchIfCreated2((error, result) => {
-          //if (result._ownedby == myaddress)
-          console.log(result[0].returnValues[0]);
-          return true;
+        this.AdminInstance.getStoreCount().then(async val => {
+          console.log(
+            `---- get Each Chicken House Infos by idx, Counts: ${val} ----`
+          );
+          for (let idx = 0; idx < val; idx++) {
+            // idx를 통해 chicken House를 바로 가져옴..
+            const CHAddress = await this.AdminInstance.findChickenHouseByIndex(
+              idx
+            );
+            const ChickenHouseInstance = contractInstance.getChickenHouseInstance(
+              CHAddress
+            );
+            console.log("pass");
+            ChickenHouseInstance.watchIfCreated2(async (error, result2) => {
+              console.log(result2);
+
+              for (let idx = 0; idx < result2.length; idx++) {
+                // 5. OrderRoom 주소를 가져옴
+                const ORAddress = await ChickenHouseInstance.findOrderRoom(
+                  result2[idx].returnValues._roomNumber
+                );
+                // 6. OrderRoom 인스턴스 생성
+                const OrderRoomInstance = contractInstance.getOrderRoomInstance(
+                  ORAddress
+                );
+                const result = await OrderRoomInstance.getStateRoom();
+                console.log(result);
+                this.orderedLists1 = [];
+                if (result === "1") {
+                  self.orderedLists1.push({
+                    storeName: result2[idx].returnValues._storeName,
+                    menu: result2[idx].returnValues._chickenName,
+                    price: result2[idx].returnValues._price,
+                    roomNumber: result2[idx].returnValues._roomNumber,
+                    state: result,
+                    finish: result2[idx].returnValues._finish
+                  });
+                }
+                console.log(this.orderedLists1);
+              }
+            });
+          }
         });
       } catch (e) {
         this.error = e.message;
