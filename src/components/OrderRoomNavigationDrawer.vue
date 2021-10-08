@@ -49,13 +49,14 @@
               src="https://demos.creative-tim.com/vuetify-material-dashboard/favicon.ico"
             />
           </v-list-item-avatar> -->
-          <component :is="'h3'" :class="small">
+          <component :is="'h3'">
             <template>
               {{ navDrawer.storeName }}
             </template>
             <template>
               <br />
-              <small>Rooms. {{ navDrawer.roomCount }} </small> /
+              <small>Rooms. {{ navDrawer.roomCount }}</small>
+              /
               <small>time(avg). {{ navDrawer.roomCount }}</small>
             </template>
           </component>
@@ -81,7 +82,11 @@
             icon="mdi-clock-time-eight-outline"
             :title="orderRoom.subText"
             :value="orderRoom.headline"
-            sub-icon="mdi-account-arrow-right"
+            :sub-icon="
+              orderRoom.menuState === '2'
+                ? 'mdi-checkbox-marked'
+                : 'mdi-checkbox-blank-outline'
+            "
             sub-icon-color="green"
             :sub-text="orderRoom.description"
             :store-name="navDrawer.storeName"

@@ -19,11 +19,6 @@
       <v-divider />
     </v-col>
 
-    <!-- <v-btn icon>
-      <v-icon :color="subIconColor" size="16" class="ml-2 mr-1">
-        {{ subIcon }}</v-icon
-      >
-    </v-btn> -->
     <v-row no-gutters justify="space-between">
       <v-col cols="9" class="mr-auto">
         <v-icon :color="subIconColor" size="16" class="ml-2 mr-1">
@@ -32,31 +27,25 @@
         <span
           :class="subTextColor"
           class="grey--text font-weight-light"
-          v-text="'순살'"
+          v-text="subText"
         />
         <div
           :class="subTextColor"
           class="black--text font-weight-regular display-1"
-          v-text="'Room Title'"
+          v-text="menuDescription"
         />
       </v-col>
-      <v-col align="center" cols="3">
-        <v-btn :color="subIconColor" dark icon>
-          <v-icon
-            :color="subIconColor"
-            size="36"
-            class="ml-5 mr-0"
-            v-text="'mdi-account-arrow-right'"
-            @click="$emit('matchRoom', storeName, roomNumber)"
-          />
+      <v-col cols="3">
+        <v-btn
+          color="red"
+          class="ml-2"
+          dark
+          icon
+          large
+          @click="$emit('removeMenu')"
+        >
+          <v-icon>mdi-minus-box-outline</v-icon>
         </v-btn>
-      </v-col>
-      <v-col cols="9">
-        <span
-          :class="subTextColor"
-          class="caption grey--text font-weight-bold"
-          v-text="subText"
-        />
       </v-col>
     </v-row>
   </base-material-card>
@@ -100,20 +89,16 @@ export default {
       type: String,
       default: undefined
     },
+    menuDescription: {
+      type: String,
+      default: undefined
+    },
     smallValue: {
       type: String,
       default: undefined
     },
-    matchRoom: {
+    removeMenu: {
       type: Function,
-      default: undefined
-    },
-    storeName: {
-      type: String,
-      default: undefined
-    },
-    roomNumber: {
-      type: Number,
       default: undefined
     }
   }

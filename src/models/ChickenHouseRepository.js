@@ -46,11 +46,11 @@ export class ChickenHouseRepository {
     }
   }
 
-  async createRoom(storeName, price, finishTime, chicken) {
+  async createRoom(storeName, price, finishTime, chicken, menuState) {
     try {
       await this._checkAccountAvailable();
       const tx = await this.contractInstance.methods
-        .createRoom(storeName, chicken, price, finishTime)
+        .createRoom(storeName, chicken, price, finishTime, menuState)
         .send({ from: this.account, gas: this.gas })
         .on("transactionHash", function(hash) {
           // return hash;
@@ -159,7 +159,7 @@ export class ChickenHouseRepository {
     return new Promise(async (resolve, reject) => {
       try {
         const result = await this.contractInstance.methods
-          .getStoreMenu()
+          .getStoreMenu2()
           .call();
         resolve(result);
       } catch (e) {

@@ -9,7 +9,7 @@
       <v-card>
         <v-card-title class="headline">{{ room.storeName }}</v-card-title>
         <v-divider></v-divider>
-        <v-card-text style="text-align: center">
+        <v-card-text style="text-align: center; overflow: hidden">
           <v-progress-circular
             indeterminate
             color="red"
@@ -23,30 +23,48 @@
             persistent-hint
           ></v-text-field>
         </v-card-text>
-
-        <v-expansion-panels v-for="(menu, idx) in room.menus" :key="idx">
-          <v-expansion-panel>
-            <v-expansion-panel-header>
-              <span>치킨이름: {{ menu.chicken }}, 가격: {{ menu.price }}₩</span>
-              <template v-slot:actions>
-                <v-icon color="primary">
-                  {{ menu.selected ? "mdi-check" : "$expand" }}
-                </v-icon>
-              </template>
-            </v-expansion-panel-header>
-            <v-expansion-panel-content>
-              <v-card text>
-                <v-card-text>{{ menu.description }}</v-card-text>
-                <v-card-actions>
-                  <v-btn outlined color="teal" @click="selectMenu(idx)">
-                    {{ !menu.selected ? "선택" : "선택취소" }}
-                  </v-btn>
-                </v-card-actions>
-              </v-card>
-            </v-expansion-panel-content>
-          </v-expansion-panel>
-        </v-expansion-panels>
-        <v-card-text style="text-align: center">
+        <v-divider></v-divider>
+        <v-card-text class="ma-0 pa-0">
+          <v-expansion-panels>
+            <v-expansion-panel v-for="(menu, idx) in room.menus" :key="idx">
+              <v-expansion-panel-header align="center">
+                <v-col>
+                  <span>{{ menu.chickenName }}</span>
+                </v-col>
+                <v-col>
+                  <span
+                    >순살
+                    <v-icon>{{
+                      menu.menuState === "2"
+                        ? "mdi-checkbox-marked"
+                        : "mdi-checkbox-blank-outline"
+                    }}</v-icon>
+                  </span>
+                </v-col>
+                <v-col>
+                  <span>{{ menu.price }}ETH</span>
+                </v-col>
+                <template v-slot:actions>
+                  <v-icon color="primary">
+                    {{ menu.selected ? "mdi-check" : "$expand" }}
+                  </v-icon>
+                </template>
+              </v-expansion-panel-header>
+              <v-expansion-panel-content>
+                <v-card text>
+                  <v-card-text>{{ menu.description }}</v-card-text>
+                  <v-card-actions>
+                    <v-btn outlined color="teal" @click="selectMenu(idx)">
+                      {{ !menu.selected ? "선택" : "선택취소" }}
+                    </v-btn>
+                  </v-card-actions>
+                </v-card>
+              </v-expansion-panel-content>
+            </v-expansion-panel>
+          </v-expansion-panels>
+        </v-card-text>
+        <v-divider></v-divider>
+        <v-card-text style="text-align: center; overflow: hidden">
           <v-slider
             v-model="room.timer"
             color="orange"
@@ -76,13 +94,14 @@
 <script>
 // Instance 사용하기 위한 구문
 import ContractInstance from "../ContractInstance";
+import Icons from "../views/dashboard/component/Icons.vue";
 const contractInstance = new ContractInstance();
 
 export default {
+  components: { Icons },
   data() {
     return {
       AdminInstance: contractInstance.getAdminInstance(), // Admin Instance data,
-      succeed: false,
       isCreating: false
       // not loaded on map page
       // isLoading: false,
@@ -95,26 +114,29 @@ export default {
   methods: {
     async createOrderRoom() {
       console.log("=== Create Order Room ===");
-      const menu = this.room.menus.filter(data => data.selected)[0];
-      console.log(`---- get Menu and Create Room, menu: ${menu}`);
-      if (menu === undefined) {
-        alert("메뉴를 선택해 주세요.");
-        return;
-      }
-      // storeName
-      const _storeName = this.room.storeName;
-      // price
-      const _price = menu.price;
-      // _finish
-      const _timer = this.room.timer;
-      // chicken
-      const _chicken = menu.chicken;
-
-      this.room.isLoading = true;
       try {
+        const menu = this.room.menus.filter(data => data.selected)[0];
+        console.log(`---- get Menu and Create Room, menu: ${menu}`);
+        if (menu === undefined) {
+          alert("메뉴를 선택해 주세요.");
+          return;
+        }
+        // storeName
+        const _storeName = this.room.storeName;
+        // price
+        const _price = menu.price;
+        // _finish
+        const _timer = this.room.timer;
+        // chicken
+        const _chicken = menu.chickenName;
+        // menuState
+        const _menuState = menu.menuState;
+        console.log(menu);
+        this.room.isLoading = true;
         this.isCreating = true;
         /* 새롭게 구조화 된 부분 */
         const CHAddress = await this.AdminInstance.findChickenHouse(_storeName);
+        console.log(CHAddress);
         const ChickenHouseInstance = contractInstance.getChickenHouseInstance(
           CHAddress
         );
@@ -122,13 +144,13 @@ export default {
           _storeName,
           _price,
           _timer,
-          _chicken
+          _chicken,
+          _menuState
         );
         console.log(`---- Create Order Room Succeed : ${tsc}`);
         this.room.isLoading = false;
         this.room.roomModal = false;
         this.isCreating = false;
-        this.succeed = true;
       } catch (error) {
         console.log(error);
       }
@@ -148,23 +170,8 @@ export default {
   updated() {
     console.log("=== Updated CreateRoomDialog.vue ===");
     // 변수가 변경 될때마다 update 실행된다.!
-    if (this.room.roomModal === false) {
-      console.log("close");
-      // this.room.menus = [];
-    } //
-    // not loaded on map page
-    // this.isLoading = false;
-    // console.log("updated");
-    // console.log(this.storeName); // undefined
-    // room // props , not defined
   },
-  watch: {
-    succeed: succeeded => {
-      if (succeeded) {
-        console.log("succeed");
-      }
-    }
-  }
+  watch: {}
 };
 </script>
 
