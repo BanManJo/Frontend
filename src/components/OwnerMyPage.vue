@@ -88,6 +88,7 @@
 <script>
 // Instance 사용하기 위한 구문
 import ContractInstance from "../ContractInstance";
+import info_window from "../utils/info_window";
 const contractInstance = new ContractInstance();
 
 export default {
@@ -98,9 +99,12 @@ export default {
   data() {
     return {
       AdminInstance: contractInstance.getAdminInstance(),
+      DemoInstance: contractInstance.getDemoInstance(),
       owner: {
         isLoading: false,
-        ownerModal: false
+        ownerModal: false,
+        storeName: null,
+        menus: []
       },
       // 입력한 데이터들
       // information: [
@@ -111,6 +115,10 @@ export default {
       //   { name: "초초", price: "17000" },
       //   {}
       // ],
+
+      information: {
+        storeName: null
+      },
       information: []
     };
   },
@@ -146,48 +154,34 @@ export default {
       // menu = data;
     },
     async getResiterMenu() {
-      console.log("=== Show Order Rooms ===");
+      console.log("=== Show OrderRooms (state = 2) ===");
 
-      const roomCount = await this.AdminInstance.getRoomsCount(
+      const CHAddress = await this.AdminInstance.findChickenHouse(
         this.storeName
-        // this.owner.price
+      );
+      const ChickenHouseInstance = contractInstance.getChickenHouseInstance(
+        CHAddress
       );
 
-      console.log(`---- get Order Rooms Info, Counts: ${roomCount}`);
-      this.information = [];
-      for (let idx = 0; idx < roomCount; idx++) {
-        await this.AdminInstance.getStoreMenu(this.storeName, idx).then(
-          result => {
-            console.log("result:::");
-            const chickens = result[0];
-            const prices = result[1];
-            // console.dir(result[0][0]);
-            // console.dir(result[1][0]);
-            for (let i = 0; i < chickens.length; i++) {
-              console.log(chickens[i], prices[i]);
-              this.information.push({
-                chicken: chickens[i],
-                price: `${prices[i]}`
-              });
-            }
+      const roomCount = await ChickenHouseInstance.getRoomsCount();
 
-            // for (let i = 0; i < result[i].length; i++) {
-            //   for (let j = 0; j < result[i][j].length; j++) {
-            //     this.information.push({
-            //       menu: result[i][j],
-            //       price: result[i][j]
-            //     });
-            //   }
-            // }
-          }
+      ChickenHouseInstance.getStoreMenu().then(result => {
+        console.log("---- get store menus from ETH ----");
+        console.log(result);
+
+        console.log(
+          `---- get OrderRooms Info (state = 2), Counts: ${roomCount}`
         );
-        // .catch(error => {
-        //   console.error(error);
-        // });
-      }
-      console.log("=== Done Show Order Room ===");
-      console.log(">>>>>>>>");
-      console.dir(this.information);
+        this.information = [];
+        for (let i = 0; i < result._chickens.length; i++) {
+          this.information.push({
+            chicken: result._chickens[i],
+            price: `${result._prices[i]}`
+          });
+        }
+      });
+
+      console.log("=== Done Show OrderRoom (state = 2) ===");
     }
   },
 
@@ -204,4 +198,26 @@ export default {
 };
 </script>
 
-<style></style>
+<style>
+html {
+  margin: 0;
+  padding: 0;
+}
+body {
+  position: relative;
+  overflow: hidden; /* Hide scrollbars */
+}
+
+#map {
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  opacity: 0.7;
+}
+
+#contents {
+  position: absolute;
+  top: 0%;
+  z-index: 2;
+}
+</style>
