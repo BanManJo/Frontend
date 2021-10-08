@@ -1,31 +1,29 @@
 <template>
   <v-app>
-    <v-toolbar dark color="primary">
-      <v-toolbar-title class="text-h3 text--white">{{
+    <v-toolbar color="primary">
+      <v-toolbar-title class="text-h3 title_color">{{
         storeName
       }}</v-toolbar-title>
       <v-spacer></v-spacer>
 
-      <v-btn-toggle>
-        <v-btn
-          class="text-h3 text--white"
-          x-large
-          @click="changeOnOff"
-          value="left"
-          color="blue"
-        >
-          영업 시작
-        </v-btn>
-        <v-btn
-          class="text-h3 text--white"
-          @click="getOnOff"
-          x-large
-          value="center"
-          color="red"
-        >
-          영업 종료
-        </v-btn>
-      </v-btn-toggle>
+      <v-btn
+        class="text-h3"
+        x-large
+        @click="changeOn"
+        value="left"
+        :color="onColor"
+      >
+        영업 시작
+      </v-btn>
+      <v-btn
+        class="text-h3 text--white"
+        @click="changeOff"
+        x-large
+        value="right"
+        :color="offColor"
+      >
+        영업 종료
+      </v-btn>
       <v-spacer></v-spacer>
       <div>
         <router-link :to="`/ownerMyPage/${storeName}`">
@@ -56,6 +54,10 @@
     >
       event test button
     </v-btn> -->
+
+    <!-- <div class="text-h3" x-large value="left" :class="colorName + '_style'">
+      영업 시작
+    </div> -->
 
     <v-container>
       <base-material-card
@@ -166,7 +168,13 @@ export default {
   data() {
     return {
       AdminInstance: contractInstance.getAdminInstance(), // Admin Instance data
+      onColor: "white",
+      offColor: "white",
+      clicked: true,
 
+      // color1: "backgroundColor: blue",
+      // color2: "backgroundColor: red",
+      state: "",
       // text: "center",
       // icon: "justify",
       // toggle_none: null,
@@ -230,8 +238,8 @@ export default {
             .then(result => {
               self.orderRooms.push({
                 roomNumber: preResult.returnValues._roomIndex,
-                menu: result.chicken,
-                price: result.price,
+                menu: result._chickenName,
+                price: result._price,
                 id: preResult.returnValues._roomIndex
               });
             })
@@ -248,16 +256,42 @@ export default {
         alert(`Store Counts : ${count}`);
       });
     },
-    async changeOnOff() {
-      alert("확인을 누르시면 가게가 활성화 됩니다.");
+    async changeOn() {
+      alert("확인을 누르시면 가게가 영업을 시작합니다.");
       const CHAddress = await this.AdminInstance.findChickenHouse(
         this.storeName
       );
       const ChickenHouseInstance = contractInstance.getChickenHouseInstance(
         CHAddress
       );
-      ChickenHouseInstance.changeOnOff();
+      const result = await ChickenHouseInstance.getChickenHouse();
+      if (result._onOff == 0) {
+        await ChickenHouseInstance.changeOnOff();
+        this.onColor = "blue";
+        this.offColor = "white";
+      } else if (result._onOff == 1) {
+        alert("현재 영업중인 상태 입니다.");
+      }
     },
+
+    async changeOff() {
+      alert("확인을 누르시면 가게가 영업을 종료합니다.");
+      const CHAddress = await this.AdminInstance.findChickenHouse(
+        this.storeName
+      );
+      const ChickenHouseInstance = contractInstance.getChickenHouseInstance(
+        CHAddress
+      );
+      const result = await ChickenHouseInstance.getChickenHouse();
+      if (result._onOff == 1) {
+        await ChickenHouseInstance.changeOnOff();
+        this.onColor = "white";
+        this.offColor = "red";
+      } else if (result._onOff == 0) {
+        alert("현재 영업이 종료된 상태 입니다.");
+      }
+    },
+
     async getOnOff() {
       alert("현재 장사 상태.");
 
@@ -271,6 +305,28 @@ export default {
       ChickenHouseInstance.getChickenHouse(this.storeName).then(number => {
         alert(`store switch : ${number._onOff}`);
       });
+    },
+
+    Unix_timestamp(t) {
+      var date = new Date(t * 1000);
+      var year = date.getFullYear();
+      var month = "0" + (date.getMonth() + 1);
+      var day = "0" + date.getDate();
+      var hour = "0" + date.getHours();
+      var minute = "0" + date.getMinutes();
+      var second = "0" + date.getSeconds();
+      return (
+        // month.substr(-2) +
+        // "월 " +
+        // day.substr(-2) +
+        // "일 " +
+        hour.substr(-2) +
+        "시 " +
+        minute.substr(-2) +
+        "분 " +
+        second.substr(-2) +
+        "초 "
+      );
     },
 
     async approveOrder(idx) {
@@ -326,6 +382,24 @@ export default {
         await ChickenHouseInstance.finishCook(idx);
         this.getOrderedLists();
       } else if (con_test == false) {
+      }
+    },
+
+    async getOnOff() {
+      const CHAddress = await this.AdminInstance.findChickenHouse(
+        this.storeName
+      );
+      const ChickenHouseInstance = contractInstance.getChickenHouseInstance(
+        CHAddress
+      );
+      const result = await ChickenHouseInstance.getChickenHouse();
+      console.log(result);
+      if (result._onOff == 0) {
+        this.onColor = "white";
+        this.offColor = "red";
+      } else if (result._onOff == 1) {
+        this.onColor = "blue";
+        this.offColor = "white";
       }
     },
 
@@ -394,7 +468,7 @@ export default {
                 roomNumber: idx,
                 kind: "순살",
                 menu: result._chickenName,
-                time: now,
+                time: this.Unix_timestamp(result._receiveTime),
                 id: idx
               });
             }
@@ -426,6 +500,7 @@ export default {
   },
   created() {
     console.log(`=== Created OwnerPage2 ${this.storeName} ===`);
+    this.getOnOff();
     this.getOrderRooms();
     this.getOrderedLists();
   },
@@ -442,5 +517,18 @@ export default {
 }
 .orderedList.뼈 {
   border-left: 6px solid #f8a529;
+}
+/* .button1 {
+  background-color: blue;
+}
+.button2 {
+  background-color: red;
+}
+*/
+.title_color {
+  color: white;
+}
+.blue_style {
+  background-color: blue;
 }
 </style>

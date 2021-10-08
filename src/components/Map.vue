@@ -28,6 +28,7 @@ const contractInstance = new ContractInstance();
 import MakeInfoWindow from "../utils/info_window";
 
 let roomCreatedEmitter;
+let roomMatchedEmitter;
 export default {
   name: "map",
   // store,
@@ -73,7 +74,6 @@ export default {
     /* ============= 주문방 만들기 함수 ============= */
     createOrderRoom(event, flag = false) {
       console.log("=== Create Order Room ===");
-      console.log(event);
       this.room.roomModal = !this.room.roomModal;
       if (flag) {
         this.room.storeName = event; // 변경해야 함.. (marker의 title로 대체 할 수 있다면?)
@@ -85,24 +85,34 @@ export default {
       this.room.menus = [];
 
       /**** 새롭게 구조화 된 부분 *****/
+      console.log(this.room.storeName);
       this.AdminInstance.findChickenHouse(this.room.storeName).then(
         CHAddress => {
-          // console.log(contract);
+          console.log(CHAddress);
           const ChickenHouseInstance = contractInstance.getChickenHouseInstance(
             CHAddress
           );
-          ChickenHouseInstance.getStoreMenu().then(result => {
+          ChickenHouseInstance.getStoreMenu().then(menus => {
             console.log("---- get store menus from ETH ----");
-            console.log(result);
+            console.log(menus);
 
-            for (let i = 0; i < result._chickens.length; i++) {
+            // for (let i = 0; i < result._chickens.length; i++) {
+            //   this.room.menus.push({
+            //     chicken: result._chickens[i],
+            //     price: `${result._prices[i]}`,
+            //     description: "고소한 올리브유로 티킨 바삭한 프라이드 치킨!",
+            //     selected: false
+            //   });
+            // }
+            menus.forEach(menu => {
               this.room.menus.push({
-                chicken: result._chickens[i],
-                price: `${result._prices[i]}`,
+                ...menu,
                 description: "고소한 올리브유로 티킨 바삭한 프라이드 치킨!",
                 selected: false
               });
-            }
+            });
+
+            console.log(this.room.menus);
           });
         }
       );
@@ -176,6 +186,7 @@ export default {
                 subText: `종료 시간: 15:23 | ${result._price}₩`,
                 show: false,
                 description: "황금올리브 같이 먹을 분 구함!~",
+                menuState: result._menuState,
                 index: idx
               });
             }
@@ -193,19 +204,39 @@ export default {
         roomCreatedEmitter.removeListener();
       }
 
+      if (roomMatchedEmitter) {
+        console.log(roomMatchedEmitter);
+        roomMatchedEmitter.removeListener();
+      }
+
       roomCreatedEmitter = ChickenHouseInstance.watchIfCreated(
         (error, result) => {
           if (!error && this.drawer) {
-            console.log(result);
             // this.addOrderRooms(result);
             this.navDrawer.orderRooms.push({
               headline: result.returnValues._chickenName,
               subText: `종료 시간: ${result.returnValues._finish} | ${result.returnValues._price}₩`,
               show: false,
               description: "황금올리브 같이 먹을 분 구함!~",
-              index: result.returnValues._roomNumber
+              menuState: result.returnValues._menuState,
+              index: Number(result.returnValues._roomNumber)
             });
             this.navDrawer.roomCount += 1;
+          }
+        }
+      );
+      roomMatchedEmitter = ChickenHouseInstance.watchIfMatched(
+        (error, result) => {
+          if (!error && this.drawer) {
+            const roomIndex = result.returnValues._roomIndex;
+            const length = this.navDrawer.orderRooms.length;
+            for (let i = 0; i < length; i++) {
+              if (this.navDrawer.orderRooms[i].index == roomIndex) {
+                this.navDrawer.orderRooms.splice(i, 1);
+                break;
+              }
+            }
+            this.navDrawer.roomCount -= 1;
           }
         }
       );
@@ -393,6 +424,7 @@ export default {
         };
         this.markerDatas.push(markerData);
         this.createMarker(markerData);
+        this.map.setCenter(new kakao.maps.LatLng(latitude, longitude));
       } else {
         throw error;
       }

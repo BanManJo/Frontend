@@ -46,11 +46,11 @@ export class ChickenHouseRepository {
     }
   }
 
-  async createRoom(storeName, price, finishTime, chicken) {
+  async createRoom(storeName, price, finishTime, chicken, menuState) {
     try {
       await this._checkAccountAvailable();
       const tx = await this.contractInstance.methods
-        .createRoom(storeName, chicken, price, finishTime)
+        .createRoom(storeName, chicken, price, finishTime, menuState)
         .send({ from: this.account, gas: this.gas })
         .on("transactionHash", function(hash) {
           // return hash;
@@ -142,6 +142,23 @@ export class ChickenHouseRepository {
     }
   }
 
+  async changeOnOff() {
+    try {
+      await this._checkAccountAvailable();
+      await this.contractInstance.methods
+        .changeOnOff()
+        .send({ from: this.account, gas: this.gas })
+        .on("transactionHash", function(hash) {
+          return hash;
+        })
+        .on("error", function(error, receipt) {
+          throw error;
+        });
+    } catch (e) {
+      throw e;
+    }
+  }
+
   async getChickenHouse() {
     return new Promise(async (resolve, reject) => {
       try {
@@ -159,7 +176,7 @@ export class ChickenHouseRepository {
     return new Promise(async (resolve, reject) => {
       try {
         const result = await this.contractInstance.methods
-          .getStoreMenu()
+          .getStoreMenu2()
           .call();
         resolve(result);
       } catch (e) {
@@ -180,13 +197,28 @@ export class ChickenHouseRepository {
   }
 
   async changeOnOff() {
-    const accounts = await window.ethereum.request({
-      method: "eth_requestAccounts"
-    });
-    console.log("changeOnOff");
+    try {
+      await this._checkAccountAvailable();
+      await this.contractInstance.methods
+        .changeOnOff()
+        .send({ from: this.account, gas: this.gas })
+        .on("transactionHash", function(hash) {
+          return hash;
+        })
+        .on("error", function(error, receipt) {
+          throw error;
+        });
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  async deleteMenu() {
+    this._checkAccountAvailable();
+    console.log("deleteMenu");
     return new Promise(async (resolve, reject) => {
       try {
-        this.contractInstance.methods.changeOnOff().send(
+        this.contractInstance.methods.deleteMenu().send(
           { from: accounts[0], gas: 4476768 },
 
           (err, transaction) => {
@@ -208,9 +240,18 @@ export class ChickenHouseRepository {
       throw e;
     }
   }
+  //대영 roomCreated event
+  async watchIfCreated2(cb) {
+    const currentBlock = await this.getCurrentBlock();
+    await this._checkAccountAvailable();
+    this.contractInstance.getPastEvents(
+      "roomCreated",
+      { filter: { _Ownedby: [this.account] }, fromBlock: 0, toBlock: "latest" },
+      cb
+    );
+  }
 
   watchIfCreated(cb) {
-    console.log("event1");
     const emitter = this.contractInstance.events
       .roomCreated(
         {
@@ -233,15 +274,16 @@ export class ChickenHouseRepository {
     });
   }
 
-  async watchIfMatched(cb) {
-    await this._checkAccountAvailable();
-    console.log("event1");
-    this.contractInstance.events.matchFinish(
-      {
-        fromBlock: "latest",
-        ToBlock: "latest"
-      },
-      cb
-    );
+  watchIfMatched(cb) {
+    const emitter = this.contractInstance.events
+      .matchFinish(
+        {
+          fromBlock: "latest",
+          ToBlock: "latest"
+        },
+        cb
+      )
+      .on("data", console.log);
+    return emitter;
   }
 }

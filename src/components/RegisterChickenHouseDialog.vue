@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div style="overflow: hidden">
     <v-dialog
       v-model="registerCH.dialog"
       fullscreen
@@ -12,7 +12,7 @@
       <v-card>
         <v-toolbar dark color="primary">
           <v-btn icon dark @click="registerCH.dialog = false">
-            <v-icon>close</v-icon>
+            <v-icon>mdi-close</v-icon>
           </v-btn>
           <v-toolbar-title>치킨 집 등록하기</v-toolbar-title>
           <v-spacer></v-spacer>
@@ -23,25 +23,25 @@
         <v-card-title>
           <span class="headline">User Profile</span>
         </v-card-title>
-        <v-layout row>
-          <v-flex xs4>
-            <v-subheader>치킨집 이름</v-subheader>
-          </v-flex>
-          <v-flex xs5>
+        <v-row justify="center" align="center">
+          <v-col cols="12" sm="3" lg="2">
+            <h3>치킨집 이름</h3>
+          </v-col>
+          <v-col cols="12" sm="3" lg="4">
             <v-text-field
               v-model="storeName"
               label="Store Name"
               placeholder="BBQ 부천점"
               :rules="[required]"
             ></v-text-field>
-          </v-flex>
-        </v-layout>
+          </v-col>
+        </v-row>
 
-        <v-layout row>
-          <v-flex xs4>
-            <v-subheader>주소 입력</v-subheader>
-          </v-flex>
-          <v-flex xs5>
+        <v-row justify="center" align="center">
+          <v-col cols="12" sm="6" lg="2">
+            <h3>주소 입력</h3>
+          </v-col>
+          <v-col cols="12" sm="6" lg="3">
             <v-text-field
               id="addressField"
               label="Address"
@@ -51,12 +51,14 @@
               :rules="[required]"
               readonly
             ></v-text-field>
-          </v-flex>
-          <v-btn @click="execDaumPostcod" color="primary">주소 찾기</v-btn>
-        </v-layout>
-        <v-layout>
-          <v-flex xs4></v-flex>
-          <v-flex xs5>
+          </v-col>
+          <v-col cols="12" sm="6" lg="1">
+            <v-btn @click="execDaumPostcod" color="primary">주소 찾기</v-btn>
+          </v-col>
+        </v-row>
+        <v-row justify="center" align="center">
+          <v-col cols="12" sm="6" lg="2"></v-col>
+          <v-col cols="12" sm="6" lg="4">
             <div
               id="map-chicken-house"
               style="
@@ -66,52 +68,78 @@
                 display: none;
               "
             ></div>
-          </v-flex>
-        </v-layout>
-        <v-layout row wrap>
-          <v-flex xs4>
-            <v-subheader>메뉴 등록</v-subheader>
-          </v-flex>
-          <v-flex xs2>
+          </v-col>
+        </v-row>
+        <v-row justify="center" align="center">
+          <v-col cols="12" sm="6" lg="2">
+            <h3>메뉴 등록</h3>
+          </v-col>
+          <v-col cols="12" sm="6" lg="1">
             <v-text-field
               v-model="chicken"
               color="purple darken-2"
               label="치킨 이름"
               required
             ></v-text-field>
-          </v-flex>
-          <v-flex xs1></v-flex>
-          <v-flex xs2>
+          </v-col>
+          <v-col cols="12" sm="6" lg="1">
             <v-text-field
               v-model="price"
               color="blue darken-2"
               label="가격"
               required
             ></v-text-field>
-          </v-flex>
-          <v-flex xs1>
+          </v-col>
+          <v-col cols="12" sm="6" lg="1">
             <v-checkbox v-model="sunsal" label="순살?"></v-checkbox>
-          </v-flex>
-          <v-btn @click="addMenu" class="mx-1" fab dark small color="indigo">
-            <v-icon dark>add</v-icon>
-          </v-btn>
-        </v-layout>
-        <v-layout row>
-          <v-flex xs4>
-            <v-subheader>치킨 메뉴</v-subheader>
-          </v-flex>
-          <v-flex xs7>
-            <v-layout style="padding-bottom: 100px" wrap>
-              <template mb4 v-for="(menu, idx) in menus">
-                <v-chip :key="idx" v-model="menu.appended" close>
-                  <span>{{ menu.chicken }}</span> / 가격:
-                  <span>{{ menu.price }}</span
-                  >원
-                </v-chip>
+          </v-col>
+          <v-col cols="12" sm="6" lg="1">
+            <v-btn @click="addMenu" class="mx-1" fab dark small color="indigo">
+              <v-icon dark>mdi-plus</v-icon>
+            </v-btn>
+          </v-col>
+        </v-row>
+        <v-row justify="center" align="center">
+          <v-col cols="1"></v-col>
+          <v-col cols="3">
+            <v-textarea
+              v-model="description"
+              label="메뉴 설명"
+              clearable
+              no-resize
+              outlined
+              rows="1"
+            ></v-textarea>
+          </v-col>
+        </v-row>
+        <v-row justify="center" align="start">
+          <v-col cols="12" sm="6" lg="2">
+            <h3>등록된 메뉴</h3>
+          </v-col>
+          <v-col cols="12" sm="6" lg="6">
+            <v-row>
+              <template v-for="(menu, idx) in menus">
+                <v-col v-if="menu.appended" :key="idx" cols="12" sm="6" lg="4">
+                  <base-material-menu-card
+                    color="#FF8C00"
+                    icon="mdi-food-drumstick"
+                    :title="menu.chicken"
+                    :value="`${menu.price}`"
+                    :sub-icon="
+                      menu.sunsal
+                        ? 'mdi-checkbox-marked'
+                        : 'mdi-checkbox-blank-outline'
+                    "
+                    :menu-description="menu.description"
+                    sub-text="순살 치킨! "
+                    smallValue="ETH"
+                    @removeMenu="menu.appended = false"
+                  />
+                </v-col>
               </template>
-            </v-layout>
-          </v-flex>
-        </v-layout>
+            </v-row>
+          </v-col>
+        </v-row>
       </v-card>
     </v-dialog>
   </div>
@@ -131,6 +159,7 @@ export default {
       chicken: "",
       price: "",
       sunsal: false,
+      description: "",
       menus: [],
       address: "",
       map: null,
@@ -186,21 +215,30 @@ export default {
       console.log("=== Done Register ===");
     },
     addMenu() {
-      if (this.chicken === "" || this.price < 0 || this.price == "") {
+      if (
+        this.chicken === "" ||
+        this.price < 0 ||
+        this.price == "" ||
+        isNaN(Number(this.price))
+      ) {
         alert("다시 입력해주세요.");
         this.chicken = "";
-        this.price = "";
+        this.description = "";
+        this.price = null;
         this.sunsal = false;
         return;
       }
+      const id = this.menus.length;
       this.menus.push({
         chicken: this.chicken,
-        price: parseInt(this.price),
+        price: Number(this.price),
         appended: true,
-        sunsal: this.sunsal
+        sunsal: this.sunsal,
+        description: this.description
       });
       this.chicken = "";
-      this.price = "";
+      this.description = "";
+      this.price = null;
       this.sunsal = false;
       console.log(this.menus);
     },
