@@ -1,16 +1,17 @@
 <template>
   <base-material-card
-    :icon="icon"
+    :icon="clockIcon"
+    :color="clockBgColor"
     class="v-card--material-stats"
     v-bind="$attrs"
     v-on="$listeners"
   >
     <template v-slot:after-heading>
       <div class="ml-auto text-right">
-        <div class="body-3 grey--text font-weight-light" v-text="title" />
+        <div class="body-3 grey--text font-weight-light" v-text="Duration" />
 
         <h3 class="display-2 font-weight-light text--primary">
-          {{ value }} <small>{{ smallValue }}</small>
+          {{ value }} <br /><small>{{ smallValue }}ETH</small>
         </h3>
       </div>
     </template>
@@ -65,6 +66,8 @@
 <script>
 import Card from "./Card";
 
+let timeInterval;
+
 export default {
   name: "MaterialStatsCard",
 
@@ -92,8 +95,8 @@ export default {
       type: String,
       default: undefined
     },
-    title: {
-      type: String,
+    duration: {
+      type: Number,
       default: undefined
     },
     value: {
@@ -116,6 +119,44 @@ export default {
       type: Number,
       default: undefined
     }
+  },
+  data() {
+    return {
+      durationData: { timer: 0 }
+    };
+  },
+  computed: {
+    Duration() {
+      const seconds = this.durationData.timer;
+      return (
+        Math.floor(seconds / 60) + ":" + (seconds % 60 ? seconds % 60 : "00")
+      );
+    },
+    clockIcon() {
+      const minutes = Math.floor(this.durationData.timer / 60);
+      return minutes >= 20
+        ? "mdi-clock-time-five-outline"
+        : minutes >= 5
+        ? "mdi-clock-time-eight-outline"
+        : "mdi-clock-time-eleven-outline";
+    },
+    clockBgColor() {
+      const minutes = Math.floor(this.durationData.timer / 60);
+      return minutes >= 20 ? "green" : minutes >= 5 ? "orange" : "red";
+    }
+  },
+  mounted() {
+    console.log("================Created" + Math.floor(Date.now() / 1000));
+
+    // set start timer
+    this.durationData.timer = this.duration - Math.floor(Date.now() / 1000);
+    console.log(this.Duration);
+    // set timer interval
+    timeInterval = setInterval(() => (this.durationData.timer -= 1), 1000);
+  },
+  beforeDestroy() {
+    console.log("=============Destroyed" + timeInterval);
+    clearInterval(timeInterval);
   }
 };
 </script>

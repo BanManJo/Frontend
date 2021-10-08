@@ -17,7 +17,7 @@
             color="orange"
             white
             fab
-            @click="setDrawer(false)"
+            @click="closeDrawer"
           >
             <v-icon>mdi-arrow-left-thick</v-icon>
           </v-btn>
@@ -28,14 +28,7 @@
             style="max-width: 70%"
           >
             <template v-if="$vuetify.breakpoint.mdAndUp" v-slot:append-outer>
-              <v-btn
-                @click="addOrderRooms"
-                class="mt-n2"
-                elevation="1"
-                color="orange"
-                fab
-                x-small
-              >
+              <v-btn class="mt-n2" elevation="1" color="orange" fab x-small>
                 <v-icon>mdi-magnify</v-icon>
               </v-btn>
             </template>
@@ -80,8 +73,9 @@
           <base-material-order-room-card
             color="orange"
             icon="mdi-clock-time-eight-outline"
-            :title="orderRoom.subText"
-            :value="orderRoom.headline"
+            :duration="orderRoom.duration"
+            :value="orderRoom.chickenName"
+            :small-value="orderRoom.price"
             :sub-icon="
               orderRoom.menuState === '2'
                 ? 'mdi-checkbox-marked'
@@ -160,21 +154,17 @@ export default {
       // storeIdx (if needed)
       console.log("=== Done Create Match Room ===");
     },
+    closeDrawer() {
+      this.setDrawer(false);
+      this.navDrawer.orderRooms = [];
+    },
     ...mapMutations({
       setDrawer: "SET_DRAWER"
-    }),
-    addOrderRooms(chickenName, price, finish) {
-      this.navDrawer.orderRooms.push({
-        headline: chickenName,
-        subText: `종료 시간: ${finish} | ${price}₩`,
-        show: false,
-        description: "황금올리브 같이 먹을 분 구함!~",
-        index: 2
-      });
-    }
+    })
   },
-  async mounted() {
+  mounted() {
     console.log("=== Mounted Navigation Drawer ===");
+    // console.log(this.navDrawer.orderRooms[0].duration);
   },
   updated() {
     console.log("=== Updated Navigation Drawer ===");
