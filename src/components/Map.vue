@@ -1,7 +1,7 @@
 <template>
   <v-app>
     <v-main>
-      <v-container id="map" fluid></v-container>
+      <div id="map" fluid></div>
     </v-main>
 
     <v-main id="contents"> </v-main>
@@ -136,11 +136,9 @@ export default {
       if (this.drawer && event.target.id === this.navDrawer.storeName) {
         return;
       }
-      this.setDrawer(true);
-      this.navDrawer.orderRooms = [];
 
       // 주문방보기 요청, 이전에 존재한 iw 는 지운다.
-      if (this.navDrawer.storeName) {
+      if (this.drawer && this.navDrawer.storeName) {
         this.markerDatas.forEach((markerData, idx) => {
           if (markerData.storeName === this.navDrawer.storeName) {
             this.infowindows[idx].close();
@@ -148,6 +146,8 @@ export default {
           }
         });
       }
+      this.setDrawer(true);
+      this.navDrawer.orderRooms = [];
 
       this.navDrawer.storeName = event.target.id;
 
@@ -179,11 +179,14 @@ export default {
         await OrderRoomInstance.getRoomInfo()
           .then(result => {
             console.log(result);
+            console.log(result._startTime);
+            console.log(result._finishTime);
             if (result._state === "1") {
               counts++;
               this.navDrawer.orderRooms.push({
-                headline: result._chickenName,
-                subText: `종료 시간: 15:23 | ${result._price}₩`,
+                chickenName: result._chickenName,
+                duration: +result._startTime + +result._finishTime * 60,
+                price: result._price,
                 show: false,
                 description: "황금올리브 같이 먹을 분 구함!~",
                 menuState: result._menuState,
@@ -200,12 +203,12 @@ export default {
       // Create Room Event Listener
       // 기존의 존재하는 리스너 해제
       if (roomCreatedEmitter) {
-        console.log(roomCreatedEmitter);
+        console.log("--- roomCreatedEmitter Removed ---");
         roomCreatedEmitter.removeListener();
       }
 
       if (roomMatchedEmitter) {
-        console.log(roomMatchedEmitter);
+        console.log("--- roomMatchedEmitter Removed ---");
         roomMatchedEmitter.removeListener();
       }
 
@@ -213,13 +216,15 @@ export default {
         (error, result) => {
           if (!error && this.drawer) {
             // this.addOrderRooms(result);
+            const returns = result.returnValues;
             this.navDrawer.orderRooms.push({
-              headline: result.returnValues._chickenName,
-              subText: `종료 시간: ${result.returnValues._finish} | ${result.returnValues._price}₩`,
+              chickenName: returns._chickenName,
+              duration: +returns._date + +returns._finish * 60,
+              price: returns._price,
               show: false,
               description: "황금올리브 같이 먹을 분 구함!~",
-              menuState: result.returnValues._menuState,
-              index: Number(result.returnValues._roomNumber)
+              menuState: returns._menuState,
+              index: Number(returns._roomNumber)
             });
             this.navDrawer.roomCount += 1;
           }
