@@ -81,7 +81,7 @@
     </v-container>
 
     <!-- modal  -->
-    <Owner-dialog :owner="owner"></Owner-dialog>
+    <Owner-dialog :owner="owner" @menuChanged="setMenus"></Owner-dialog>
   </v-app>
 </template>
 
@@ -153,6 +153,13 @@ export default {
       // console.log("MENUDATA :", data);
       // menu = data;
     },
+    setMenus: function(_newMenu) {
+      let menuName = _newMenu.menu;
+      let price = _newMenu.price;
+
+      console.log("MENU CHANGED", menuName, price);
+      // let index = this.information[num].index;
+    },
     async getResiterMenu() {
       console.log("=== Show OrderRooms (state = 2) ===");
 
@@ -174,10 +181,7 @@ export default {
         );
         this.information = [];
         for (let i = 0; i < result._chickens.length; i++) {
-          this.information.push({
-            chicken: result._chickens[i],
-            price: `${result._prices[i]}`
-          });
+          this.information.push({});
         }
       });
 
