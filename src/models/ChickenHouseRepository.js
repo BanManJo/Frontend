@@ -185,6 +185,17 @@ export class ChickenHouseRepository {
     });
   }
 
+  async setMenu() {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const result = await this.contractInstance.methods.setMenu().call();
+        resolve(result);
+      } catch (e) {
+        reject(e);
+      }
+    });
+  }
+
   async deleteMenu() {
     this._checkAccountAvailable();
     console.log("deleteMenu");
