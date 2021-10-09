@@ -196,23 +196,6 @@ export class ChickenHouseRepository {
     });
   }
 
-  async changeOnOff() {
-    try {
-      await this._checkAccountAvailable();
-      await this.contractInstance.methods
-        .changeOnOff()
-        .send({ from: this.account, gas: this.gas })
-        .on("transactionHash", function(hash) {
-          return hash;
-        })
-        .on("error", function(error, receipt) {
-          throw error;
-        });
-    } catch (e) {
-      throw e;
-    }
-  }
-
   async deleteMenu() {
     this._checkAccountAvailable();
     console.log("deleteMenu");

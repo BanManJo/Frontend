@@ -158,7 +158,7 @@ export default {
       let price = _newMenu.price;
 
       console.log("MENU CHANGED", menuName, price);
-      let index = this.information[num].index;
+      // let index = this.information[num].index;
     },
     async getResiterMenu() {
       console.log("=== Show OrderRooms (state = 2) ===");
@@ -181,10 +181,7 @@ export default {
         );
         this.information = [];
         for (let i = 0; i < result._chickens.length; i++) {
-          this.information.push({
-            chicken: result._chickens[i],
-            price: `${result._prices[i]}`
-          });
+          this.information.push({});
         }
       });
 
