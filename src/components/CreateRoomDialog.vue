@@ -74,6 +74,7 @@
             max="30"
             thumb-label
           ></v-slider>
+
           <v-chip class="pa-1">{{ room.timer }} Minutes</v-chip>
           <!-- </v-flex> -->
           <!-- <v-flex style="height: 100%; padding-bottom: 5px" xs12 sm12 md12> -->
@@ -81,9 +82,7 @@
         </v-card-text>
         <v-divider></v-divider>
         <v-card-actions>
-          <v-btn @click="createOrderRoom()" outlined color="teal"
-            >Create Room</v-btn
-          >
+          <v-btn @click="checkStore()" outlined color="teal">Create Room</v-btn>
           <v-spacer></v-spacer>
         </v-card-actions>
       </v-card>
@@ -112,6 +111,25 @@ export default {
     room: Object
   },
   methods: {
+    async checkStore() {
+      const CHAddress = await this.AdminInstance.findChickenHouse(
+        this.room.storeName
+      );
+      console.log(CHAddress);
+      const ChickenHouseInstance = contractInstance.getChickenHouseInstance(
+        CHAddress
+      );
+
+      const storeState = await ChickenHouseInstance.getChickenHouse();
+      console.log(storeState);
+      if (storeState._onOff == 0) {
+        alert(
+          `죄송합니다. 지금 선택하신 ${this.room.storeName} 가게는 영업중인 가게가 아닙니다.`
+        );
+      } else {
+        this.createOrderRoom();
+      }
+    },
     async createOrderRoom() {
       console.log("=== Create Order Room ===");
       try {

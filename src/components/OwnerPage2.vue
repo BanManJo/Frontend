@@ -80,7 +80,7 @@
                 <div class="text-h3">방번호 : {{ orderRoom.roomNumber }}</div>
                 <br />
                 <div class="text-h4">
-                  메뉴 : {{ orderRoom.menu }} ({{ orderRoom.kind }})
+                  메뉴 : {{ orderRoom.menu }} / {{ orderRoom.kind }}
                 </div>
                 <div class="text-h4">가격 : {{ orderRoom.price }}</div>
               </v-card-text>
@@ -236,12 +236,23 @@ export default {
           );
           OrderRoomInstance.getRoomInfo()
             .then(result => {
-              self.orderRooms.push({
-                roomNumber: preResult.returnValues._roomIndex,
-                menu: result._chickenName,
-                price: result._price,
-                id: preResult.returnValues._roomIndex
-              });
+              if (result._menuState === "2") {
+                self.orderRooms.push({
+                  roomNumber: preResult.returnValues._roomIndex,
+                  menu: result._chickenName,
+                  kind: "순살",
+                  price: result._price,
+                  id: preResult.returnValues._roomIndex
+                });
+              } else if (result._menuState === "1") {
+                self.orderRooms.push({
+                  roomNumber: preResult.returnValues._roomIndex,
+                  menu: result._chickenName,
+                  kind: "뼈",
+                  price: result._price,
+                  id: preResult.returnValues._roomIndex
+                });
+              }
             })
             .catch(error => {
               console.error(error);
@@ -290,21 +301,6 @@ export default {
       } else if (result._onOff == 0) {
         alert("현재 영업이 종료된 상태 입니다.");
       }
-    },
-
-    async getOnOff() {
-      alert("현재 장사 상태.");
-
-      const CHAddress = await this.AdminInstance.findChickenHouse(
-        this.storeName
-      );
-      const ChickenHouseInstance = contractInstance.getChickenHouseInstance(
-        CHAddress
-      );
-
-      ChickenHouseInstance.getChickenHouse(this.storeName).then(number => {
-        alert(`store switch : ${number._onOff}`);
-      });
     },
 
     Unix_timestamp(t) {
@@ -426,12 +422,23 @@ export default {
         await OrderRoomInstance.getRoomInfo()
           .then(result => {
             if (result._state === "2") {
-              this.orderRooms.push({
-                roomNumber: idx,
-                menu: result._chickenName,
-                price: result._price,
-                id: idx
-              });
+              if (result._menuState === "2") {
+                this.orderRooms.push({
+                  roomNumber: idx,
+                  menu: result._chickenName,
+                  kind: "순살",
+                  price: result._price,
+                  id: idx
+                });
+              } else if (result._menuState === "1") {
+                this.orderRooms.push({
+                  roomNumber: idx,
+                  menu: result._chickenName,
+                  kind: "뼈",
+                  price: result._price,
+                  id: idx
+                });
+              }
             }
           })
           .catch(error => {
@@ -464,13 +471,23 @@ export default {
           .then(result => {
             // console.log(result);
             if (result._state === "3") {
-              this.orderedLists.push({
-                roomNumber: idx,
-                kind: "순살",
-                menu: result._chickenName,
-                time: this.Unix_timestamp(result._receiveTime),
-                id: idx
-              });
+              if (result._menuState === "2") {
+                this.orderedLists.push({
+                  roomNumber: idx,
+                  kind: "순살",
+                  menu: result._chickenName,
+                  time: this.Unix_timestamp(result._receiveTime),
+                  id: idx
+                });
+              } else if (result._menuState === "1") {
+                this.orderedLists.push({
+                  roomNumber: idx,
+                  kind: "뼈",
+                  menu: result._chickenName,
+                  time: this.Unix_timestamp(result._receiveTime),
+                  id: idx
+                });
+              }
             }
           })
           .catch(error => {
