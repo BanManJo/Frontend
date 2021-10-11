@@ -46,37 +46,45 @@ export class ChickenHouseRepository {
     }
   }
 
-  async createRoom(storeName, price, finishTime, chicken, menuState) {
+  async createRoom(storeName, price, finishTime, chicken, menuState, ethPaid) {
     try {
       await this._checkAccountAvailable();
       const tx = await this.contractInstance.methods
         .createRoom(storeName, chicken, price, finishTime, menuState)
-        .send({ from: this.account, gas: this.gas })
-        .on("transactionHash", function(hash) {
-          // return hash;
-        })
-        // .on('receipt', function(receipt){
-        //     ...
-        // })
-        // .on('confirmation', function(confirmationNumber, receipt){
-        //     ...
-        // })
-        .on("error", function(error, receipt) {
-          throw error;
+        .send({
+          from: this.account,
+          gas: this.gas,
+          value: this.web3.utils.toWei(ethPaid)
         });
+      // .on("transactionHash", function(hash) {
+      // return hash;
+      // })
+      // .on('receipt', function(receipt){
+      //     ...
+      // })
+      // .on('confirmation', function(confirmationNumber, receipt){
+      //     ...
+      // })
+      // .on("error", function(error, receipt) {
+      //   throw error;
+      // });
       return tx;
     } catch (e) {
       throw e;
     }
   }
 
-  async matchRoom(roomIndex) {
+  async matchRoom(roomIndex, ethPaid) {
     try {
       await this._checkAccountAvailable();
       let tx;
       await this.contractInstance.methods
         .matchRoom(roomIndex)
-        .send({ from: this.account, gas: this.gas })
+        .send({
+          from: this.account,
+          gas: this.gas,
+          value: this.web3.utils.toWei(ethPaid)
+        })
         .on("transactionHash", function(hash) {
           tx = hash;
         })
@@ -107,11 +115,11 @@ export class ChickenHouseRepository {
     }
   }
 
-  async refund2(roomIndex) {
+  async refundToBothUsers(roomIndex) {
     try {
       await this._checkAccountAvailable();
       await this.contractInstance.methods
-        .refund2(roomIndex)
+        .refundToBothUsers(roomIndex)
         .send({ from: this.account, gas: this.gas })
         .on("transactionHash", function(hash) {
           return hash;

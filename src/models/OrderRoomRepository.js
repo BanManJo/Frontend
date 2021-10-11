@@ -35,12 +35,10 @@ export class OrderRoomRepository {
     }
   }
 
-  async getBalanceOfRomm(storeName, roomNumber) {
+  async getBalance() {
     return new Promise(async (resolve, reject) => {
       try {
-        var result = await this.contractInstance.methods
-          .getBalanceOfRomm(storeName, roomNumber)
-          .call();
+        var result = await this.contractInstance.methods.getBalance().call();
         resolve(result);
       } catch (e) {
         reject(e);

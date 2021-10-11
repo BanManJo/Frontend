@@ -11,7 +11,9 @@
         <div class="body-3 grey--text font-weight-light" v-text="Duration" />
 
         <h3 class="display-2 font-weight-light text--primary">
-          {{ value }} <br /><small>{{ smallValue }}ETH</small>
+          {{ value }}
+          <br />
+          <small>{{ smallValue }}ETH</small>
         </h3>
       </div>
     </template>
@@ -24,17 +26,11 @@
       <v-icon :color="subIconColor" size="16" class="ml-2 mr-1">
         {{ subIcon }}</v-icon
       >
-    </v-btn> -->
+    </v-btn>-->
     <v-row no-gutters justify="space-between">
       <v-col cols="9" class="mr-auto">
-        <v-icon :color="subIconColor" size="16" class="ml-2 mr-1">
-          {{ subIcon }}
-        </v-icon>
-        <span
-          :class="subTextColor"
-          class="grey--text font-weight-light"
-          v-text="'순살'"
-        />
+        <v-icon :color="subIconColor" size="16" class="ml-2 mr-1">{{ subIcon }}</v-icon>
+        <span :class="subTextColor" class="grey--text font-weight-light" v-text="'순살'" />
         <div
           :class="subTextColor"
           class="black--text font-weight-regular display-1"
@@ -48,16 +44,12 @@
             size="36"
             class="ml-5 mr-0"
             v-text="'mdi-account-arrow-right'"
-            @click="$emit('matchRoom', storeName, roomNumber)"
+            @click="$emit('matchRoom', storeName, roomNumber, smallValue)"
           />
         </v-btn>
       </v-col>
       <v-col cols="9">
-        <span
-          :class="subTextColor"
-          class="caption grey--text font-weight-bold"
-          v-text="subText"
-        />
+        <span :class="subTextColor" class="caption grey--text font-weight-bold" v-text="subText" />
       </v-col>
     </v-row>
   </base-material-card>
@@ -77,52 +69,52 @@ export default {
     ...Card.props,
     icon: {
       type: String,
-      required: true
+      required: true,
     },
     subIcon: {
       type: String,
-      default: undefined
+      default: undefined,
     },
     subIconColor: {
       type: String,
-      default: undefined
+      default: undefined,
     },
     subTextColor: {
       type: String,
-      default: undefined
+      default: undefined,
     },
     subText: {
       type: String,
-      default: undefined
+      default: undefined,
     },
     duration: {
       type: Number,
-      default: undefined
+      default: undefined,
     },
     value: {
       type: String,
-      default: undefined
+      default: undefined,
     },
     smallValue: {
       type: String,
-      default: undefined
+      default: undefined,
     },
     matchRoom: {
       type: Function,
-      default: undefined
+      default: undefined,
     },
     storeName: {
       type: String,
-      default: undefined
+      default: undefined,
     },
     roomNumber: {
       type: Number,
-      default: undefined
-    }
+      default: undefined,
+    },
   },
   data() {
     return {
-      durationData: { timer: 0 }
+      durationData: { timer: 0 },
     };
   },
   computed: {
@@ -143,7 +135,7 @@ export default {
     clockBgColor() {
       const minutes = Math.floor(this.durationData.timer / 60);
       return minutes >= 20 ? "green" : minutes >= 5 ? "orange" : "red";
-    }
+    },
   },
   mounted() {
     console.log("================Created" + Math.floor(Date.now() / 1000));
@@ -157,7 +149,7 @@ export default {
   beforeDestroy() {
     console.log("=============Destroyed" + timeInterval);
     clearInterval(timeInterval);
-  }
+  },
 };
 </script>
 
