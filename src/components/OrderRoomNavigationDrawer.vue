@@ -133,7 +133,7 @@ export default {
         contractInstance.getChickenHouseInstance(CHAddress);
 
       // find Room Address and get instnace
-      const ethUserPay = +price / 2;
+      const ethUserPay = +price;
       await ChickenHouseInstance.matchRoom(
         roomNumber,
         ethUserPay.toString()

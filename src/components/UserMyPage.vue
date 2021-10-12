@@ -247,6 +247,7 @@ export default {
             roomNumber: returns._roomIndex,
             state: "성공",
           });
+          this.orderedLists2 = {};
         } else {
           console.log(error);
         }
