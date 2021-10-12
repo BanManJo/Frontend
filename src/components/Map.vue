@@ -10,6 +10,20 @@
     <order-room-navigation-drawer :navDrawer="navDrawer" @createOrderRoom="createOrderRoom"></order-room-navigation-drawer>
     <!-- modal -->
     <create-room-dialog :room="room"></create-room-dialog>
+
+    <v-btn
+      @click="setCurrentPos"
+      class="mb-15 mr-5"
+      absolute
+      bottom
+      right
+      fab
+      regular
+      dark
+      :color="showWhereUserIs ? 'yellow darken-2' : 'white'"
+    >
+      <v-icon :color="showWhereUserIs ? 'white' : 'yellow darken-2' " large>mdi-crosshairs-gps</v-icon>
+    </v-btn>
   </v-app>
 </template>
 
@@ -23,6 +37,9 @@ const contractInstance = new ContractInstance();
 
 // Info Window
 import MakeInfoWindow from "../utils/info_window";
+
+// get Image
+import storeImg from "../img/storeImg1.png";
 
 let roomCreatedEmitter;
 let roomMatchedEmitter;
@@ -57,6 +74,8 @@ export default {
         menus: [],
         timer: 15,
       },
+      showWhereUserIs: true,
+      userMarker: null,
     };
   },
   computed: {
@@ -244,14 +263,24 @@ export default {
     },
     /* ============= 치킨집 지도 마커 생성 함수 ============= */
     createMarker(markerData) {
-      const markerPosition = new kakao.maps.LatLng(
-        markerData.latitude,
-        markerData.longitude
-      );
+      const imageSrc = storeImg,
+        imageSize = new kakao.maps.Size(48, 48),
+        imageOption = { offset: new kakao.maps.Point(27, 50) };
+
+      const markerImage = new kakao.maps.MarkerImage(
+          imageSrc,
+          imageSize,
+          imageOption
+        ),
+        markerPosition = new kakao.maps.LatLng(
+          markerData.latitude,
+          markerData.longitude
+        );
 
       // 마커를 생성합니다
       const marker = new kakao.maps.Marker({
         position: markerPosition,
+        image: markerImage,
       });
 
       // 마커가 지도 위에 표시되도록 설정합니다
@@ -318,6 +347,7 @@ export default {
             }
           });
         }
+        this.map.getLevel() >= 8 ? this.map.setLevel(5) : null;
         this.map.panTo(markerPosition);
       });
     },
@@ -373,25 +403,59 @@ export default {
       // 어떤 컨테이너 뷰에 맵을 띄울 것인가..
       const container = document.getElementById("map");
       navigator.geolocation.getCurrentPosition((position) => {
-        const lat = position.coords.latitude;
-        const lng = position.coords.longitude;
-        const _position = new kakao.maps.LatLng(lat, lng);
+        // const imageSrc = storeImg,
+        //   imageSize = new kakao.maps.Size(24, 24),
+        //   imageOption = { offset: new kakao.maps.Point(0, 0) };
+
+        // const markerImage = new kakao.maps.MarkerImage(
+        //     imageSrc,
+        //     imageSize,
+        //     imageOption
+        //   ),
+        const _position = new kakao.maps.LatLng(
+          position.coords.latitude,
+          position.coords.longitude
+        );
+
+        // 유저 현위치 마커를 생성합니다
+        this.userMarker = new kakao.maps.Marker({
+          position: _position,
+          // image: markerImage,
+        });
+
+        // 지도 객체 초기화
         const options = {
           center: _position,
           level: 3,
         };
+
         this.map = new kakao.maps.Map(container, options);
-        this.markerDatas.push({
-          latitude: lat,
-          longitude: lng,
-          removed: true,
-          storeName: "현 위치 ",
-          orderCount: 3,
-        });
+
+        this.userMarker.setMap(this.map);
         console.log("---- call create marker func ----");
         this.initMarkers();
       }, console.log);
       console.log("=== Done Init Map ===");
+    },
+    setCurrentPos() {
+      this.showWhereUserIs = !this.showWhereUserIs;
+      if (this.showWhereUserIs) {
+        navigator.geolocation.getCurrentPosition((position) => {
+          const _position = new kakao.maps.LatLng(
+            position.coords.latitude,
+            position.coords.longitude
+          );
+
+          this.map.setLevel(3);
+
+          this.userMarker.setVisible(true);
+          this.userMarker.setPosition(_position);
+          this.map.panTo(_position);
+          console.log("---- find where user is ----");
+        }, console.log);
+      } else {
+        this.userMarker.setVisible(false);
+      }
     },
   },
   mounted() {
@@ -506,4 +570,9 @@ body {
   top: 0%;
   z-index: 2;
 }
+
+/* #crosshair-btn {
+  position: absolute;
+  z-index: 2;
+} */
 </style>
