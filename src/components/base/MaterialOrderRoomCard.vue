@@ -8,7 +8,8 @@
   >
     <template v-slot:after-heading>
       <div class="ml-auto text-right">
-        <div class="body-3 grey--text font-weight-light" v-text="Duration" />
+        <div v-if="timeout" class="body-3 grey--text font-weight-light" v-text="'00:00'" />
+        <div v-else class="body-3 grey--text font-weight-light" v-text="Duration" />
 
         <h3 class="display-2 font-weight-light text--primary">
           {{ value }}
@@ -38,7 +39,10 @@
         />
       </v-col>
       <v-col align="center" cols="3">
-        <v-btn :color="subIconColor" dark icon>
+        <template v-if="timeout">
+          <v-icon color="grey" size="36" class="ml-5 mr-0" v-text="'mdi-account-arrow-right'" />
+        </template>
+        <v-btn v-else :color="subIconColor" dark icon>
           <v-icon
             :color="subIconColor"
             size="36"
@@ -125,6 +129,9 @@ export default {
       );
     },
     clockIcon() {
+      if (this.timeout) {
+        return "mdi-clock-remove-outline";
+      }
       const minutes = Math.floor(this.durationData.timer / 60);
       return minutes >= 20
         ? "mdi-clock-time-five-outline"
@@ -133,8 +140,18 @@ export default {
         : "mdi-clock-time-eleven-outline";
     },
     clockBgColor() {
+      if (this.timeout) {
+        return "grey";
+      }
       const minutes = Math.floor(this.durationData.timer / 60);
       return minutes >= 20 ? "green" : minutes >= 5 ? "orange" : "red";
+    },
+    timeout() {
+      if (this.durationData.timer < 0) {
+        clearInterval(timeInterval);
+        return true;
+      }
+      return false;
     },
   },
   mounted() {

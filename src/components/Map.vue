@@ -195,11 +195,16 @@ export default {
             console.log(result);
             console.log(result._startTime);
             console.log(result._finishTime);
-            if (result._state === "1") {
+            const duration = +result._startTime + +result._finishTime * 60;
+
+            if (
+              result._state === "1" &&
+              duration > Math.floor(Date.now() / 1000)
+            ) {
               counts++;
               this.navDrawer.orderRooms.push({
                 chickenName: result._chickenName,
-                duration: +result._startTime + +result._finishTime * 60,
+                duration: duration,
                 price: result._price,
                 show: false,
                 description: "황금올리브 같이 먹을 분 구함!~",
@@ -228,7 +233,11 @@ export default {
 
       roomCreatedEmitter = ChickenHouseInstance.watchIfCreated(
         (error, result) => {
-          if (!error && this.drawer) {
+          if (
+            !error &&
+            this.drawer &&
+            this.navDrawer.storeName === result.returnValues._storeName
+          ) {
             // this.addOrderRooms(result);
             const returns = result.returnValues;
             this.navDrawer.orderRooms.push({
@@ -288,68 +297,83 @@ export default {
 
       // 마커에 커서가 오버됐을 때 마커 위에 표시할 인포윈도우를 생성합니다
       console.log("---- call make Info Window func ----");
-      const iwContent = MakeInfoWindow(
-        markerData,
-        this.createOrderRoom,
-        this.showOrderRooms
-      );
-      const iwRemoveable = false;
-      // 인포윈도우를 생성합니다
-      const infowindow = new kakao.maps.InfoWindow({
-        content: iwContent,
-        removable: iwRemoveable,
-      });
+      const geocoder = new kakao.maps.services.Geocoder();
 
-      this.infowindows.push(infowindow);
-      console.log("---- Add click event on marker ----");
-      // 마커에 마우스클릭 이벤트를 등록합니다
-      kakao.maps.event.addListener(marker, "click", () => {
-        if (this.drawer) {
-          // drawer가 열려 있다.
-          this.markerDatas.forEach((_markerData, index) => {
-            // 현재 열린 치킨집 이외에 마커 적용
-            if (_markerData.storeName !== this.navDrawer.storeName) {
-              // 열려있는 건 닫고, 눌린게 연다.
-              if (_markerData.storeName === markerData.storeName) {
-                // 열려있는 것은 닫고, 눌린게 열린다.
-                if (markerData.removed) {
-                  infowindow.open(this.map, marker);
-                  markerData.removed = false;
-                } else {
-                  infowindow.close();
-                  markerData.removed = true;
-                }
-              } else {
-                if (!_markerData.removed) {
-                  this.infowindows[index].close();
-                  _markerData.removed = true;
-                }
-              }
-            }
+      const callback = (result, status) => {
+        console.log(status);
+        if (status === kakao.maps.services.Status.OK) {
+          console.log(result[0].address.address_name);
+          const address = result[0].address.address_name;
+          const iwContent = MakeInfoWindow(
+            markerData,
+            this.createOrderRoom,
+            this.showOrderRooms,
+            address
+          );
+          const iwRemoveable = false;
+          // 인포윈도우를 생성합니다
+          const infowindow = new kakao.maps.InfoWindow({
+            content: iwContent,
+            removable: iwRemoveable,
           });
-        } else {
-          // drawer가 닫혀 있다.
-          this.markerDatas.forEach((_markerData, index) => {
-            if (_markerData.storeName === markerData.storeName) {
-              // 열려있는 것은 닫고, 눌린게 열린다.
-              if (markerData.removed) {
-                infowindow.open(this.map, marker);
-                markerData.removed = false;
-              } else {
-                infowindow.close();
-                markerData.removed = true;
-              }
+
+          this.infowindows.push(infowindow);
+          kakao.maps.event.addListener(marker, "click", () => {
+            if (this.drawer) {
+              // drawer가 열려 있다.
+              this.markerDatas.forEach((_markerData, index) => {
+                // 현재 열린 치킨집 이외에 마커 적용
+                if (_markerData.storeName !== this.navDrawer.storeName) {
+                  // 열려있는 건 닫고, 눌린게 연다.
+                  if (_markerData.storeName === markerData.storeName) {
+                    // 열려있는 것은 닫고, 눌린게 열린다.
+                    if (markerData.removed) {
+                      infowindow.open(this.map, marker);
+                      markerData.removed = false;
+                    } else {
+                      infowindow.close();
+                      markerData.removed = true;
+                    }
+                  } else {
+                    if (!_markerData.removed) {
+                      this.infowindows[index].close();
+                      _markerData.removed = true;
+                    }
+                  }
+                }
+              });
             } else {
-              if (!_markerData.removed) {
-                this.infowindows[index].close();
-                _markerData.removed = true;
-              }
+              // drawer가 닫혀 있다.
+              this.markerDatas.forEach((_markerData, index) => {
+                if (_markerData.storeName === markerData.storeName) {
+                  // 열려있는 것은 닫고, 눌린게 열린다.
+                  if (markerData.removed) {
+                    infowindow.open(this.map, marker);
+                    markerData.removed = false;
+                  } else {
+                    infowindow.close();
+                    markerData.removed = true;
+                  }
+                } else {
+                  if (!_markerData.removed) {
+                    this.infowindows[index].close();
+                    _markerData.removed = true;
+                  }
+                }
+              });
             }
+            this.map.getLevel() >= 8 ? this.map.setLevel(5) : null;
+            this.map.panTo(markerPosition);
           });
         }
-        this.map.getLevel() >= 8 ? this.map.setLevel(5) : null;
-        this.map.panTo(markerPosition);
-      });
+      };
+      geocoder.coord2Address(
+        markerPosition.getLng(),
+        markerPosition.getLat(),
+        callback
+      );
+      console.log("---- Add click event on marker ----");
+      // 마커에 마우스클릭 이벤트를 등록합니다
     },
     /* ============= 마커 초기화 하기 ============= */
     async initMarkers() {
