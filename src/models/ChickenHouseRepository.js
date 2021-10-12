@@ -277,4 +277,19 @@ export class ChickenHouseRepository {
       .on("data", console.log);
     return emitter;
   }
+
+  async watchIfApproved(cb) {
+    await this._checkAccountAvailable();
+    const emitter = this.contractInstance.events
+      .approveFinish(
+        {
+          filter: { user1: [this.account], user2: [this.account] },
+          fromBlock: "latest",
+          ToBlock: "latest"
+        },
+        cb
+      )
+      .on("data", console.log);
+    return emitter;
+  }
 }

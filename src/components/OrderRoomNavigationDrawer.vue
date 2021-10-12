@@ -63,7 +63,7 @@
             icon="mdi-clock-time-eight-outline"
             :duration="orderRoom.duration"
             :value="orderRoom.chickenName"
-            :small-value="orderRoom.price"
+            :small-value="orderRoom.price / 2"
             :sub-icon="
               orderRoom.menuState === '2'
                 ? 'mdi-checkbox-marked'
