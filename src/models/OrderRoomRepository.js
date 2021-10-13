@@ -108,4 +108,22 @@ export class OrderRoomRepository {
       });
     });
   }
+
+  // userMyPage 1명의 취소 환불
+  async refundToAUser() {
+    try {
+      await this._checkAccountAvailable();
+      await this.contractInstance.methods
+        .refundToAUser()
+        .send({ from: this.account, gas: this.gas })
+        .on("transactionHash", function(hash) {
+          return hash;
+        })
+        .on("error", function(error, receipt) {
+          throw error;
+        });
+    } catch (e) {
+      throw e;
+    }
+  }
 }
