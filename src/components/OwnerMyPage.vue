@@ -221,7 +221,9 @@ export default {
     // this.setMenus();
     console.log("ASASAS");
   },
-  mounted() {}
+  mounted() {
+    document.body.style.overflowY = "scroll";
+  }
 
   // mounted() {
   //   getMenus();
