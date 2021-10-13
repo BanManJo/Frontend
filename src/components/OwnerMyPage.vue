@@ -1,5 +1,6 @@
 <template>
   <v-app>
+    <!-- <child-component v-on:update="getResiterMenu"></child-component> -->
     <v-toolbar dark color="primary">
       <v-toolbar-title class="text-h3 text--white">{{
         storeName
@@ -11,11 +12,13 @@
       <v-row>
         <v-col>
           <v-card>
-            <v-toolbar>
-              <v-toolbar-title class="dark--text">가게 이름 :</v-toolbar-title>
+            <v-toolbar flat>
+              <v-toolbar-title class="dark--text"
+                >가게 이름 : {{ storeName }}</v-toolbar-title
+              >
               <v-spacer></v-spacer>
-              <v-btn color="white">
-                수정
+              <v-btn class="text-h4" color="primary">
+                수정하기
               </v-btn>
             </v-toolbar>
           </v-card>
@@ -24,11 +27,11 @@
       <v-row>
         <v-col>
           <v-card>
-            <v-toolbar>
+            <v-toolbar flat>
               <v-toolbar-title class="dark--text">주 소 :</v-toolbar-title>
               <v-spacer></v-spacer>
-              <v-btn color="white">
-                수정
+              <v-btn class="text-h4" color="primary">
+                수정하기
               </v-btn>
             </v-toolbar>
           </v-card>
@@ -45,33 +48,34 @@
         <!-- 메뉴 정보 수정 부분 -->
         <v-row row wrap>
           <v-col
-            xs12
-            sm6
-            md4
-            lg3
-            v-for="information in information"
-            :key="information.name"
+            sm="8"
+            md="4"
+            lg="4"
+            v-for="infor in information"
+            :key="infor.name"
           >
-            <v-responsive class="pt-4">
+            <!-- <v-responsive class="pt-4">
               Menu
-            </v-responsive>
+            </v-responsive> -->
             <v-card class="text-center">
               <v-card-text>
                 <!-- <div class="text-h3">{{ information.Name }}</div> -->
-                <div class="text-h4">메뉴 : {{ information.chicken }}</div>
-                <div class="text-h4">가격 : {{ information.price }}</div>
+                <div class="text-h4">
+                  메뉴 : {{ infor.chickenName }} /
+                  {{ infor.kind }}
+                </div>
+                <div class="text-h4">가격 : {{ infor.price }}</div>
               </v-card-text>
               <v-card-actions>
                 <v-btn
                   class="ma-2 text-h4"
-                  color="orange"
-                  @click="owner.ownerModal = true"
-                  >수정</v-btn
+                  color="primary"
+                  @click="open(infor.menuIndex)"
+                  ><span>수정하기</span></v-btn
                 >
-                <span></span>
-                <v-btn color="orange" @click="deletMenu">
-                  <v-icon>mdi-cancel</v-icon>
-                  <span>삭제</span>
+                <v-spacer></v-spacer>
+                <v-btn class="ma-2 text-h4" color="orange" @click="deletMenu">
+                  <span> 삭제하기</span>
                 </v-btn>
               </v-card-actions>
             </v-card>
@@ -81,7 +85,7 @@
     </v-container>
 
     <!-- modal  -->
-    <Owner-dialog :owner="owner" @menuChanged="setMenus"></Owner-dialog>
+    <owner-dialog :owner="owner" @reload="getResiterMenu"></owner-dialog>
   </v-app>
 </template>
 
@@ -89,11 +93,12 @@
 // Instance 사용하기 위한 구문
 import ContractInstance from "../ContractInstance";
 import info_window from "../utils/info_window";
-const contractInstance = new ContractInstance();
 
+const contractInstance = new ContractInstance();
 export default {
   components: {
     OwnerDialog: () => import("./OwnerDialog")
+    // "child-component": childComponent
   },
 
   data() {
@@ -103,8 +108,9 @@ export default {
       owner: {
         isLoading: false,
         ownerModal: false,
-        storeName: null,
-        menus: []
+        storeName: this.$route.params.storeName,
+        menus: this.information,
+        chosenIndex: ""
       },
       // 입력한 데이터들
       // information: [
@@ -116,9 +122,6 @@ export default {
       //   {}
       // ],
 
-      information: {
-        storeName: null
-      },
       information: []
     };
   },
@@ -128,6 +131,15 @@ export default {
     }
   },
   methods: {
+    open(index) {
+      console.log("open");
+
+      this.owner.chosenIndex = index;
+      console.log(this.owner.chosenIndex);
+      console.log("open1");
+      this.owner.ownerModal = true;
+      console.log("open2");
+    },
     deletMenu() {
       var con_test = confirm("주의 : 등록하신 메뉴를 삭제하시겠습니까?");
       if (con_test == true) {
@@ -135,10 +147,7 @@ export default {
       } else if (con_test == false) {
       }
     },
-    toggleModal: function() {
-      this.owner.ownerModal = !this.owner.ownerModal;
-      console.log("ownerModal : " + this.ownerModal);
-    },
+
     testInstance() {
       this.AdminInstance.getStoreCount().then(count => {
         // resolve
@@ -153,18 +162,19 @@ export default {
       // console.log("MENUDATA :", data);
       // menu = data;
     },
-    setMenus: function(_newMenu) {
-      let menuName = _newMenu.menu;
-      let price = _newMenu.price;
+    // setMenus: function(_newMenu) {
+    //   let menuName = _newMenu.menu;
+    //   let price = _newMenu.price;
 
-      console.log("MENU CHANGED", menuName, price);
-      // let index = this.information[num].index;
-    },
+    //   console.log("MENU CHANGED", menuName, price);
+    //   // let index = this.information[num].index;
+    // },
+
     async getResiterMenu() {
       console.log("=== Show OrderRooms (state = 2) ===");
 
       const CHAddress = await this.AdminInstance.findChickenHouse(
-        this.storeName
+        "this.storeName"
       );
       const ChickenHouseInstance = contractInstance.getChickenHouseInstance(
         CHAddress
@@ -175,13 +185,29 @@ export default {
       ChickenHouseInstance.getStoreMenu().then(result => {
         console.log("---- get store menus from ETH ----");
         console.log(result);
-
+        console.log(result[0].chickenName);
+        console.log(result[0].menuIndex);
         console.log(
           `---- get OrderRooms Info (state = 2), Counts: ${roomCount}`
         );
+        console.dir(result);
         this.information = [];
-        for (let i = 0; i < result._chickens.length; i++) {
-          this.information.push({});
+        for (let i = 0; i < result.length; i++) {
+          if (result[i].menuState == 1) {
+            this.information.push({
+              chickenName: result[i].chickenName,
+              kind: "뼈",
+              price: result[i].price,
+              menuIndex: result[i].menuIndex
+            });
+          } else if (result[i].menuState == 2) {
+            this.information.push({
+              chickenName: result[i].chickenName,
+              kind: "순살",
+              price: result[i].price,
+              menuIndex: result[i].menuIndex
+            });
+          }
         }
       });
 
@@ -192,6 +218,7 @@ export default {
   created() {
     console.log(`=== Created OwnerMyPage ${this.owner.storeName} ===`);
     this.getResiterMenu();
+    // this.setMenus();
     console.log("ASASAS");
   },
   mounted() {}

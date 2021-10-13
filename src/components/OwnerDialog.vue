@@ -5,6 +5,10 @@
       <v-dialog v-model="owner.ownerModal" max-width="290">
         <v-card>
           <v-card-title class="headline">메뉴 수정</v-card-title>
+          <<<<<<< HEAD =======
+          <v-card-title class="headline">{{ owner.storeName }}</v-card-title>
+
+          >>>>>>> 1008
           <v-card-text style="text-align: center">
             <v-progress-circular
               indeterminate
@@ -24,6 +28,8 @@
                 label="메뉴"
                 persistent-hint
               ></v-text-field>
+              <v-checkbox v-model="sunsal" label="순살?"></v-checkbox>
+
               <v-text-field
                 v-model="price"
                 placeholder="Chicken"
@@ -51,16 +57,23 @@ import ContractInstance from "../ContractInstance";
 const contractInstance = new ContractInstance();
 
 export default {
-  props: ["owner"],
+  props: ["owner", "reload"],
+
   data() {
     return {
-      price: 0,
-      menu: "",
+      price: 1000,
+      menu: "후라이드",
+      sunsal: false,
+
       AdminInstance: contractInstance.getAdminInstance(), // Admin Instance data,
       succeed: false
       // not loaded on map page
       // isLoading: false,
     };
+  },
+
+  created() {
+    console.log("cc");
   },
   computed: {},
 
@@ -68,44 +81,43 @@ export default {
     console.log("aa");
   },
   methods: {
-    async changeMenu() {
-      console.log("=== Create Order Room ===");
-      const menu = this.information.menus.filter(data => data.selected)[0];
-      console.log(`---- get Menu and Create Room, menu: ${menu}`);
-      if (menu === undefined) {
-        alert("메뉴를 선택해 주세요.");
-        return;
-      }
-      // storeName
-      const _storeName = this.information.storeName;
-      // price
-      const _price = menu.price;
-      // chicken
-      const _chicken = menu.chicken;
+    async setMenus() {
+      console.log(this.owner.storeName);
+      console.log(this.price);
 
-      this.information.isLoading = true;
-      try {
-        /* 새롭게 구조화 된 부분 */
-        const CHAddress = await this.AdminInstance.findChickenHouse(_storeName);
-        const ChickenHouseInstance = contractInstance.getChickenHouseInstance(
-          CHAddress
+      const CHAddress = await this.AdminInstance.findChickenHouse(
+        this.owner.storeName
+      );
+      const ChickenHouseInstance = contractInstance.getChickenHouseInstance(
+        CHAddress
+      );
+
+      if (this.sunsal == true) {
+        await ChickenHouseInstance.setMenu(
+          this.owner.chosenIndex,
+          this.menu,
+          this.price,
+          2
         );
-        const tsc = await ChickenHouseInstance.createRoom(_price, _chicken);
-        console.log(`---- Create Order Room Succeed : ${tsc}`);
-      } catch (error) {
-        console.log(error);
+      } else if (this.sunsal == false) {
+        await ChickenHouseInstance.setMenu(
+          this.owner.chosenIndex,
+          this.menu,
+          this.price,
+          1
+        );
       }
-      console.log("=== Doen Create Order Room ===");
-    },
-    setMenus() {
-      let menuInfo = {
-        menu: this.menu,
-        price: this.price
-      };
-      var con_test = confirm("등록하신 메뉴를 수정하시겠습니까?");
-      console.log(menuInfo);
-      this.$emit("menuChanged", menuInfo);
+      this.$emit("reload");
+      this.owner.ownerModal = false;
+
+      // console.log(`---- get OrderRooms Info (state = 2), Counts: ${tjdrn}`);
+      // var con_test = confirm("등록하신 메뉴를 수정하시겠습니까?");
+      // console.log(menuInfo);
+      // this.$emit("menuChanged", menuInfo);
     }
+    // sendEvent: function() {
+    //   this.$emit("update");
+    // }
   }
 };
 </script>

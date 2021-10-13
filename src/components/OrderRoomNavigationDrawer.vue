@@ -1,6 +1,11 @@
 <template>
   <v-container>
-    <v-navigation-drawer style="overflow: hidden" v-model="drawer" absolute width="400">
+    <v-navigation-drawer
+      style="overflow: hidden"
+      v-model="drawer"
+      absolute
+      width="400"
+    >
       <v-list align="center" dense app>
         <v-row class="mt-1" align="center" justify="center">
           <v-btn
@@ -16,7 +21,12 @@
           >
             <v-icon>mdi-arrow-left-thick</v-icon>
           </v-btn>
-          <v-text-field :label="$t('search')" color="secondary" hide-details style="max-width: 70%">
+          <v-text-field
+            :label="$t('search')"
+            color="secondary"
+            hide-details
+            style="max-width: 70%"
+          >
             <template v-if="$vuetify.breakpoint.mdAndUp" v-slot:append-outer>
               <v-btn class="mt-n2" elevation="1" color="orange" fab x-small>
                 <v-icon>mdi-magnify</v-icon>
@@ -90,18 +100,19 @@ const contractInstance = new ContractInstance();
 export default {
   data() {
     return {
+      AdminInstance: contractInstance.getAdminInstance(), // Admin Instance data,
       collapseOnScroll: true,
       //   drawer: this.navDrawer.drawer,
       items: [
         { title: "Home", icon: "dashboard" },
-        { title: "About", icon: "question_answer" },
+        { title: "About", icon: "question_answer" }
       ],
-      right: null,
+      right: null
     };
   },
   props: {
     navDrawer: Object,
-    createOrderRoom: Function,
+    createOrderRoom: Function
     // orderRooms: Array,
     // drawer: Boolean,
   },
@@ -118,34 +129,53 @@ export default {
       },
       set(val) {
         this.$store.commit("SET_DRAWER", val);
-      },
-    },
+      }
+    }
   },
   methods: {
+    async checkStore(storeName) {
+      console.log(storeName);
+      const CHAddress = await this.AdminInstance.findChickenHouse(storeName);
+      console.log(CHAddress);
+      const ChickenHouseInstance = contractInstance.getChickenHouseInstance(
+        CHAddress
+      );
+
+      const storeState = await ChickenHouseInstance.getChickenHouse();
+      console.log(storeState);
+      if (storeState._onOff == 0) {
+        alert(
+          `죄송합니다. ${this.room.storeName}는 방금 영업을 마감하였습니다. My Page로 가셔서 주문취소 버튼을 눌러주세요. 자동으로 환불처리 됩니다.`
+        );
+      } else {
+        this.matchRoom();
+      }
+    },
     async matchRoom(storeName, roomNumber, price) {
       console.log(storeName, roomNumber);
       console.log("=== Create Match Room ===");
 
-      const AdminInstance = contractInstance.getAdminInstance();
       // find Chicken House address and get instance
-      const CHAddress = await AdminInstance.findChickenHouse(storeName);
-      const ChickenHouseInstance =
-        contractInstance.getChickenHouseInstance(CHAddress);
+      const CHAddress = await this.AdminInstance.findChickenHouse(storeName);
+      const ChickenHouseInstance = contractInstance.getChickenHouseInstance(
+        CHAddress
+      );
 
       // find Room Address and get instnace
       const ethUserPay = +price;
       await ChickenHouseInstance.matchRoom(
         roomNumber,
         ethUserPay.toString()
-      ).then((result) => {
+      ).then(result => {
         console.log(result);
       });
 
       // 5. OrderRoom 주소를 가져옴
       const ORAddress = await ChickenHouseInstance.findOrderRoom(roomNumber);
       // 6. OrderRoom 인스턴스 생성
-      const OrderRoomInstance =
-        contractInstance.getOrderRoomInstance(ORAddress);
+      const OrderRoomInstance = contractInstance.getOrderRoomInstance(
+        ORAddress
+      );
       const balance = await OrderRoomInstance.getBalance();
       console.log(`====== room;s balance ${balance} =====`);
       // storeIdx (if needed)
@@ -156,8 +186,8 @@ export default {
       this.navDrawer.orderRooms = [];
     },
     ...mapMutations({
-      setDrawer: "SET_DRAWER",
-    }),
+      setDrawer: "SET_DRAWER"
+    })
   },
   mounted() {
     console.log("=== Mounted Navigation Drawer ===");
@@ -165,7 +195,7 @@ export default {
   },
   updated() {
     console.log("=== Updated Navigation Drawer ===");
-  },
+  }
 };
 </script>
 
