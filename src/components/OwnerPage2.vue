@@ -1,33 +1,21 @@
 <template>
   <v-app>
     <v-toolbar color="primary">
-      <v-toolbar-title class="text-h3 title_color">
-        {{ storeName }}
-      </v-toolbar-title>
+      <v-toolbar-title class="text-h3 title_color">{{ storeName }}</v-toolbar-title>
       <v-spacer></v-spacer>
 
-      <v-btn
-        class="text-h3"
-        x-large
-        @click="changeOn"
-        value="left"
-        :color="onColor"
-        >영업 시작</v-btn
-      >
+      <v-btn class="text-h3" x-large @click="changeOn" value="left" :color="onColor">영업 시작</v-btn>
       <v-btn
         class="text-h3 text--white"
         @click="changeOff"
         x-large
         value="right"
         :color="offColor"
-        >영업 종료</v-btn
-      >
+      >영업 종료</v-btn>
       <v-spacer></v-spacer>
       <div>
         <router-link :to="`/ownerMyPage/${storeName}`">
-          <v-btn class="text-h4 text--white" color="light-green"
-            >메뉴 수정 페이지</v-btn
-          >
+          <v-btn class="text-h4 text--white" color="light-green">메뉴 수정 페이지</v-btn>
         </router-link>
       </div>
     </v-toolbar>
@@ -66,44 +54,22 @@
         outlined
       >
         <v-row row wrap>
-          <v-col
-            v-for="orderRoom in orderRooms"
-            :key="orderRoom.roomNumber"
-            sm="8"
-            md="4"
-            lg="4"
-          >
+          <v-col v-for="orderRoom in orderRooms" :key="orderRoom.roomNumber" sm="8" md="4" lg="4">
             <v-card flat outlined class="text-center" width="381">
               <v-card-text>
                 <div class="text-h3">방번호 : {{ orderRoom.roomNumber }}</div>
                 <br />
-                <<<<<<< HEAD
-                <div class="text-h4">
-                  메뉴 : {{ orderRoom.menu }} ({{ orderRoom.kind }})
-                </div>
-                =======
-                <div class="text-h4">
-                  메뉴 : {{ orderRoom.menu }} / {{ orderRoom.kind }}
-                </div>
-                >>>>>>> 1008
+                <div class="text-h4">메뉴 : {{ orderRoom.menu }} / {{ orderRoom.kind }}</div>
                 <div class="text-h4">가격 : {{ orderRoom.price }}</div>
               </v-card-text>
               <v-card-actions>
-                <v-btn
-                  class="ma-2 text-h4"
-                  color="primary"
-                  @click="approveOrder(orderRoom.id)"
-                >
+                <v-btn class="ma-2 text-h4" color="primary" @click="approveOrder(orderRoom.id)">
                   <v-icon left>mdi-checkbox-marked-circle</v-icon>
                   <span>주문받기</span>
                 </v-btn>
                 <v-spacer></v-spacer>
 
-                <v-btn
-                  class="ma-2 text-h4"
-                  color="orange"
-                  @click="refundToBothUsers(orderRoom.id)"
-                >
+                <v-btn class="ma-2 text-h4" color="orange" @click="refundToBothUsers(orderRoom.id)">
                   <v-icon left>mdi-cancel</v-icon>
                   <span>거절하기</span>
                 </v-btn>
@@ -122,11 +88,7 @@
         flat
         outlined
       >
-        <v-card
-          flat
-          v-for="orderedList in orderedLists"
-          :key="orderedList.title"
-        >
+        <v-card flat v-for="orderedList in orderedLists" :key="orderedList.title">
           <v-row row wrap :class="`pa-3 orderedList ${orderedList.kind}`">
             <v-col xs12 md5>
               <div class="caption grey--text">주문 받은 시간</div>
@@ -146,12 +108,7 @@
             </v-flex>
 
             <div class="text-xs-center">
-              <v-btn
-                fab
-                small
-                color="green"
-                @click="finishCook(orderedList.id)"
-              >
+              <v-btn fab small color="green" @click="finishCook(orderedList.id)">
                 <v-icon color="white">mdi-minus</v-icon>
               </v-btn>
             </div>
@@ -195,16 +152,16 @@ export default {
           text: "result",
           align: "center",
           sortable: false,
-          value: "hash"
-        }
+          value: "hash",
+        },
       ],
-      items: []
+      items: [],
     };
   },
   computed: {
     storeName() {
       return this.$route.params.storeName;
-    }
+    },
   },
   methods: {
     deleteOrderRoom() {
@@ -219,9 +176,8 @@ export default {
       const CHAddress = await this.AdminInstance.findChickenHouse(
         this.storeName
       );
-      const ChickenHouseInstance = await contractInstance.getChickenHouseInstance(
-        CHAddress
-      );
+      const ChickenHouseInstance =
+        await contractInstance.getChickenHouseInstance(CHAddress);
       let self = this;
       ChickenHouseInstance.watchIfMatched(async (error, result) => {
         if (!error) {
@@ -239,14 +195,14 @@ export default {
             ORAddress
           );
           OrderRoomInstance.getRoomInfo()
-            .then(result => {
+            .then((result) => {
               if (result._menuState === "2") {
                 self.orderRooms.push({
                   roomNumber: preResult.returnValues._roomIndex,
                   menu: result._chickenName,
                   kind: "순살",
                   price: result._price,
-                  id: preResult.returnValues._roomIndex
+                  id: preResult.returnValues._roomIndex,
                 });
               } else if (result._menuState === "1") {
                 self.orderRooms.push({
@@ -254,11 +210,11 @@ export default {
                   menu: result._chickenName,
                   kind: "뼈",
                   price: result._price,
-                  id: preResult.returnValues._roomIndex
+                  id: preResult.returnValues._roomIndex,
                 });
               }
             })
-            .catch(error => {
+            .catch((error) => {
               console.error(error);
             });
         }
@@ -266,7 +222,7 @@ export default {
     },
 
     testInstance() {
-      this.AdminInstance.getStoreCount().then(count => {
+      this.AdminInstance.getStoreCount().then((count) => {
         // resolve
         alert(`Store Counts : ${count}`);
       });
@@ -276,9 +232,8 @@ export default {
       const CHAddress = await this.AdminInstance.findChickenHouse(
         this.storeName
       );
-      const ChickenHouseInstance = contractInstance.getChickenHouseInstance(
-        CHAddress
-      );
+      const ChickenHouseInstance =
+        contractInstance.getChickenHouseInstance(CHAddress);
       const result = await ChickenHouseInstance.getChickenHouse();
       if (result._onOff == 0) {
         await ChickenHouseInstance.changeOnOff();
@@ -294,9 +249,8 @@ export default {
       const CHAddress = await this.AdminInstance.findChickenHouse(
         this.storeName
       );
-      const ChickenHouseInstance = contractInstance.getChickenHouseInstance(
-        CHAddress
-      );
+      const ChickenHouseInstance =
+        contractInstance.getChickenHouseInstance(CHAddress);
       const result = await ChickenHouseInstance.getChickenHouse();
       if (result._onOff == 1) {
         await ChickenHouseInstance.changeOnOff();
@@ -338,9 +292,8 @@ export default {
         const CHAddress = await this.AdminInstance.findChickenHouse(
           this.storeName
         );
-        const ChickenHouseInstance = contractInstance.getChickenHouseInstance(
-          CHAddress
-        );
+        const ChickenHouseInstance =
+          contractInstance.getChickenHouseInstance(CHAddress);
         await ChickenHouseInstance.approveOrder(this.storeName, idx);
         this.getOrderRooms();
         this.getOrderedLists();
@@ -358,9 +311,8 @@ export default {
         const CHAddress = await this.AdminInstance.findChickenHouse(
           this.storeName
         );
-        const ChickenHouseInstance = await contractInstance.getChickenHouseInstance(
-          CHAddress
-        );
+        const ChickenHouseInstance =
+          await contractInstance.getChickenHouseInstance(CHAddress);
         await ChickenHouseInstance.refundToBothUsers(idx);
         this.getOrderRooms();
         this.getOrderedLists();
@@ -375,9 +327,8 @@ export default {
         const CHAddress = await this.AdminInstance.findChickenHouse(
           this.storeName
         );
-        const ChickenHouseInstance = contractInstance.getChickenHouseInstance(
-          CHAddress
-        );
+        const ChickenHouseInstance =
+          contractInstance.getChickenHouseInstance(CHAddress);
 
         await ChickenHouseInstance.finishCook(idx);
         this.getOrderedLists();
@@ -389,9 +340,8 @@ export default {
       const CHAddress = await this.AdminInstance.findChickenHouse(
         this.storeName
       );
-      const ChickenHouseInstance = contractInstance.getChickenHouseInstance(
-        CHAddress
-      );
+      const ChickenHouseInstance =
+        contractInstance.getChickenHouseInstance(CHAddress);
       const result = await ChickenHouseInstance.getChickenHouse();
       console.log(result);
       if (result._onOff == 0) {
@@ -409,9 +359,8 @@ export default {
       const CHAddress = await this.AdminInstance.findChickenHouse(
         this.storeName
       );
-      const ChickenHouseInstance = contractInstance.getChickenHouseInstance(
-        CHAddress
-      );
+      const ChickenHouseInstance =
+        contractInstance.getChickenHouseInstance(CHAddress);
 
       const roomCount = await ChickenHouseInstance.getRoomsCount();
 
@@ -419,12 +368,11 @@ export default {
       this.orderRooms = [];
       for (let idx = 0; idx < roomCount; idx++) {
         const ORAddress = await ChickenHouseInstance.findOrderRoom(idx);
-        const OrderRoomInstance = contractInstance.getOrderRoomInstance(
-          ORAddress
-        );
+        const OrderRoomInstance =
+          contractInstance.getOrderRoomInstance(ORAddress);
 
         await OrderRoomInstance.getRoomInfo()
-          .then(result => {
+          .then((result) => {
             if (result._state === "2") {
               if (result._menuState === "2") {
                 this.orderRooms.push({
@@ -432,7 +380,7 @@ export default {
                   menu: result._chickenName,
                   kind: "순살",
                   price: result._price,
-                  id: idx
+                  id: idx,
                 });
               } else if (result._menuState === "1") {
                 this.orderRooms.push({
@@ -440,12 +388,12 @@ export default {
                   menu: result._chickenName,
                   kind: "뼈",
                   price: result._price,
-                  id: idx
+                  id: idx,
                 });
               }
             }
           })
-          .catch(error => {
+          .catch((error) => {
             console.error(error);
           });
       }
@@ -456,9 +404,8 @@ export default {
       const CHAddress = await this.AdminInstance.findChickenHouse(
         this.storeName
       );
-      const ChickenHouseInstance = contractInstance.getChickenHouseInstance(
-        CHAddress
-      );
+      const ChickenHouseInstance =
+        contractInstance.getChickenHouseInstance(CHAddress);
       const roomCount = await ChickenHouseInstance.getRoomsCount();
 
       console.log(
@@ -468,11 +415,10 @@ export default {
 
       for (let idx = 0; idx < roomCount; idx++) {
         const ORAddress = await ChickenHouseInstance.findOrderRoom(idx);
-        const OrderRoomInstance = contractInstance.getOrderRoomInstance(
-          ORAddress
-        );
+        const OrderRoomInstance =
+          contractInstance.getOrderRoomInstance(ORAddress);
         await OrderRoomInstance.getRoomInfo()
-          .then(result => {
+          .then((result) => {
             // console.log(result);
             if (result._state === "3") {
               if (result._menuState === "2") {
@@ -481,7 +427,7 @@ export default {
                   kind: "순살",
                   menu: result._chickenName,
                   time: this.Unix_timestamp(result._receiveTime),
-                  id: idx
+                  id: idx,
                 });
               } else if (result._menuState === "1") {
                 this.orderedLists.push({
@@ -489,17 +435,17 @@ export default {
                   kind: "뼈",
                   menu: result._chickenName,
                   time: this.Unix_timestamp(result._receiveTime),
-                  id: idx
+                  id: idx,
                 });
               }
             }
           })
-          .catch(error => {
+          .catch((error) => {
             console.error(error);
           });
       }
       console.log("=== Done Show OrderedLists (state = 3) ===");
-    }
+    },
 
     // async matchRoomEvent5() {
     //   alert("김현수");
@@ -528,7 +474,7 @@ export default {
 
   mounted() {
     this.matchRoomEvent();
-  }
+  },
 };
 </script>
 
