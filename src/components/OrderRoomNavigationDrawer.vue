@@ -108,6 +108,7 @@ const contractInstance = new ContractInstance();
 export default {
   data() {
     return {
+      AdminInstance: contractInstance.getAdminInstance(), // Admin Instance data,
       collapseOnScroll: true,
       //   drawer: this.navDrawer.drawer,
       items: [
@@ -140,13 +141,30 @@ export default {
     }
   },
   methods: {
+    async checkStore(storeName) {
+      console.log(storeName);
+      const CHAddress = await this.AdminInstance.findChickenHouse(storeName);
+      console.log(CHAddress);
+      const ChickenHouseInstance = contractInstance.getChickenHouseInstance(
+        CHAddress
+      );
+
+      const storeState = await ChickenHouseInstance.getChickenHouse();
+      console.log(storeState);
+      if (storeState._onOff == 0) {
+        alert(
+          `죄송합니다. ${this.room.storeName}는 방금 영업을 마감하였습니다. My Page로 가셔서 주문취소 버튼을 눌러주세요. 자동으로 환불처리 됩니다.`
+        );
+      } else {
+        this.matchRoom();
+      }
+    },
     async matchRoom(storeName, roomNumber) {
       console.log(storeName, roomNumber);
       console.log("=== Create Match Room ===");
 
-      const AdminInstance = contractInstance.getAdminInstance();
       // find Chicken House address and get instance
-      const CHAddress = await AdminInstance.findChickenHouse(storeName);
+      const CHAddress = await this.AdminInstance.findChickenHouse(storeName);
       const ChickenHouseInstance = contractInstance.getChickenHouseInstance(
         CHAddress
       );

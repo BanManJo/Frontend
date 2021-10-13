@@ -159,6 +159,23 @@ export class ChickenHouseRepository {
     }
   }
 
+  async setMenu(index, chickenName, price, menuState) {
+    try {
+      await this._checkAccountAvailable();
+      await this.contractInstance.methods
+        .setMenu(index, chickenName, price, menuState)
+        .send({ from: this.account, gas: this.gas })
+        .on("transactionHash", function(hash) {
+          return hash;
+        })
+        .on("error", function(error, receipt) {
+          throw error;
+        });
+    } catch (e) {
+      throw e;
+    }
+  }
+
   async getChickenHouse() {
     return new Promise(async (resolve, reject) => {
       try {
@@ -218,7 +235,11 @@ export class ChickenHouseRepository {
     await this._checkAccountAvailable();
     this.contractInstance.getPastEvents(
       "roomCreated",
-      { filter: { _Ownedby: [this.account] }, fromBlock: 0, toBlock: "latest" },
+      {
+        filter: { _Ownedby: [this.account] },
+        fromBlock: 0,
+        toBlock: "latest"
+      },
       cb
     );
   }
