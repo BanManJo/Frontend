@@ -8,13 +8,21 @@
   >
     <template v-slot:after-heading>
       <div class="ml-auto text-right">
-        <div v-if="timeout" class="body-3 grey--text font-weight-light" v-text="'00:00'" />
-        <div v-else class="body-3 grey--text font-weight-light" v-text="Duration" />
+        <div
+          v-if="timeout"
+          class="body-3 grey--text font-weight-light"
+          v-text="'00:00'"
+        />
+        <div
+          v-else
+          class="body-3 grey--text font-weight-light"
+          v-text="Duration"
+        />
 
         <h3 class="display-2 font-weight-light text--primary">
           {{ value }}
           <br />
-          <small>{{ smallValue }}ETH</small>
+          <small>{{ price }}ETH</small>
         </h3>
       </div>
     </template>
@@ -24,14 +32,20 @@
     </v-col>
 
     <!-- <v-btn icon>
-      <v-icon :color="subIconColor" size="16" class="ml-2 mr-1">
-        {{ subIcon }}</v-icon
+      <v-icon :color="baseIconColor" size="16" class="ml-2 mr-1">
+        {{ sunsalCheckBox }}</v-icon
       >
     </v-btn>-->
     <v-row no-gutters justify="space-between">
       <v-col cols="9" class="mr-auto">
-        <v-icon :color="subIconColor" size="16" class="ml-2 mr-1">{{ subIcon }}</v-icon>
-        <span :class="subTextColor" class="grey--text font-weight-light" v-text="'순살'" />
+        <v-icon :color="baseIconColor" size="16" class="ml-2 mr-1">{{
+          sunsalCheckBox
+        }}</v-icon>
+        <span
+          :class="subTextColor"
+          class="grey--text font-weight-light"
+          v-text="'순살'"
+        />
         <div
           :class="subTextColor"
           class="black--text font-weight-regular display-1"
@@ -40,20 +54,29 @@
       </v-col>
       <v-col align="center" cols="3">
         <template v-if="timeout">
-          <v-icon color="grey" size="36" class="ml-5 mr-0" v-text="'mdi-account-arrow-right'" />
-        </template>
-        <v-btn v-else :color="subIconColor" dark icon>
           <v-icon
-            :color="subIconColor"
+            color="grey"
             size="36"
             class="ml-5 mr-0"
             v-text="'mdi-account-arrow-right'"
-            @click="$emit('matchRoom', storeName, roomNumber, smallValue)"
+          />
+        </template>
+        <v-btn v-else :color="baseIconColor" dark icon>
+          <v-icon
+            :color="baseIconColor"
+            size="36"
+            class="ml-5 mr-0"
+            v-text="'mdi-account-arrow-right'"
+            @click="$emit('matchRoom', storeName, roomNumber, price)"
           />
         </v-btn>
       </v-col>
       <v-col cols="9">
-        <span :class="subTextColor" class="caption grey--text font-weight-bold" v-text="subText" />
+        <span
+          :class="subTextColor"
+          class="caption grey--text font-weight-bold"
+          v-text="description"
+        />
       </v-col>
     </v-row>
   </base-material-card>
@@ -73,52 +96,52 @@ export default {
     ...Card.props,
     icon: {
       type: String,
-      required: true,
+      required: true
     },
-    subIcon: {
+    sunsalCheckBox: {
       type: String,
-      default: undefined,
+      default: undefined
     },
-    subIconColor: {
+    baseIconColor: {
       type: String,
-      default: undefined,
+      default: undefined
     },
     subTextColor: {
       type: String,
-      default: undefined,
+      default: undefined
     },
-    subText: {
+    description: {
       type: String,
-      default: undefined,
+      default: undefined
     },
     duration: {
       type: Number,
-      default: undefined,
+      default: undefined
     },
     value: {
       type: String,
-      default: undefined,
+      default: undefined
     },
-    smallValue: {
+    price: {
       type: String,
-      default: undefined,
+      default: undefined
     },
     matchRoom: {
       type: Function,
-      default: undefined,
+      default: undefined
     },
     storeName: {
       type: String,
-      default: undefined,
+      default: undefined
     },
     roomNumber: {
       type: Number,
-      default: undefined,
-    },
+      default: undefined
+    }
   },
   data() {
     return {
-      durationData: { timer: 0 },
+      durationData: { timer: 0 }
     };
   },
   computed: {
@@ -152,7 +175,7 @@ export default {
         return true;
       }
       return false;
-    },
+    }
   },
   mounted() {
     console.log("================Created" + Math.floor(Date.now() / 1000));
@@ -166,7 +189,7 @@ export default {
   beforeDestroy() {
     console.log("=============Destroyed" + timeInterval);
     clearInterval(timeInterval);
-  },
+  }
 };
 </script>
 

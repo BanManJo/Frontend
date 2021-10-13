@@ -61,9 +61,11 @@
                 &nbsp; &nbsp;
                 <span class="matching">
                   만료시간 &nbsp; :&nbsp;
-                  {{ orderedLists1.finish }}{{ orderedLists2.finish }}
-                </span> </v-chip
-              >&nbsp; &nbsp; &nbsp; &nbsp;
+                  <!-- {{ orderedLists1.finish }}{{ orderedLists2.finish }} -->
+                  {{ timeout ? "00:00" : Duration }}
+                </span>
+              </v-chip>
+              &nbsp; &nbsp; &nbsp; &nbsp;
             </v-row>
             <v-card-title>
               <div>
@@ -149,6 +151,7 @@
 import ContractInstance from "../ContractInstance";
 const contractInstance = new ContractInstance();
 
+let timeInterval;
 export default {
   data() {
     return {
@@ -169,10 +172,25 @@ export default {
         { text: "방번호", value: "roomNumber" }
       ],
       orderedLists3: [],
-      orderedLists4: []
+      orderedLists4: [],
+      durationData: { timer: 0 }
     };
   },
-  computed: {},
+  computed: {
+    Duration() {
+      const seconds = this.durationData.timer;
+      return (
+        Math.floor(seconds / 60) + ":" + (seconds % 60 ? seconds % 60 : "00")
+      );
+    },
+    timeout() {
+      if (this.durationData.timer < 0) {
+        clearInterval(timeInterval);
+        return true;
+      }
+      return false;
+    }
+  },
   props: {},
   methods: {
     async readRoomInfo() {
@@ -207,14 +225,23 @@ export default {
                 console.log(result);
                 this.orderedLists1 = [];
                 if (result === "1") {
+                  const duration =
+                    +result2[idx].returnValues._date +
+                    +result2[idx].returnValues._finish * 60;
                   this.orderedLists1 = {
                     storeName: result2[idx].returnValues._storeName,
                     menu: result2[idx].returnValues._chickenName,
                     price: result2[idx].returnValues._price,
                     roomNumber: result2[idx].returnValues._roomNumber,
-                    state: "매칭중입니다",
-                    finish: result2[idx].returnValues._finish
+                    state: "매칭중입니다"
+                    // duration: duration
                   };
+                  this.durationData.timer =
+                    duration - Math.floor(Date.now() / 1000);
+                  timeInterval = setInterval(
+                    () => (this.durationData.timer -= 1),
+                    1000
+                  );
                 } else if (result === "2") {
                   this.orderedLists2 = {
                     storeName: result2[idx].returnValues._storeName,
@@ -307,6 +334,10 @@ export default {
   },
   created() {
     console.log(`=== Created userMyPage  ===`);
+  },
+  beforeDestroy() {
+    console.log("=============Destroyed" + timeInterval);
+    clearInterval(timeInterval);
   }
 };
 </script>

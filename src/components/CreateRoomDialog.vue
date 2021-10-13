@@ -15,15 +15,8 @@
             color="red"
             v-show="room.isLoading"
           ></v-progress-circular>
-          <!-- <v-flex style="height: 100%; padding-bottom: 5px" xs12 sm12 md12> -->
-          <v-text-field
-            v-model="room.roomName"
-            placeholder="황금올리브 ㄲ?"
-            label="방이름"
-            persistent-hint
-          ></v-text-field>
         </v-card-text>
-        <v-divider></v-divider>
+        <v-card-subtitle>메뉴 선택</v-card-subtitle>
         <v-card-text class="ma-0 pa-0">
           <v-expansion-panels>
             <v-expansion-panel v-for="(menu, idx) in room.menus" :key="idx">
