@@ -1,80 +1,8 @@
 import findWayImage from "../img/two-ways.png";
 
-// export default function(marker, createOrderRoom, showOrderRooms) {
-//   console.log("=== Make Info Window ===");
-//   const content = document.createElement("div");
-//   content.style.padding = "5px";
-
-//   const storeName = document.createElement("div");
-//   const storeNameText = document.createTextNode(`가게: ${marker.storeName} `);
-//   storeName.appendChild(storeNameText);
-//   content.appendChild(storeName);
-
-//   const orderRoomCount = document.createElement("div");
-//   const orderRoomCountText = document.createTextNode(
-//     `주문방: ${marker.orderCount}`
-//   );
-//   orderRoomCount.appendChild(orderRoomCountText);
-//   content.appendChild(orderRoomCount);
-
-//   const linkCreateRoom = document.createElement("a");
-//   linkCreateRoom.style.color = "blue";
-//   linkCreateRoom.target = "_blank";
-//   linkCreateRoom.id = marker.storeName;
-//   linkCreateRoom.addEventListener("click", createOrderRoom);
-//   linkCreateRoom.appendChild(document.createTextNode("방만들기 "));
-//   content.appendChild(linkCreateRoom);
-
-//   const linkShowOrderRooms = document.createElement("a");
-//   linkShowOrderRooms.style.color = "blue";
-//   linkShowOrderRooms.target = "_blank";
-//   linkShowOrderRooms.id = marker.storeName;
-//   linkShowOrderRooms.addEventListener("click", showOrderRooms);
-//   linkShowOrderRooms.appendChild(document.createTextNode("주문방 보기"));
-//   content.appendChild(linkShowOrderRooms);
-
-//   console.log("=== Done Mark Info Window ===");
-//   return content;
-// }
-
-// export default function(marker, createOrderRoom, showOrderRooms) {
-//   console.log("=== Make Info Window ===");
-//   const content = `<div class="wrap">
-//         <div>
-//             <div class="title">
-//                 카카오 스페이스닷원
-//             <div class="close" onclick="closeOverlay()" title="닫기"></div>
-//             </div>
-//             <div class="body">
-//                 <div class="img">
-//                     <img src="https://cfile181.uf.daum.net/image/250649365602043421936D" width="33" height="33">
-//                </div>
-//                 <div class="desc">
-//                     <div class="ellipsis" width="fit-content">제주특별자치도 제주시 첨단로 242</div>
-//                     <div><a href="https://www.kakaocorp.com/main" target="_blank" class="link">홈페이지</a></div>
-//                 </div>
-//             </div>
-//         </div>
-//     </div>`;
-//   // const content = `<div>
-//   //     <div>
-//   //       <div >안녕하세요</div>
-//   //       <div>
-//   //         <div >
-//   //           <span>서울시 강남구 오피스텔 1층 개꿀</span>
-//   //           <button>길찾기</button>
-//   //         </div>
-//   //         <div>
-//   //           <button>방만들기</button><button>주문방보기</button>
-//   //         </div>
-//   //       </div>
-//   //     </div>
-//   //   </div>`;
-//   return content;
-// }
-
 export default function(marker, createOrderRoom, showOrderRooms, _address) {
   console.log("=== Make Info Window ===");
+  const isOpen = marker.onOff == 1 ? true : false;
   const content = document.createElement("div");
   // content.style.padding = "5px";
   // content.style.border = "1px outset white";
@@ -104,7 +32,9 @@ export default function(marker, createOrderRoom, showOrderRooms, _address) {
   address.style.padding = "5px";
 
   const addressSpan = document.createElement("span"),
-    addressText = document.createTextNode(_address);
+    addressText = document.createTextNode(
+      isOpen ? _address : "오픈 준비중입니다..."
+    );
   addressSpan.appendChild(addressText);
   address.appendChild(addressSpan);
 
@@ -131,7 +61,8 @@ export default function(marker, createOrderRoom, showOrderRooms, _address) {
 
   const linkCreateRoom = document.createElement("button");
   linkCreateRoom.id = marker.storeName;
-  linkCreateRoom.style.color = "DarkOrange";
+  linkCreateRoom.disabled = !isOpen;
+  linkCreateRoom.style.color = isOpen ? "DarkOrange" : "grey";
   linkCreateRoom.style.fontWeight = "bold";
   linkCreateRoom.style.borderRight = "0.5px solid grey";
   // linkCreateRoom.style.borderRadius = "5px";
@@ -144,7 +75,8 @@ export default function(marker, createOrderRoom, showOrderRooms, _address) {
 
   const linkShowOrderRooms = document.createElement("button");
   linkShowOrderRooms.id = marker.storeName;
-  linkShowOrderRooms.style.color = "DarkOrange";
+  linkShowOrderRooms.disabled = !isOpen;
+  linkShowOrderRooms.style.color = isOpen ? "DarkOrange" : "grey";
   linkShowOrderRooms.style.fontWeight = "bold";
   // linkShowOrderRooms.style.border = "1px solid black";
   // linkShowOrderRooms.style.borderRadius = "5px";
