@@ -527,7 +527,7 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 .orderedList.순살 {
   border-left: 6px solid #faffca;
 }

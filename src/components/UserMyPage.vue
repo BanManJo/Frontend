@@ -329,8 +329,8 @@ export default {
     }
   },
   mounted() {
+    // document.body.style.overflowY = "scroll";
     this.readRoomInfo();
-    document.body.style.overflowY = "scroll";
   },
   created() {
     console.log(`=== Created userMyPage  ===`);
@@ -342,7 +342,7 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 .roomNumber {
   font-size: 30px;
   vertical-align: middle;

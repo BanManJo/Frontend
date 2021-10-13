@@ -78,14 +78,46 @@ export default {
       // handleChainChanged(chainId);
     }
 
-    // 네트워크 변경할 경우, Reload 하는 이벤트
-    provider.on("chainChanged", handleChainChanged);
-
-    function handleChainChanged(_chainId) {
+    provider.on("chainChanged", _chainId => {
       // We recommend reloading the page, unless you must do otherwise
-      window.location.reload();
-    }
+      this.$router.go();
+    }); // 네트워크 변경할 경우, Reload 하는 이벤트
+
+    provider.on("accountsChanged", _accounts => {
+      console.log("--------------------------------------");
+      console.log(this.$router);
+      console.log(this.$router.currentRoute);
+      console.log(this.$route);
+      console.log(this.$route.path);
+      const route = this.$route;
+      contractInstance.getAdminInstance().setAccount(_accounts[0]);
+      contractInstance
+        .getAdminInstance()
+        .storeNameOfOwner()
+        .then(storeName => {
+          if (storeName) {
+            console.log(storeName);
+            this.$router.push({
+              name: "OwnerPage2",
+              params: { storeName: storeName }
+            });
+          } else {
+            if (route.name === "OwnerPage2") {
+              this.$router.push({ name: "Map" });
+            } else {
+              this.$router.go();
+            }
+          }
+        })
+        .catch(console.log);
+    }); // 계좌 변경할 경우, 사장님 계좌 체크 및 reload하는 이벤트
+
     console.log("Done Created App.vue");
   }
 };
 </script>
+<style scoped>
+html {
+  overflow: hidden;
+}
+</style>

@@ -555,6 +555,20 @@ export default {
     // }
     console.log("=== Done Created Map.vue ===");
   },
+  beforeCreate() {
+    this.AdminInstance = contractInstance.getAdminInstance();
+    this.AdminInstance.storeNameOfOwner()
+      .then(storeName => {
+        if (storeName) {
+          console.log(storeName);
+          this.$router.push({
+            name: "OwnerPage2",
+            params: { storeName: storeName }
+          });
+        }
+      })
+      .catch(console.log);
+  },
   watch: {
     drawer(drawerState) {
       if (!drawerState) {
@@ -567,15 +581,14 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 html {
   margin: 0;
   padding: 0;
-  overflow: hidden;
 }
 body {
   position: relative;
-  overflow: hidden; /* Hide scrollbars */
+  overflow-y: hidden;
 }
 
 #map {
@@ -585,7 +598,6 @@ body {
   opacity: 0.7;
   padding: 0;
   margin: 0;
-  overflow: hidden; /* Hide scrollbars */
 }
 
 .container {
@@ -597,9 +609,4 @@ body {
   top: 0%;
   z-index: 2;
 }
-
-/* #crosshair-btn {
-  position: absolute;
-  z-index: 2;
-} */
 </style>

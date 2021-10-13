@@ -221,9 +221,7 @@ export default {
     // this.setMenus();
     console.log("ASASAS");
   },
-  mounted() {
-    document.body.style.overflowY = "scroll";
-  }
+  mounted() {}
 
   // mounted() {
   //   getMenus();
@@ -231,7 +229,7 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 html {
   margin: 0;
   padding: 0;
