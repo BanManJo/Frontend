@@ -232,11 +232,21 @@ export class ChickenHouseRepository {
     }
   }
   //대영 roomCreated event
-  async watchIfCreated2(cb) {
+  async roomCreated(cb) {
     const currentBlock = await this.getCurrentBlock();
     await this._checkAccountAvailable();
     this.contractInstance.getPastEvents(
       "roomCreated",
+      { filter: { _Ownedby: [this.account] }, fromBlock: 0, toBlock: "latest" },
+      cb
+    );
+  }
+
+  async matchFinish(cb) {
+    const currentBlock = await this.getCurrentBlock();
+    await this._checkAccountAvailable();
+    this.contractInstance.getPastEvents(
+      "matchFinish",
       { filter: { _Ownedby: [this.account] }, fromBlock: 0, toBlock: "latest" },
       cb
     );
