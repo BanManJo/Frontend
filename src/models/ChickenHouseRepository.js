@@ -257,7 +257,11 @@ export class ChickenHouseRepository {
     await this._checkAccountAvailable();
     this.contractInstance.getPastEvents(
       "matchFinish",
-      { filter: { _Ownedby: [this.account] }, fromBlock: 0, toBlock: "latest" },
+      {
+        filter: { _matchedby: [this.account] },
+        fromBlock: 0,
+        toBlock: "latest"
+      },
       cb
     );
   }
@@ -301,9 +305,22 @@ export class ChickenHouseRepository {
   async watchIfApproved(cb) {
     await this._checkAccountAvailable();
     const emitter = this.contractInstance.events
-      .approveFinish(
+      .roomApproved(
         {
-          filter: { user1: [this.account], user2: [this.account] },
+          fromBlock: "latest",
+          ToBlock: "latest"
+        },
+        cb
+      )
+      .on("data", console.log);
+    return emitter;
+  }
+
+  async watchIfRejected(cb) {
+    await this._checkAccountAvailable();
+    const emitter = this.contractInstance.events
+      .roomRejected(
+        {
           fromBlock: "latest",
           ToBlock: "latest"
         },

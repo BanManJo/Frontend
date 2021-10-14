@@ -32,7 +32,7 @@
     <v-layout>
       <v-flex xs12 sm6 offset-sm3>
         <base-material-card color="success" title=" " class="px-5 py-3">
-          <v-card>
+          <v-card v-if="orderingLists.length != 0">
             <v-row justify="space-around" class="mb-2">
               &nbsp; &nbsp; &nbsp; &nbsp;
               <v-chip
@@ -46,7 +46,7 @@
                 &nbsp; &nbsp;
                 <span class="matching">
                   방번호 &nbsp; :&nbsp;
-                  {{ orderedLists1.roomNumber }}{{ orderedLists2.roomNumber }}
+                  {{ orderingLists[0].roomNumber }}
                 </span>
               </v-chip>
               <v-spacer></v-spacer>
@@ -60,9 +60,7 @@
               >
                 <v-icon size="30" right>mdi-widgets</v-icon>&nbsp; &nbsp; &nbsp;
                 &nbsp; &nbsp;
-                <span class="matching"
-                  >{{ orderedLists1.state }}{{ orderedLists2.state }}</span
-                >
+                <span class="matching">{{ orderingLists[0].state }}</span>
               </v-chip>
               <v-spacer></v-spacer>
               <v-chip
@@ -85,50 +83,48 @@
             <v-card-title>
               <div>
                 <span class="blackText">
-                  가게이름 &nbsp; : &nbsp;{{ orderedLists1.storeName }}
-                  {{ orderedLists2.storeName }}
+                  가게이름 &nbsp; : &nbsp;{{ orderingLists[0].storeName }}
                 </span>
                 <br />
                 <v-spacer></v-spacer>
                 <v-spacer></v-spacer>
                 <span class="blackText">
-                  치킨메뉴 &nbsp; : &nbsp;{{ orderedLists1.menu
-                  }}{{ orderedLists2.menu }}
+                  치킨메뉴 &nbsp; : &nbsp;{{ orderingLists[0].menu }}
                 </span>
                 <br />
                 <v-spacer></v-spacer>
                 <v-spacer></v-spacer>
                 <span class="blackText">
-                  가격 &nbsp; : &nbsp; {{ orderedLists1.price
-                  }}{{ orderedLists2.price }}
+                  가격 &nbsp; : &nbsp;
+                  {{ orderingLists[0].price }}
                 </span>
                 <br />
                 <v-spacer></v-spacer>
                 <v-spacer></v-spacer>
                 <span class="blackText">
-                  방 생성 시간 &nbsp; : &nbsp; {{ orderedLists1.date
-                  }}{{ orderedLists2.date }}
+                  방 생성 시간 &nbsp; : &nbsp;
+                  {{ orderingLists[0].date }}
                 </span>
               </div>
             </v-card-title>
-          </v-card>
-          <v-card-actions>
-            <v-row justify="space-around" class="mb-2">
-              <v-spacer></v-spacer>
-              <v-btn
-                class="ma-2 text-h4"
-                color="orange"
-                @click="refund1(orderedLists1.roomNumber)"
-              >
-                <v-icon left>mdi-cancel</v-icon>
-                <span>주문취소</span>
-              </v-btn>
-              <!-- <v-btn class="ma-2 text-h4" color="orange" @click="readRoomInfo">
+            <v-card-actions>
+              <v-row justify="space-around" class="mb-2">
+                <v-spacer></v-spacer>
+                <v-btn
+                  class="ma-2 text-h4"
+                  color="orange"
+                  @click="refund1(orderingLists[0].roomNumber)"
+                >
+                  <v-icon left>mdi-cancel</v-icon>
+                  <span>주문취소</span>
+                </v-btn>
+                <!-- <v-btn class="ma-2 text-h4" color="orange" @click="readRoomInfo">
                 <v-icon left>mdi-cancel</v-icon>
                 <span>테스트</span>
               </v-btn>-->
-            </v-row>
-          </v-card-actions>
+              </v-row>
+            </v-card-actions>
+          </v-card>
         </base-material-card>
       </v-flex>
     </v-layout>
@@ -147,7 +143,7 @@
         <!-- <v-app id="inspire"> -->
         <v-data-table
           :headers="headers"
-          :items="orderedLists3"
+          :items="orderedLists"
           class="elevation-1"
         >
           <template v-slot:items="props">
@@ -178,8 +174,10 @@ export default {
   data() {
     return {
       AdminInstance: contractInstance.getAdminInstance(),
-      orderedLists1: {},
-      orderedLists2: {},
+      orderingLists: [],
+      // orderedLists2: {},
+      orderedLists: [],
+      // orderedLists4: [],
       headers: [
         {
           text: "가게이름 (storeName)",
@@ -193,8 +191,6 @@ export default {
         { text: "주문상태 (성공/실패)", value: "state" },
         { text: "방번호", value: "roomNumber" }
       ],
-      orderedLists3: [],
-      orderedLists4: [],
       durationData: { timer: 0 }
     };
   },
@@ -230,7 +226,7 @@ export default {
               CHAddress
             );
             // console.log("pass");
-            this.addListIfApproved(ChickenHouseInstance);
+            this.watchEventApprovedOrRejected(ChickenHouseInstance);
             ChickenHouseInstance.roomCreated(async (error, result2) => {
               console.log(result2);
 
@@ -244,21 +240,24 @@ export default {
                   ORAddress
                 );
                 const result = await OrderRoomInstance.getStateRoom();
+                // 시간 나타내는 구문
+                const orderDate = new Date(
+                  result2[idx].returnValues._date * 1000
+                ).toString();
                 console.log(result);
-                this.orderedLists1 = [];
                 if (result === "1") {
-                  const duration =
-                    +result2[idx].returnValues._date +
-                    +result2[idx].returnValues._finish * 60;
-                  this.orderedLists1 = {
+                  this.orderingLists.push({
                     storeName: result2[idx].returnValues._storeName,
                     menu: result2[idx].returnValues._chickenName,
                     price: result2[idx].returnValues._price,
                     roomNumber: result2[idx].returnValues._roomNumber,
                     state: "매칭중입니다",
                     finish: result2[idx].returnValues._finish,
-                    date: result2[idx].returnValues._date
-                  };
+                    date: orderDate
+                  });
+                  const duration =
+                    +result2[idx].returnValues._date +
+                    +result2[idx].returnValues._finish * 60;
                   this.durationData.timer =
                     duration - Math.floor(Date.now() / 1000);
                   timeInterval = setInterval(
@@ -266,35 +265,33 @@ export default {
                     1000
                   );
                 } else if (result === "2") {
-                  this.orderedLists2 = {
+                  this.orderingLists.push({
                     storeName: result2[idx].returnValues._storeName,
                     menu: result2[idx].returnValues._chickenName,
                     price: result2[idx].returnValues._price,
                     roomNumber: result2[idx].returnValues._roomNumber,
                     state: "주문 접수중입니다",
                     finish: " ",
-                    date: result2[idx].returnValues._date
-                  };
-                  console.log(this.orderedLists2);
+                    date: orderDate
+                  });
                 } else if (result === "3") {
-                  this.orderedLists3.push({
+                  this.orderedLists.push({
                     name: result2[idx].returnValues._storeName,
                     menu: result2[idx].returnValues._chickenName,
                     price: result2[idx].returnValues._price,
                     roomNumber: result2[idx].returnValues._roomNumber,
                     state: "성공",
-                    date: result2[idx].returnValues._date
+                    date: orderDate
                   });
                 } else if (result === "4") {
-                  this.orderedLists4.push({
+                  this.orderedLists.push({
                     name: result2[idx].returnValues._storeName,
                     menu: result2[idx].returnValues._chickenName,
                     price: result2[idx].returnValues._price,
                     roomNumber: result2[idx].returnValues._roomNumber,
                     state: "실패",
-                    date: result2[idx].returnValues._date
+                    date: orderDate
                   });
-                  console.log(this.orderedLists4);
                 }
               }
             });
@@ -311,34 +308,39 @@ export default {
                 console.log(state);
                 const matched = await OrderRoomInstance.getRoomInfo();
                 console.log(matched);
-                this.orderedLists2 = [];
+
+                // 시간 나타내는 구문
+                const orderDate = new Date(
+                  matched._startTime * 1000
+                ).toString();
+
                 if (state === "2") {
-                  this.orderedLists2 = {
+                  this.orderingLists.push({
                     storeName: result3[idx].returnValues._storeName,
                     menu: matched._chickenName,
                     price: matched._price,
                     roomNumber: result3[idx].returnValues._roomIndex,
                     state: "주문 접수중입니다",
                     finish: " ",
-                    date: matched._startTime
-                  };
+                    date: orderDate
+                  });
                 } else if (state === "3") {
-                  this.orderedLists3.push({
+                  this.orderedLists.push({
                     name: result3[idx].returnValues._storeName,
                     menu: matched._chickenName,
                     price: matched._price,
                     roomNumber: result3[idx].returnValues._roomIndex,
                     state: "성공",
-                    date: matched._startTime
+                    date: orderDate
                   });
                 } else if (state === "4") {
-                  this.orderedLists4.push({
+                  this.orderedLists.push({
                     name: result3[idx].returnValues._storeName,
                     menu: matched._chickenName,
                     price: matched._price,
                     roomNumber: result3[idx].returnValues._roomIndex,
                     state: "실패",
-                    date: matched._startTime
+                    date: orderDate
                   });
                 }
               }
@@ -349,11 +351,15 @@ export default {
         this.error = e.message;
       }
     },
-    addListIfApproved(storeInstance) {
-      storeInstance.watchIfApproved(async (error, result) => {
+    watchEventApprovedOrRejected(storeInstance) {
+      const callback = async (error, result) => {
         if (!error) {
           console.log(result);
           const returns = result.returnValues;
+          const roomNumber = this.orderingLists[0].roomNumber;
+          if (returns._roomIndex !== roomNumber) {
+            return;
+          }
           const ORAddress = await storeInstance.findOrderRoom(
             returns._roomIndex
           );
@@ -362,18 +368,25 @@ export default {
             ORAddress
           );
           const roomInfo = await OrderRoomInstance.getRoomInfo();
-          this.orderedLists3.push({
+
+          // 시간 나타내는 구문
+          const orderDate = new Date(roomInfo._startTime * 1000).toString();
+
+          this.orderedLists.push({
             name: returns._storeName,
             menu: roomInfo._chickenName,
             price: roomInfo._price,
             roomNumber: returns._roomIndex,
-            state: "성공"
+            state: roomInfo._state === "3" ? "성공" : "실패",
+            date: orderDate
           });
-          this.orderedLists2 = {};
+          this.orderingLists = [];
         } else {
           console.log(error);
         }
-      });
+      };
+      storeInstance.watchIfApproved(callback);
+      storeInstance.watchIfRejected(callback);
     }, //주문취소하기 버튼
     async refund1(idx) {
       try {
@@ -390,8 +403,8 @@ export default {
             ORAddress
           );
           await OrderRoomInstance.refundToAUser();
-          this.getOrderRooms();
-          this.getOrderedLists();
+          this.orderedLists.push(this.orderingLists[0]);
+          this.orderingLists = [];
         } else if (con_test == false) {
         }
       } catch (e) {

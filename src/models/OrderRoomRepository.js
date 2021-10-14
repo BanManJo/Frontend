@@ -26,6 +26,15 @@ export class OrderRoomRepository {
     this.account = account;
   }
 
+  get account() {
+    if (this.account) {
+      return this.account;
+    } else {
+      console.log("no account");
+      return;
+    }
+  }
+
   async _checkAccountAvailable() {
     if (this.account === null) {
       const accounts = await window.ethereum.request({
