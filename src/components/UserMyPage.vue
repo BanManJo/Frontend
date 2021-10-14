@@ -31,11 +31,7 @@
 
     <v-layout>
       <v-flex xs12 sm6 offset-sm3>
-        <base-material-card
-          color="success"
-          title="This card is the current room information."
-          class="px-5 py-3"
-        >
+        <base-material-card color="success" title=" " class="px-5 py-3">
           <v-card>
             <v-row justify="space-around" class="mb-2">
               &nbsp; &nbsp; &nbsp; &nbsp;
@@ -106,6 +102,13 @@
                   가격 &nbsp; : &nbsp; {{ orderedLists1.price
                   }}{{ orderedLists2.price }}
                 </span>
+                <br />
+                <v-spacer></v-spacer>
+                <v-spacer></v-spacer>
+                <span class="blackText">
+                  방 생성 시간 &nbsp; : &nbsp; {{ orderedLists1.date
+                  }}{{ orderedLists2.date }}
+                </span>
               </div>
             </v-card-title>
           </v-card>
@@ -149,7 +152,7 @@
         >
           <template v-slot:items="props">
             <td>{{ props.item.name }}</td>
-            <td class="text-xs-right">{{ props.item.kind }}</td>
+            <td class="text-xs-right">{{ props.item.date }}</td>
             <td class="text-xs-right">{{ props.item.menu }}</td>
             <td class="text-xs-right">{{ props.item.price }}</td>
             <td class="text-xs-right">{{ props.item.state }}</td>
@@ -184,7 +187,7 @@ export default {
           sortable: false,
           value: "name"
         },
-        { text: "종류", value: "kind" },
+        { text: "날짜", value: "date" },
         { text: "치킨메뉴", value: "menu" },
         { text: "가격 (eth)", value: "price" },
         { text: "주문상태 (성공/실패)", value: "state" },
@@ -228,7 +231,7 @@ export default {
             );
             // console.log("pass");
             this.addListIfApproved(ChickenHouseInstance);
-            ChickenHouseInstance.watchIfCreated2(async (error, result2) => {
+            ChickenHouseInstance.roomCreated(async (error, result2) => {
               console.log(result2);
 
               for (let idx = 0; idx < result2.length; idx++) {
@@ -252,8 +255,9 @@ export default {
                     menu: result2[idx].returnValues._chickenName,
                     price: result2[idx].returnValues._price,
                     roomNumber: result2[idx].returnValues._roomNumber,
-                    state: "매칭중입니다"
-                    // duration: duration
+                    state: "매칭중입니다",
+                    finish: result2[idx].returnValues._finish,
+                    date: result2[idx].returnValues._date
                   };
                   this.durationData.timer =
                     duration - Math.floor(Date.now() / 1000);
@@ -268,7 +272,8 @@ export default {
                     price: result2[idx].returnValues._price,
                     roomNumber: result2[idx].returnValues._roomNumber,
                     state: "주문 접수중입니다",
-                    finish: result2[idx].returnValues._finish
+                    finish: " ",
+                    date: result2[idx].returnValues._date
                   };
                   console.log(this.orderedLists2);
                 } else if (result === "3") {
@@ -277,17 +282,64 @@ export default {
                     menu: result2[idx].returnValues._chickenName,
                     price: result2[idx].returnValues._price,
                     roomNumber: result2[idx].returnValues._roomNumber,
-                    state: "성공"
+                    state: "성공",
+                    date: result2[idx].returnValues._date
                   });
                 } else if (result === "4") {
-                  this.orderedLists3.push({
+                  this.orderedLists4.push({
                     name: result2[idx].returnValues._storeName,
                     menu: result2[idx].returnValues._chickenName,
                     price: result2[idx].returnValues._price,
                     roomNumber: result2[idx].returnValues._roomNumber,
-                    state: "실패"
+                    state: "실패",
+                    date: result2[idx].returnValues._date
                   });
                   console.log(this.orderedLists4);
+                }
+              }
+            });
+            ChickenHouseInstance.matchFinish(async (error, result3) => {
+              console.log(result3);
+              for (let idx = 0; idx < result3.length; idx++) {
+                const ORAddress = result3[idx].returnValues.orderRoom;
+
+                // 6. OrderRoom 인스턴스 생성
+                const OrderRoomInstance = contractInstance.getOrderRoomInstance(
+                  ORAddress
+                );
+                const state = await OrderRoomInstance.getStateRoom();
+                console.log(state);
+                const matched = await OrderRoomInstance.getRoomInfo();
+                console.log(matched);
+                this.orderedLists2 = [];
+                if (state === "2") {
+                  this.orderedLists2 = {
+                    storeName: result3[idx].returnValues._storeName,
+                    menu: matched._chickenName,
+                    price: matched._price,
+                    roomNumber: result3[idx].returnValues._roomIndex,
+                    state: "주문 접수중입니다",
+                    finish: " ",
+                    date: matched._startTime
+                  };
+                } else if (state === "3") {
+                  this.orderedLists3.push({
+                    name: result3[idx].returnValues._storeName,
+                    menu: matched._chickenName,
+                    price: matched._price,
+                    roomNumber: result3[idx].returnValues._roomIndex,
+                    state: "성공",
+                    date: matched._startTime
+                  });
+                } else if (state === "4") {
+                  this.orderedLists4.push({
+                    name: result3[idx].returnValues._storeName,
+                    menu: matched._chickenName,
+                    price: matched._price,
+                    roomNumber: result3[idx].returnValues._roomIndex,
+                    state: "실패",
+                    date: matched._startTime
+                  });
                 }
               }
             });
