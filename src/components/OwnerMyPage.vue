@@ -1,17 +1,39 @@
 <template>
-  <v-app>
+  <v-app
+    style="
+    background: #f5f5f5;"
+  >
     <!-- <child-component v-on:update="getResiterMenu"></child-component> -->
-    <v-toolbar dark color="primary">
-      <v-toolbar-title class="text-h3 text--white">{{
+    <v-app-bar id="app-bar" absolute app color="transparent" flat height="75">
+      <v-toolbar-title class="text-h3 font-weight-light">{{
         storeName
       }}</v-toolbar-title>
-    </v-toolbar>
-    <v-spacer></v-spacer>
+
+      <v-spacer />
+
+      <router-link :to="`/OwnerPage2/${storeName}`">
+        <v-btn class="ml-2 text-h4" min-width="0" text>
+          주문 관리
+          <v-icon>mdi-account-edit</v-icon>
+        </v-btn>
+      </router-link>
+      <router-link :to="`/OwnerMyPage/${storeName}`">
+        <v-btn class="ml-2 text-h4" min-width="0" text>
+          메뉴 관리
+          <v-icon>mdi-animation</v-icon>
+        </v-btn>
+      </router-link>
+    </v-app-bar>
+
+    <br />
+    <br />
+    <br />
+
     <!-- <h1 class="subheading grey--text"></h1> -->
     <v-container class="my-5">
       <v-row>
         <v-col>
-          <v-card>
+          <v-card flat outlined>
             <v-toolbar flat>
               <v-toolbar-title class="dark--text"
                 >가게 이름 : {{ storeName }}</v-toolbar-title
@@ -26,7 +48,7 @@
       </v-row>
       <v-row>
         <v-col>
-          <v-card>
+          <v-card flat outlined>
             <v-toolbar flat>
               <v-toolbar-title class="dark--text">주 소 :</v-toolbar-title>
               <v-spacer></v-spacer>
@@ -44,6 +66,8 @@
         icon="mdi-clipboard-text"
         title="등록한 메뉴 목록"
         class="px-5 py-2"
+        flat
+        outlined
       >
         <!-- 메뉴 정보 수정 부분 -->
         <v-row row wrap>
@@ -57,7 +81,7 @@
             <!-- <v-responsive class="pt-4">
               Menu
             </v-responsive> -->
-            <v-card class="text-center">
+            <v-card class="text-center" flat outlined>
               <v-card-text>
                 <!-- <div class="text-h3">{{ information.Name }}</div> -->
                 <div class="text-h4">
@@ -161,6 +185,7 @@ export default {
       // 가져온 데이터를 메뉴에 저장
       // console.log("MENUDATA :", data);
       // menu = data;
+      this.getResiterMenu();
     },
     // setMenus: function(_newMenu) {
     //   let menuName = _newMenu.menu;
@@ -169,7 +194,6 @@ export default {
     //   console.log("MENU CHANGED", menuName, price);
     //   // let index = this.information[num].index;
     // },
-
     async getResiterMenu() {
       console.log("=== Show OrderRooms (state = 2) ===");
 
@@ -230,25 +254,7 @@ export default {
 </script>
 
 <style>
-html {
-  margin: 0;
-  padding: 0;
-}
 body {
-  position: relative;
-  overflow: hidden; /* Hide scrollbars */
-}
-
-#map {
-  z-index: 1;
-  width: 100%;
-  height: 100%;
-  opacity: 0.7;
-}
-
-#contents {
-  position: absolute;
-  top: 0%;
-  z-index: 2;
+  background: #3a1c71;
 }
 </style>
