@@ -31,7 +31,7 @@
 
     <v-layout>
       <v-flex xs12 sm6 offset-sm3>
-        <base-material-card color="success" title=" " class="px-5 py-3">
+        <base-material-card color="success" class="px-5 py-3">
           <v-card v-if="orderingLists.length != 0">
             <v-row justify="space-around" class="mb-2">
               &nbsp; &nbsp; &nbsp; &nbsp;

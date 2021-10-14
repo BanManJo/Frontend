@@ -1,10 +1,24 @@
 <template>
   <v-app>
     <v-main>
-      <div id="map" fluid></div>
+      <div id="map"></div>
     </v-main>
+    <v-toolbar dense floating>
+      <v-text-field
+        hide-details
+        prepend-icon="mdi-magnify"
+        single-line
+      ></v-text-field>
 
-    <v-main id="contents"></v-main>
+      <v-btn icon>
+        <v-icon>mdi-crosshairs-gps</v-icon>
+      </v-btn>
+
+      <v-btn icon>
+        <v-icon>mdi-dots-vertical</v-icon>
+      </v-btn>
+    </v-toolbar>
+
     <menu-speed-dial></menu-speed-dial>
     <!-- Navigation Drawer -->
     <order-room-navigation-drawer
@@ -13,7 +27,6 @@
     ></order-room-navigation-drawer>
     <!-- modal -->
     <create-room-dialog :room="room"></create-room-dialog>
-
     <v-btn
       @click="setCurrentPos"
       class="mb-15 mr-5"
@@ -606,7 +619,6 @@ body {
 
 #contents {
   position: absolute;
-  top: 0%;
-  z-index: 2;
+  z-index: 3;
 }
 </style>
