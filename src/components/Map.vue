@@ -77,6 +77,9 @@ const contractInstance = new ContractInstance();
 // Info Window
 import MakeInfoWindow from "../utils/info_window";
 
+// store Imge
+import storeImg from "../img/storeImg3.png";
+
 let roomCreatedEmitter;
 let roomMatchedEmitter;
 export default {

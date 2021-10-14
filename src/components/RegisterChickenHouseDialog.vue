@@ -6,9 +6,6 @@
       hide-overlay
       transition="dialog-bottom-transition"
     >
-      <!-- <template v-slot:activator="{ on }">
-        <v-btn color="primary" dark v-on="on">Open Dialog</v-btn>
-      </template>-->
       <v-card>
         <v-toolbar dark color="primary">
           <v-btn icon dark @click="registerCH.dialog = false">
@@ -20,8 +17,8 @@
             <v-btn dark text @click="registerChickenHouse">등록</v-btn>
           </v-toolbar-items>
         </v-toolbar>
-        <v-card-title>
-          <span class="headline">User Profile</span>
+        <v-card-title class="mb-5 mt-3">
+          <span class="headline">아래 양식을 작성해주세요</span>
         </v-card-title>
         <v-row justify="center" align="center">
           <v-col cols="12" sm="3" lg="2">

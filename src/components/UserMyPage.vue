@@ -150,7 +150,7 @@
           class="elevation-1"
         >
           <template v-slot:items="props">
-            <td>{{ props.item.name }}</td>
+            <td>{{ props.item.storeName }}</td>
             <td class="text-xs-right">{{ props.item.date }}</td>
             <td class="text-xs-right">{{ props.item.menu }}</td>
             <td class="text-xs-right">{{ props.item.price }}</td>
@@ -279,7 +279,7 @@ export default {
                   });
                 } else if (result === "3") {
                   this.orderedLists.push({
-                    name: result2[idx].returnValues._storeName,
+                    storeName: result2[idx].returnValues._storeName,
                     menu: result2[idx].returnValues._chickenName,
                     price: result2[idx].returnValues._price,
                     roomNumber: result2[idx].returnValues._roomNumber,
@@ -288,7 +288,7 @@ export default {
                   });
                 } else if (result === "4") {
                   this.orderedLists.push({
-                    name: result2[idx].returnValues._storeName,
+                    storeName: result2[idx].returnValues._storeName,
                     menu: result2[idx].returnValues._chickenName,
                     price: result2[idx].returnValues._price,
                     roomNumber: result2[idx].returnValues._roomNumber,
@@ -329,7 +329,7 @@ export default {
                   });
                 } else if (state === "3") {
                   this.orderedLists.push({
-                    name: result3[idx].returnValues._storeName,
+                    storeName: result3[idx].returnValues._storeName,
                     menu: matched._chickenName,
                     price: matched._price,
                     roomNumber: result3[idx].returnValues._roomIndex,
@@ -338,7 +338,7 @@ export default {
                   });
                 } else if (state === "4") {
                   this.orderedLists.push({
-                    name: result3[idx].returnValues._storeName,
+                    storeName: result3[idx].returnValues._storeName,
                     menu: matched._chickenName,
                     price: matched._price,
                     roomNumber: result3[idx].returnValues._roomIndex,
@@ -376,7 +376,7 @@ export default {
           const orderDate = new Date(roomInfo._startTime * 1000).toString();
 
           this.orderedLists.push({
-            name: returns._storeName,
+            storeName: returns._storeName,
             menu: roomInfo._chickenName,
             price: roomInfo._price,
             roomNumber: returns._roomIndex,
@@ -394,9 +394,10 @@ export default {
     async refund1(idx) {
       try {
         var con_test = confirm("주의 : 주문을 취소하시겠습니까?");
-        if (con_test == true) {
+        if (con_test === true) {
+          console.log("pass");
           const CHAddress = await this.AdminInstance.findChickenHouse(
-            this.orderedLists1.storeName
+            this.orderingLists[0].storeName
           );
           const ChickenHouseInstance = await contractInstance.getChickenHouseInstance(
             CHAddress
@@ -406,9 +407,10 @@ export default {
             ORAddress
           );
           await OrderRoomInstance.refundToAUser();
-          this.orderedLists.push(this.orderingLists[0]);
+          const orderList = this.orderingLists[0];
+          orderList.state = "실패";
+          this.orderedLists.push(orderList);
           this.orderingLists = [];
-        } else if (con_test == false) {
         }
       } catch (e) {
         this.error = e.message;
