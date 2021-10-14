@@ -1,8 +1,8 @@
 <template>
   <!-- modal -->
-  <v-dialog v-model="owner.ownerModal" max-width="290">
+  <v-dialog v-model="owner.menuModal" max-width="290">
     <v-card>
-      <v-card-title class="headline">메뉴 수정</v-card-title>
+      <v-card-title class="headline">메뉴 추가</v-card-title>
       <v-card-text style="text-align: center">
         <v-progress-circular
           indeterminate
@@ -32,7 +32,7 @@
           ></v-text-field>
         </v-col>
         <v-col style="height: 100%; padding-bottom: 5px" xs12 sm12 md12>
-          <v-btn @click="setMenus" color="teal">확인</v-btn>
+          <v-btn @click="addOneMenu" color="teal">확인</v-btn>
         </v-col>
       </v-card-text>
       <v-card-actions>
@@ -73,7 +73,7 @@ export default {
     console.log("aa");
   },
   methods: {
-    async setMenus() {
+    async addOneMenu() {
       console.log(this.owner.storeName);
       console.log(this.price);
       console.log(this.menu);
@@ -86,22 +86,12 @@ export default {
       );
 
       if (this.sunsal == true) {
-        await ChickenHouseInstance.setMenu(
-          this.owner.chosenIndex,
-          this.menu,
-          this.price,
-          2
-        );
+        await ChickenHouseInstance.addOneMenu(this.menu, this.price, 2);
       } else if (this.sunsal == false) {
-        await ChickenHouseInstance.setMenu(
-          this.owner.chosenIndex,
-          this.menu,
-          this.price,
-          1
-        );
+        await ChickenHouseInstance.addOneMenu(this.menu, this.price, 1);
       }
       this.$emit("reload");
-      this.owner.ownerModal = false;
+      this.owner.menuModal = false;
 
       // console.log(`---- get OrderRooms Info (state = 2), Counts: ${tjdrn}`);
       // var con_test = confirm("등록하신 메뉴를 수정하시겠습니까?");

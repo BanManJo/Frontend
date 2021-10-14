@@ -50,7 +50,9 @@
         <v-col>
           <v-card flat outlined>
             <v-toolbar flat>
-              <v-toolbar-title class="dark--text">주 소 :</v-toolbar-title>
+              <v-toolbar-title class="dark--text"
+                >주소 : {{ location[0] }}</v-toolbar-title
+              >
               <v-spacer></v-spacer>
               <v-btn class="text-h4" color="primary">
                 수정하기
@@ -61,6 +63,18 @@
       </v-row>
     </v-container>
 
+    <v-btn
+      @click="menuDialog"
+      color="info"
+      style="width:95px; height:40px"
+      fab
+      tile
+      rounded
+      class="rect2 text-h4 "
+      absolute
+    >
+      메뉴추가
+    </v-btn>
     <v-container>
       <base-material-card
         icon="mdi-clipboard-text"
@@ -110,18 +124,21 @@
 
     <!-- modal  -->
     <owner-dialog :owner="owner" @reload="getResiterMenu"></owner-dialog>
+    <menu-dialog :owner="owner" @reload="getResiterMenu"></menu-dialog>
   </v-app>
 </template>
 
 <script>
 // Instance 사용하기 위한 구문
+
 import ContractInstance from "../ContractInstance";
 import info_window from "../utils/info_window";
 
 const contractInstance = new ContractInstance();
 export default {
   components: {
-    OwnerDialog: () => import("./OwnerDialog")
+    OwnerDialog: () => import("./OwnerDialog"),
+    MenuDialog: () => import("./MenuDialog")
     // "child-component": childComponent
   },
 
@@ -134,8 +151,11 @@ export default {
         ownerModal: false,
         storeName: this.$route.params.storeName,
         menus: this.information,
-        chosenIndex: ""
+        chosenIndex: "",
+        menuModal: false
       },
+      location: {},
+
       // 입력한 데이터들
       // information: [
       //   { name: "뿌링클", price: "21000" },
@@ -162,6 +182,13 @@ export default {
       console.log(this.owner.chosenIndex);
       console.log("open1");
       this.owner.ownerModal = true;
+      console.log("open2");
+    },
+    menuDialog() {
+      console.log("open menuDialog");
+      console.log(this.owner.menuModal);
+      console.log("open1");
+      this.owner.menuModal = true;
       console.log("open2");
     },
     deletMenu() {
@@ -194,11 +221,42 @@ export default {
     //   console.log("MENU CHANGED", menuName, price);
     //   // let index = this.information[num].index;
     // },
+    async getLocation() {
+      const CHAddress = await this.AdminInstance.findChickenHouse(
+        this.storeName
+      );
+      const ChickenHouseInstance = contractInstance.getChickenHouseInstance(
+        CHAddress
+      );
+      const result = await ChickenHouseInstance.getChickenHouse();
+      console.log(result);
+      console.log(result._latitude);
+      console.log(result._longitude);
+
+      const geocoder = new kakao.maps.services.Geocoder();
+      const callback = (result, status) => {
+        console.log(status);
+        if (status === kakao.maps.services.Status.OK) {
+          console.log(result[0].address.address_name);
+          this.location = [];
+          this.location.push(result[0].address.address_name);
+        }
+      };
+      const markerPosition = new kakao.maps.LatLng(
+        result._latitude,
+        result._longitude
+      );
+      geocoder.coord2Address(
+        markerPosition.getLng(),
+        markerPosition.getLat(),
+        callback
+      );
+    },
     async getResiterMenu() {
       console.log("=== Show OrderRooms (state = 2) ===");
 
       const CHAddress = await this.AdminInstance.findChickenHouse(
-        "this.storeName"
+        this.storeName
       );
       const ChickenHouseInstance = contractInstance.getChickenHouseInstance(
         CHAddress
@@ -245,7 +303,20 @@ export default {
     // this.setMenus();
     console.log("ASASAS");
   },
-  mounted() {}
+  mounted() {
+    console.log("=== Mounted Map.vue ===");
+    console.log("---- Initialize kakao Object and Map Object ----");
+    if (window.kakao && window.kakao.maps) {
+      this.getLocation();
+    } else {
+      const script = document.createElement("script");
+      /* global kakao */
+      script.onload = () => kakao.maps.load(this.getLocation);
+      script.src =
+        "http://dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=f16dcaffdef9152c39799852d826d9c4&libraries=services";
+      document.head.appendChild(script);
+    }
+  }
 
   // mounted() {
   //   getMenus();
@@ -260,5 +331,10 @@ html {
 }
 body {
   background: #3a1c71;
+}
+.rect2 {
+  position: absolute;
+  top: 425px;
+  left: 1213px;
 }
 </style>

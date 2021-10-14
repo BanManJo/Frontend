@@ -184,6 +184,23 @@ export class ChickenHouseRepository {
     }
   }
 
+  async addOneMenu(chickenName, price, menuState) {
+    try {
+      await this._checkAccountAvailable();
+      await this.contractInstance.methods
+        .addOneMenu(chickenName, price, menuState)
+        .send({ from: this.account, gas: this.gas })
+        .on("transactionHash", function(hash) {
+          return hash;
+        })
+        .on("error", function(error, receipt) {
+          throw error;
+        });
+    } catch (e) {
+      throw e;
+    }
+  }
+
   async getChickenHouse() {
     return new Promise(async (resolve, reject) => {
       try {
