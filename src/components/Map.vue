@@ -1,11 +1,61 @@
 <template>
   <v-app>
+    <!-- <child-component v-on:update="getResiterMenu"></child-component> -->
+    <v-app-bar
+      id="app-bar"
+      absolute
+      app
+      color=" 
+   #f5f5f5"
+      flat
+    >
+      <v-toolbar-title class="text-h3 font-weight-light">
+        반 만 조</v-toolbar-title
+      >
+      <v-spacer></v-spacer>
+
+      <v-text-field :label="$t('search')" color="secondary" hide-details>
+        <template v-if="$vuetify.breakpoint.mdAndUp" v-slot:append-outer>
+          <v-btn class="mt-n2" small text>
+            <v-icon>mdi-magnify</v-icon>
+          </v-btn>
+        </template>
+      </v-text-field>
+
+      <v-btn class="ml-2 text-h4" min-width="0" text @click="setCurrentPos">
+        <v-icon large :color="showWhereUserIs ? 'yellow darken-2' : 'black'"
+          >mdi-crosshairs-gps</v-icon
+        >
+      </v-btn>
+      <v-spacer />
+      <v-btn
+        class="ml-2 text-h4"
+        min-width="0"
+        text
+        @click="registerCH.dialog = true"
+      >
+        치킨집 등록
+        <v-icon>mdi-store-plus</v-icon>
+      </v-btn>
+      <v-btn class="ml-2 text-h4" min-width="0" text to="/UserMyPage">
+        내 주문 현황
+        <v-icon>mdi-account-check</v-icon>
+      </v-btn>
+      <v-btn class="ml-2 text-h4" min-width="0" text>
+        알림
+        <v-icon>mdi-alert-circle</v-icon>
+      </v-btn>
+      <v-btn class="ml-2 text-h4" min-width="0" text to="/map">
+        지도
+        <v-icon>mdi-arrow-expand-all</v-icon>
+      </v-btn>
+    </v-app-bar>
     <v-main>
       <div id="map" fluid></div>
     </v-main>
 
     <v-main id="contents"></v-main>
-    <menu-speed-dial></menu-speed-dial>
+
     <!-- Navigation Drawer -->
     <order-room-navigation-drawer
       :navDrawer="navDrawer"
@@ -13,22 +63,9 @@
     ></order-room-navigation-drawer>
     <!-- modal -->
     <create-room-dialog :room="room"></create-room-dialog>
-
-    <v-btn
-      @click="setCurrentPos"
-      class="mb-15 mr-5"
-      absolute
-      bottom
-      right
-      fab
-      regular
-      dark
-      :color="showWhereUserIs ? 'yellow darken-2' : 'white'"
-    >
-      <v-icon :color="showWhereUserIs ? 'white' : 'yellow darken-2'" large
-        >mdi-crosshairs-gps</v-icon
-      >
-    </v-btn>
+    <register-chicken-house-dialog
+      :registerCH="registerCH"
+    ></register-chicken-house-dialog>
   </v-app>
 </template>
 
@@ -52,6 +89,8 @@ export default {
   name: "map",
   // store,
   components: {
+    RegisterChickenHouseDialog: () =>
+      import("./RegisterChickenHouseDialog.vue"),
     CreateRoomDialog: () => import("./CreateRoomDialog"),
     OrderRoomNavigationDrawer: () => import("./OrderRoomNavigationDrawer"),
     MenuSpeedDial: () => import("./MenuSpeedDial")
@@ -78,6 +117,12 @@ export default {
         storeIdx: 0,
         menus: [],
         timer: 15
+      },
+      registerCH: {
+        dialog: false,
+        notifications: false,
+        sound: true,
+        widgets: false
       },
       showWhereUserIs: true,
       userMarker: null
@@ -540,8 +585,8 @@ export default {
         document.documentElement.clientHeight ||
         document.body.clientHeight}px`;
     };
-    resizeWindow();
-    window.addEventListener("resize", resizeWindow);
+    // resizeWindow();
+    // window.addEventListener("resize", resizeWindow);
     // console.log("---- Initialize kakao Object and Map Object ----");
     // if (window.kakao && window.kakao.maps) {
     //   this.initMap();

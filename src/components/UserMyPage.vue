@@ -10,11 +10,11 @@
       >
 
       <v-spacer />
-      <v-btn class="ml-2 text-h4" min-width="0" text to="/map">
-        주문 현황
+      <v-btn class="ml-2 text-h4" min-width="0" text to="/UserMyPage">
+        내 주문 현황
         <v-icon>mdi-account-check</v-icon>
       </v-btn>
-      <v-btn class="ml-2 text-h4" min-width="0" text to="/map">
+      <v-btn class="ml-2 text-h4" min-width="0" text>
         알림
         <v-icon>mdi-alert-circle</v-icon>
       </v-btn>
@@ -41,6 +41,7 @@
                 label
                 text-color="white"
                 x-large
+                flat
               >
                 <v-icon size="30" right>mdi-home</v-icon>&nbsp; &nbsp; &nbsp;
                 &nbsp; &nbsp;
@@ -57,6 +58,7 @@
                 label
                 text-color="white"
                 x-large
+                flat
               >
                 <v-icon size="30" right>mdi-widgets</v-icon>&nbsp; &nbsp; &nbsp;
                 &nbsp; &nbsp;
@@ -71,6 +73,7 @@
                 label
                 text-color="white"
                 x-large
+                flat
               >
                 <v-icon size="30" right>mdi-clock</v-icon>&nbsp; &nbsp; &nbsp;
                 &nbsp; &nbsp;
