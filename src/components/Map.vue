@@ -414,7 +414,8 @@ export default {
                 longitude: Number(result._longitude),
                 removed: true,
                 storeName: result._storeName,
-                orderCount: _orderCount
+                orderCount: _orderCount,
+                onOff: result._onOff
               });
             });
           }
@@ -516,7 +517,8 @@ export default {
           longitude: Number(longitude),
           removed: true,
           storeName: storeName,
-          orderCount: 0
+          orderCount: 0,
+          onOff: 0
         };
         this.markerDatas.push(markerData);
         this.createMarker(markerData);
@@ -553,6 +555,20 @@ export default {
     // }
     console.log("=== Done Created Map.vue ===");
   },
+  beforeCreate() {
+    this.AdminInstance = contractInstance.getAdminInstance();
+    this.AdminInstance.storeNameOfOwner()
+      .then(storeName => {
+        if (storeName) {
+          console.log(storeName);
+          this.$router.push({
+            name: "OwnerPage2",
+            params: { storeName: storeName }
+          });
+        }
+      })
+      .catch(console.log);
+  },
   watch: {
     drawer(drawerState) {
       if (!drawerState) {
@@ -565,15 +581,14 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 html {
   margin: 0;
   padding: 0;
-  overflow-y: auto;
 }
 body {
   position: relative;
-  overflow: hidden; /* Hide scrollbars */
+  overflow-y: hidden;
 }
 
 #map {
@@ -583,15 +598,10 @@ body {
   opacity: 0.7;
   padding: 0;
   margin: 0;
-  overflow: hidden; /* Hide scrollbars */
 }
 
 .container {
-  width: 100%;
-  /* padding: 12px; */
   padding: 0px;
-  margin-right: auto;
-  margin-left: auto;
 }
 
 #contents {
@@ -599,9 +609,4 @@ body {
   top: 0%;
   z-index: 2;
 }
-
-/* #crosshair-btn {
-  position: absolute;
-  z-index: 2;
-} */
 </style>

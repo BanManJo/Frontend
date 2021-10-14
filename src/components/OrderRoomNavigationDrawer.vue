@@ -73,14 +73,14 @@
             icon="mdi-clock-time-eight-outline"
             :duration="orderRoom.duration"
             :value="orderRoom.chickenName"
-            :small-value="orderRoom.price / 2"
-            :sub-icon="
+            :price="orderRoom.price / 2"
+            :sunsal-check-box="
               orderRoom.menuState === '2'
                 ? 'mdi-checkbox-marked'
                 : 'mdi-checkbox-blank-outline'
             "
-            sub-icon-color="green"
-            :sub-text="orderRoom.description"
+            base-icon-color="green"
+            :description="orderRoom.description"
             :store-name="navDrawer.storeName"
             :room-number="orderRoom.index"
             @matchRoom="matchRoom"

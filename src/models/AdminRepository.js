@@ -122,18 +122,17 @@ export class AdminRepository {
     });
   }
 
-  // async watchIfCreated(cb) {
-  //   const currentBlock = await this.getCurrentBlock();
-  //   console.log("pass3");
-  //   this.contractInstance.getPastEvents(
-  //     "matchFinish",
-  //     {
-  //       fromBlock: currentBlock - 1,
-  //       toBlock: "latest"
-  //     },
-  //     cb
-  //   );
-  // }
+  async storeNameOfOwner() {
+    try {
+      await this._checkAccountAvailable();
+      const result = await this.contractInstance.methods
+        .storeNameOfOwner(this.account) // 솔리디티 컨트랙트의 메소드 이름
+        .call(); // Gas 소모가 없는 함수를 호출 하는 방식 vs send
+      return result; // 2
+    } catch (e) {
+      throw e;
+    }
+  }
 
   async watchIfRegistered(cb) {
     this.contractInstance.events.registerStore(

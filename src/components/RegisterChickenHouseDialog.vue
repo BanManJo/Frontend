@@ -199,6 +199,10 @@ export default {
           isSunsals
         );
         console.log(`---- Register Succeed : ${transaction}`);
+        this.$router.push({
+          name: "OwnerPage2",
+          params: { storeName: this.storeName }
+        });
       } catch (e) {
         this.error = e.message;
         console.error(this.error);
@@ -300,7 +304,7 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 .item {
   width: 180px;
   height: 50px;
