@@ -34,7 +34,14 @@ export default {
       console.log("metask on");
       console.log(provider);
     } else {
-      console.log("Please install MetaMask!");
+      const data = confirm("Please install MetaMask!");
+      if (data === true) {
+        console.log("12");
+        window.location.href =
+          "https://chrome.google.com/webstore/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn";
+
+        return;
+      }
     }
 
     // 메타마스크가 존재할 경우, 네트워크 및 계정 초기 설정
