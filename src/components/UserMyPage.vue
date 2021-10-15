@@ -333,7 +333,7 @@ export default {
                     menu: matched._chickenName,
                     price: matched._price,
                     roomNumber: result3[idx].returnValues._roomIndex,
-                    state: "성공",
+                    state: "픽업 대기중",
                     date: orderDate
                   });
                 } else if (state === "4") {
@@ -342,7 +342,7 @@ export default {
                     menu: matched._chickenName,
                     price: matched._price,
                     roomNumber: result3[idx].returnValues._roomIndex,
-                    state: "실패",
+                    state: "완료",
                     date: orderDate
                   });
                 }
