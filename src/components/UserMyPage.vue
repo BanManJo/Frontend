@@ -331,7 +331,7 @@ export default {
                     menu: matched._chickenName,
                     price: matched._price,
                     roomNumber: result3[idx].returnValues._roomIndex,
-                    state: "성공",
+                    state: "픽업 대기중",
                     date: orderDate
                   });
                 } else if (state === "4") {
@@ -340,7 +340,7 @@ export default {
                     menu: matched._chickenName,
                     price: matched._price,
                     roomNumber: result3[idx].returnValues._roomIndex,
-                    state: "실패",
+                    state: "완료",
                     date: orderDate
                   });
                 }
@@ -379,7 +379,7 @@ export default {
             menu: roomInfo._chickenName,
             price: roomInfo._price,
             roomNumber: returns._roomIndex,
-            state: roomInfo._state === "3" ? "성공" : "실패",
+            state: roomInfo._state === "3" ? "픽업 대기중" : "완료",
             date: orderDate
           });
           this.orderingLists = [];
@@ -407,7 +407,7 @@ export default {
           );
           await OrderRoomInstance.refundToAUser();
           const orderList = this.orderingLists[0];
-          orderList.state = "실패";
+          orderList.state = "완료";
           this.orderedLists.push(orderList);
           this.orderingLists = [];
         }
