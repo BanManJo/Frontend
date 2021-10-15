@@ -112,7 +112,11 @@
                   ><span>수정하기</span></v-btn
                 >
                 <v-spacer></v-spacer>
-                <v-btn class="ma-2 text-h4" color="orange" @click="deletMenu">
+                <v-btn
+                  class="ma-2 text-h4"
+                  color="orange"
+                  @click="deleteMenu(infor.menuIndex)"
+                >
                   <span> 삭제하기</span>
                 </v-btn>
               </v-card-actions>
@@ -191,12 +195,27 @@ export default {
       this.owner.menuModal = true;
       console.log("open2");
     },
-    deletMenu() {
+    async deleteMenu(menuIdx) {
+      console.log("되나영");
+
       var con_test = confirm("주의 : 등록하신 메뉴를 삭제하시겠습니까?");
-      if (con_test == true) {
-        this.information.splice(0, 1);
-      } else if (con_test == false) {
-      }
+
+      const CHAddress = await this.AdminInstance.findChickenHouse(
+        "this.storeName"
+      );
+      const ChickenHouseInstance = contractInstance.getChickenHouseInstance(
+        CHAddress
+      );
+
+      const result = await ChickenHouseInstance.deleteMenu(menuIdx);
+      console.log("ggggglllll");
+      // if (result == this.owner.chosenIndex) {
+      //   // await ChickenHouseRepository.deleteMenu();
+      //   console.log("제발 ~ ~");
+      //   // this.information.splice(0, 1);
+      // } else if (con_test == false) {
+      // }
+      this.getResiterMenu();
     },
 
     testInstance() {

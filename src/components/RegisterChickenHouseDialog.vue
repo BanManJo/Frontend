@@ -21,24 +21,33 @@
           <span class="headline">아래 양식을 작성해주세요</span>
         </v-card-title>
         <v-row justify="center" align="center">
-          <v-col cols="12" sm="3" lg="2">
+          <v-col cols="12" sm="2" lg="2">
             <h3>치킨집 이름</h3>
           </v-col>
-          <v-col cols="12" sm="3" lg="4">
+          <v-col cols="12" sm="3" lg="3">
             <v-text-field
               v-model="storeName"
               label="Store Name"
               placeholder="BBQ 부천점"
               :rules="[required]"
+              :disabled="nameOk"
             ></v-text-field>
+          </v-col>
+          <v-col cols="12" sm="1" lg="1">
+            <v-btn v-if="!nameOk" @click="checkNameRedundancy" color="primary"
+              >중복 확인</v-btn
+            >
+            <v-btn v-else @click="nameOk = false" color="primary"
+              >수정 하기</v-btn
+            >
           </v-col>
         </v-row>
 
         <v-row justify="center" align="center">
-          <v-col cols="12" sm="6" lg="2">
+          <v-col cols="12" sm="2" lg="2">
             <h3>주소 입력</h3>
           </v-col>
-          <v-col cols="12" sm="6" lg="3">
+          <v-col cols="12" sm="3" lg="3">
             <v-text-field
               id="addressField"
               label="Address"
@@ -49,13 +58,13 @@
               readonly
             ></v-text-field>
           </v-col>
-          <v-col cols="12" sm="6" lg="1">
+          <v-col cols="12" sm="1" lg="1">
             <v-btn @click="execDaumPostcod" color="primary">주소 찾기</v-btn>
           </v-col>
         </v-row>
         <v-row justify="center" align="center">
-          <v-col cols="12" sm="6" lg="2"></v-col>
-          <v-col cols="12" sm="6" lg="4">
+          <v-col cols="12" sm="2" lg="2"></v-col>
+          <v-col cols="12" sm="4" lg="4">
             <div
               id="map-chicken-house"
               style="
@@ -68,10 +77,10 @@
           </v-col>
         </v-row>
         <v-row justify="center" align="center">
-          <v-col cols="12" sm="6" lg="2">
+          <v-col cols="12" sm="2" lg="2">
             <h3>메뉴 등록</h3>
           </v-col>
-          <v-col cols="12" sm="6" lg="1">
+          <v-col cols="12" sm="2" lg="1">
             <v-text-field
               v-model="chicken"
               color="purple darken-2"
@@ -79,7 +88,7 @@
               required
             ></v-text-field>
           </v-col>
-          <v-col cols="12" sm="6" lg="1">
+          <v-col cols="12" sm="2" lg="1">
             <v-text-field
               v-model="price"
               color="blue darken-2"
@@ -87,10 +96,10 @@
               required
             ></v-text-field>
           </v-col>
-          <v-col cols="12" sm="6" lg="1">
+          <v-col cols="12" sm="2" lg="1">
             <v-checkbox v-model="sunsal" label="순살?"></v-checkbox>
           </v-col>
-          <v-col cols="12" sm="6" lg="1">
+          <v-col cols="12" sm="1" lg="1">
             <v-btn @click="addMenu" class="mx-1" fab dark small color="indigo">
               <v-icon dark>mdi-plus</v-icon>
             </v-btn>
@@ -98,7 +107,7 @@
         </v-row>
         <v-row justify="center" align="center">
           <v-col cols="1"></v-col>
-          <v-col cols="3">
+          <v-col cols="5">
             <v-textarea
               v-model="description"
               label="메뉴 설명"
@@ -110,10 +119,10 @@
           </v-col>
         </v-row>
         <v-row justify="center" align="start">
-          <v-col cols="12" sm="6" lg="2">
+          <v-col cols="12" sm="2" lg="2">
             <h3>등록된 메뉴</h3>
           </v-col>
-          <v-col cols="12" sm="6" lg="6">
+          <v-col cols="12" sm="7" lg="6">
             <v-row>
               <template v-for="(menu, idx) in menus">
                 <v-col v-if="menu.appended" :key="idx" cols="12" sm="6" lg="4">
@@ -160,7 +169,8 @@ export default {
       menus: [],
       address: "",
       map: null,
-      required: value => !!value || "Required."
+      required: value => !!value || "Required.",
+      nameOk: false
     };
   },
   computed: {},
@@ -170,10 +180,18 @@ export default {
   methods: {
     async registerChickenHouse() {
       console.log("=== Register Chicken House ===");
-      // check User input right info
-      // if (storeName){
-
-      // }
+      if (!this.nameOk) {
+        alert("치킨집 이름 중복을 확인해주세요");
+        return;
+      }
+      if (
+        this.storeName === "" ||
+        this.latitude == null ||
+        this.longitude == null
+      ) {
+        alert("양식을 올바르게 작성하였는지 다시 확인해주세요");
+        return;
+      }
       // make lists of chicke and price
       const chickens = this.menus
         .filter(menu => menu.appended)
@@ -290,6 +308,19 @@ export default {
         oncomplete: this.setAddress
       }).open();
       //   console.log(_address);
+    },
+    checkNameRedundancy() {
+      this.AdminInstance.findChickenHouse(this.storeName).then(result => {
+        console.log(result);
+        if (result == 0) {
+          alert("사용가능한 이름입니다.");
+          this.nameOk = true;
+        } else {
+          alert("이미 사용되는 이름입니다. 다시설정해주세요");
+          this.storeName = "";
+          this.nameOk = false;
+        }
+      });
     }
   },
   mounted() {
