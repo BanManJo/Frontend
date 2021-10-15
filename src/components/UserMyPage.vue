@@ -116,7 +116,7 @@
                 <v-btn
                   class="ma-2 text-h4"
                   color="orange"
-                  @click="refund1(orderingLists[0].roomNumber)"
+                  @click="cancelAlert = true"
                 >
                   <v-icon left>mdi-cancel</v-icon>
                   <span>주문취소</span>
@@ -132,6 +132,7 @@
       </v-flex>
     </v-layout>
     <!-- </div> -->
+
     &nbsp;
     <!--대영 기록 테이블 -->
     <v-container>
@@ -163,6 +164,46 @@
       </base-material-card>
     </v-container>
     <!-- </div> -->
+    <v-dialog v-model="cancelAlert" max-width="300">
+      <v-card>
+        <v-card-title>
+          주문취소 하시겠습니까?
+
+          <v-spacer />
+
+          <v-icon aria-label="Close" @click="cancelAlert = false">
+            mdi-close
+          </v-icon>
+        </v-card-title>
+
+        <v-card-text class="pb-6 pt-12 text-center">
+          <v-btn class="mr-3" text @click="cancelAlert = false">
+            Nevermind
+          </v-btn>
+
+          <v-btn
+            color="success"
+            text
+            @click="refund1(orderingLists[0].roomNumber)"
+          >
+            Yes
+          </v-btn>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
+    <base-material-snackbar
+      v-model="snackbar"
+      :type="color"
+      v-bind="{
+        bottom: true,
+        center: true,
+        timeout: 10000
+      }"
+    >
+      Welcome to
+      <span class="font-weight-bold">&nbsp;MATERIAL DASHBOARD&nbsp;</span> — a
+      beautiful admin panel for every web developer.
+    </base-material-snackbar>
     <!-- </v-app> -->
     <!-- </div> -->
   </v-app>
@@ -180,13 +221,15 @@ export default {
       orderingLists: [],
       // orderedLists2: {},
       orderedLists: [],
+      cancelAlert: false,
+      snackbar: false,
       // orderedLists4: [],
       headers: [
         {
           text: "가게이름 (storeName)",
           align: "left",
           sortable: false,
-          value: "storeName"
+          value: "name"
         },
         { text: "날짜", value: "date" },
         { text: "치킨메뉴", value: "menu" },
@@ -244,8 +287,9 @@ export default {
                 );
                 const result = await OrderRoomInstance.getStateRoom();
                 // 시간 나타내는 구문
-                const date = new Date(result2[idx].returnValues._date * 1000);
-                const orderDate = `${date.getFullYear()}/${date.getMonth()}/${date.getDate()} ${date.getHours()}:${date.getSeconds()}`;
+                const orderDate = new Date(
+                  result2[idx].returnValues._date * 1000
+                ).toString();
                 console.log(result);
                 if (result === "1") {
                   this.orderingLists.push({
@@ -312,8 +356,9 @@ export default {
                 console.log(matched);
 
                 // 시간 나타내는 구문
-                const date = new Date(matched._startTime * 1000);
-                const orderDate = `${date.getFullYear()}/${date.getMonth()}/${date.getDate()} ${date.getHours()}:${date.getSeconds()}`;
+                const orderDate = new Date(
+                  matched._startTime * 1000
+                ).toString();
 
                 if (state === "2") {
                   this.orderingLists.push({
@@ -371,15 +416,14 @@ export default {
           const roomInfo = await OrderRoomInstance.getRoomInfo();
 
           // 시간 나타내는 구문
-          const date = new Date(roomInfo._startTime * 1000);
-          const orderDate = `${date.getFullYear()}/${date.getMonth()}/${date.getDate()} ${date.getHours()}:${date.getSeconds()}`;
+          const orderDate = new Date(roomInfo._startTime * 1000).toString();
 
           this.orderedLists.push({
             storeName: returns._storeName,
             menu: roomInfo._chickenName,
             price: roomInfo._price,
             roomNumber: returns._roomIndex,
-            state: roomInfo._state === "3" ? "픽업 대기중" : "완료",
+            state: roomInfo._state === "3" ? "성공" : "실패",
             date: orderDate
           });
           this.orderingLists = [];
@@ -392,25 +436,24 @@ export default {
     }, //주문취소하기 버튼
     async refund1(idx) {
       try {
-        var con_test = confirm("주의 : 주문을 취소하시겠습니까?");
-        if (con_test === true) {
-          console.log("pass");
-          const CHAddress = await this.AdminInstance.findChickenHouse(
-            this.orderingLists[0].storeName
-          );
-          const ChickenHouseInstance = await contractInstance.getChickenHouseInstance(
-            CHAddress
-          );
-          const ORAddress = await ChickenHouseInstance.findOrderRoom(idx);
-          const OrderRoomInstance = contractInstance.getOrderRoomInstance(
-            ORAddress
-          );
-          await OrderRoomInstance.refundToAUser();
-          const orderList = this.orderingLists[0];
-          orderList.state = "완료";
-          this.orderedLists.push(orderList);
-          this.orderingLists = [];
-        }
+        //var con_test = confirm("주의 : 주문을 취소하시겠습니까?");
+        console.log("pass");
+        const CHAddress = await this.AdminInstance.findChickenHouse(
+          this.orderingLists[0].storeName
+        );
+        const ChickenHouseInstance = await contractInstance.getChickenHouseInstance(
+          CHAddress
+        );
+        const ORAddress = await ChickenHouseInstance.findOrderRoom(idx);
+        const OrderRoomInstance = contractInstance.getOrderRoomInstance(
+          ORAddress
+        );
+        await OrderRoomInstance.refundToAUser();
+        const orderList = this.orderingLists[0];
+        orderList.state = "실패";
+        this.orderedLists.push(orderList);
+        this.orderingLists = [];
+        this.cancelAlert = false;
       } catch (e) {
         this.error = e.message;
       }
