@@ -244,7 +244,7 @@ export default {
                 );
                 const result = await OrderRoomInstance.getStateRoom();
                 // 시간 나타내는 구문
-                const date = new Date(matched._startTime * 1000);
+                const date = new Date(result2[idx].returnValues._date * 1000);
                 const orderDate = `${date.getFullYear()}/${date.getMonth()}/${date.getDate()} ${date.getHours()}:${date.getSeconds()}`;
                 console.log(result);
                 if (result === "1") {
@@ -371,7 +371,7 @@ export default {
           const roomInfo = await OrderRoomInstance.getRoomInfo();
 
           // 시간 나타내는 구문
-          const date = new Date(matched._startTime * 1000);
+          const date = new Date(roomInfo._startTime * 1000);
           const orderDate = `${date.getFullYear()}/${date.getMonth()}/${date.getDate()} ${date.getHours()}:${date.getSeconds()}`;
 
           this.orderedLists.push({
