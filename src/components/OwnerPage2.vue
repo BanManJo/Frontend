@@ -30,7 +30,13 @@
     <v-container class="mb-12 text-center">
       <v-btn
         class="text-h3"
-        @click="changeOn"
+        @click="
+          isOn
+            ? () => {
+                return;
+              }
+            : changeOnOffBtnClicked()
+        "
         value="left"
         :color="onColor"
         flat
@@ -38,7 +44,13 @@
       </v-btn>
       <v-btn
         class="text-h3 text--white"
-        @click="changeOff"
+        @click="
+          isOn
+            ? changeOnOffBtnClicked()
+            : () => {
+                return;
+              }
+        "
         value="right"
         :color="offColor"
         flat
@@ -143,6 +155,42 @@
         </v-card>
       </base-material-card>
     </v-container>
+    <v-dialog v-model="onOffAlert" max-width="300">
+      <v-card>
+        <v-card-title>
+          Are you sure?
+
+          <v-spacer />
+
+          <v-icon aria-label="Close" @click="onOffAlert = false">
+            mdi-close
+          </v-icon>
+        </v-card-title>
+
+        <v-card-text class="pb-6 pt-12 text-center">
+          <v-btn class="mr-3" text @click="onOffAlert = false">
+            Nevermind
+          </v-btn>
+
+          <v-btn color="success" text @click="isOn ? changeOff() : changeOn()">
+            Yes
+          </v-btn>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
+    <base-material-snackbar
+      v-model="snackbar"
+      type="info"
+      v-bind="{
+        bottom: true,
+        center: true,
+        timeout: 10000
+      }"
+    >
+      Welcome to
+      <span class="font-weight-bold">&nbsp;MATERIAL DASHBOARD&nbsp;</span> — a
+      beautiful admin panel for every web developer.
+    </base-material-snackbar>
   </v-app>
 </template>
 
@@ -158,7 +206,6 @@ export default {
       onColor: "white",
       offColor: "white",
       clicked: true,
-
       // color1: "backgroundColor: blue",
       // color2: "backgroundColor: red",
       state: "",
@@ -181,7 +228,10 @@ export default {
           value: "hash"
         }
       ],
-      items: []
+      items: [],
+      onOffAlert: false,
+      isOn: true,
+      snackbar: false
     };
   },
   computed: {
@@ -240,6 +290,7 @@ export default {
                   id: preResult.returnValues._roomIndex
                 });
               }
+              this.snackbar = true;
             })
             .catch(error => {
               console.error(error);
@@ -254,8 +305,12 @@ export default {
         alert(`Store Counts : ${count}`);
       });
     },
+    changeOnOffBtnClicked() {
+      this.onOffAlert = true;
+    },
     async changeOn() {
-      alert("확인을 누르시면 가게가 영업을 시작합니다.");
+      // alert("확인을 누르시면 가게가 영업을 시작합니다.");
+      // this.onOffAlert = true;
       const CHAddress = await this.AdminInstance.findChickenHouse(
         this.storeName
       );
@@ -267,13 +322,16 @@ export default {
         await ChickenHouseInstance.changeOnOff();
         this.onColor = "blue";
         this.offColor = "white";
+        this.isOn = true;
+        this.onOffAlert = false;
       } else if (result._onOff == 1) {
         alert("현재 영업중인 상태 입니다.");
       }
     },
 
     async changeOff() {
-      alert("확인을 누르시면 가게가 영업을 종료합니다.");
+      // alert("확인을 누르시면 가게가 영업을 종료합니다.");
+      // this.onOffAlert = true;
       const CHAddress = await this.AdminInstance.findChickenHouse(
         this.storeName
       );
@@ -285,6 +343,8 @@ export default {
         await ChickenHouseInstance.changeOnOff();
         this.onColor = "white";
         this.offColor = "red";
+        this.isOn = false;
+        this.onOffAlert = false;
       } else if (result._onOff == 0) {
         alert("현재 영업이 종료된 상태 입니다.");
       }
@@ -380,9 +440,11 @@ export default {
       if (result._onOff == 0) {
         this.onColor = "white";
         this.offColor = "red";
+        this.isOn = false;
       } else if (result._onOff == 1) {
         this.onColor = "blue";
         this.offColor = "white";
+        this.isOn = true;
       }
     },
 

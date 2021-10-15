@@ -63,18 +63,6 @@
       </v-row>
     </v-container>
 
-    <v-btn
-      @click="menuDialog"
-      color="info"
-      style="width:95px; height:40px"
-      fab
-      tile
-      rounded
-      class="rect2 text-h4 "
-      absolute
-    >
-      메뉴추가
-    </v-btn>
     <v-container>
       <base-material-card
         icon="mdi-clipboard-text"
@@ -84,10 +72,10 @@
         outlined
       >
         <!-- 메뉴 정보 수정 부분 -->
-        <v-row row wrap>
+        <v-row row wrap align="center">
           <v-col
             sm="8"
-            md="4"
+            md="6"
             lg="4"
             v-for="infor in information"
             :key="infor.name"
@@ -115,11 +103,20 @@
                 <v-btn
                   class="ma-2 text-h4"
                   color="orange"
-                  @click="deleteMenu(infor.menuIndex)"
+                  :id="infor.menuIndex"
+                  @click="openDeleteAlert"
+                  v-text="'삭제하기'"
                 >
-                  <span> 삭제하기</span>
                 </v-btn>
               </v-card-actions>
+            </v-card>
+          </v-col>
+          <v-col sm="8" md="6" lg="4">
+            <v-card class="text-center" flat>
+              <v-btn @click="menuDialog" color="info" rounded>
+                메뉴추가
+                <v-icon>mdi-plus</v-icon>
+              </v-btn>
             </v-card>
           </v-col>
         </v-row>
@@ -129,6 +126,30 @@
     <!-- modal  -->
     <owner-dialog :owner="owner" @reload="getResiterMenu"></owner-dialog>
     <menu-dialog :owner="owner" @reload="getResiterMenu"></menu-dialog>
+
+    <v-dialog v-model="deleteAlert" max-width="300">
+      <v-card>
+        <v-card-title>
+          Are you sure?
+
+          <v-spacer />
+
+          <v-icon aria-label="Close" @click="deleteAlert = false">
+            mdi-close
+          </v-icon>
+        </v-card-title>
+
+        <v-card-text class="pb-6 pt-12 text-center">
+          <v-btn class="mr-3" text @click="deleteAlert = false">
+            Nevermind
+          </v-btn>
+
+          <v-btn color="success" text @click="deleteMenu">
+            Yes
+          </v-btn>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
   </v-app>
 </template>
 
@@ -136,7 +157,6 @@
 // Instance 사용하기 위한 구문
 
 import ContractInstance from "../ContractInstance";
-import info_window from "../utils/info_window";
 
 const contractInstance = new ContractInstance();
 export default {
@@ -170,7 +190,9 @@ export default {
       //   {}
       // ],
 
-      information: []
+      information: [],
+      deleteAlert: false,
+      index: 0
     };
   },
   computed: {
@@ -179,6 +201,10 @@ export default {
     }
   },
   methods: {
+    openDeleteAlert(event) {
+      this.deleteAlert = true;
+      this.index = event.target.id;
+    },
     open(index) {
       console.log("open");
 
@@ -195,19 +221,19 @@ export default {
       this.owner.menuModal = true;
       console.log("open2");
     },
-    async deleteMenu(menuIdx) {
+    async deleteMenu() {
       console.log("되나영");
 
-      var con_test = confirm("주의 : 등록하신 메뉴를 삭제하시겠습니까?");
+      // var con_test = confirm("주의 : 등록하신 메뉴를 삭제하시겠습니까?");
 
       const CHAddress = await this.AdminInstance.findChickenHouse(
-        "this.storeName"
+        this.storeName
       );
       const ChickenHouseInstance = contractInstance.getChickenHouseInstance(
         CHAddress
       );
 
-      const result = await ChickenHouseInstance.deleteMenu(menuIdx);
+      const result = await ChickenHouseInstance.deleteMenu(this.index);
       console.log("ggggglllll");
       // if (result == this.owner.chosenIndex) {
       //   // await ChickenHouseRepository.deleteMenu();
@@ -215,6 +241,7 @@ export default {
       //   // this.information.splice(0, 1);
       // } else if (con_test == false) {
       // }
+      this.deleteAlert = false;
       this.getResiterMenu();
     },
 
