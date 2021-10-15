@@ -563,7 +563,7 @@ export default {
         };
         this.markerDatas.push(markerData);
         this.createMarker(markerData);
-        this.map.setCenter(new kakao.maps.LatLng(latitude, longitude));
+        // this.map.setCenter(new kakao.maps.LatLng(latitude, longitude));
       } else {
         throw error;
       }

@@ -227,23 +227,21 @@ export class ChickenHouseRepository {
     });
   }
 
-  async deleteMenu() {
-    this._checkAccountAvailable();
-    console.log("deleteMenu");
-    return new Promise(async (resolve, reject) => {
-      try {
-        this.contractInstance.methods.deleteMenu().send(
-          { from: accounts[0], gas: 4476768 },
-
-          (err, transaction) => {
-            if (!err) resolve(transaction);
-            reject(err);
-          }
-        );
-      } catch (e) {
-        reject(e);
-      }
-    });
+  async deleteMenu(index) {
+    try {
+      await this._checkAccountAvailable();
+      await this.contractInstance.methods
+        .deleteMenu(index)
+        .send({ from: this.account, gas: this.gas })
+        .on("transactionHash", function(hash) {
+          return hash;
+        })
+        .on("error", function(error, receipt) {
+          throw error;
+        });
+    } catch (e) {
+      throw e;
+    }
   }
 
   async getRoomsCount() {

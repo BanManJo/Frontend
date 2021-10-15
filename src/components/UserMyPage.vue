@@ -186,7 +186,7 @@ export default {
           text: "가게이름 (storeName)",
           align: "left",
           sortable: false,
-          value: "name"
+          value: "storeName"
         },
         { text: "날짜", value: "date" },
         { text: "치킨메뉴", value: "menu" },
@@ -244,9 +244,8 @@ export default {
                 );
                 const result = await OrderRoomInstance.getStateRoom();
                 // 시간 나타내는 구문
-                const orderDate = new Date(
-                  result2[idx].returnValues._date * 1000
-                ).toString();
+                const date = new Date(matched._startTime * 1000);
+                const orderDate = `${date.getFullYear()}/${date.getMonth()}/${date.getDate()} ${date.getHours()}:${date.getSeconds()}`;
                 console.log(result);
                 if (result === "1") {
                   this.orderingLists.push({
@@ -313,9 +312,8 @@ export default {
                 console.log(matched);
 
                 // 시간 나타내는 구문
-                const orderDate = new Date(
-                  matched._startTime * 1000
-                ).toString();
+                const date = new Date(matched._startTime * 1000);
+                const orderDate = `${date.getFullYear()}/${date.getMonth()}/${date.getDate()} ${date.getHours()}:${date.getSeconds()}`;
 
                 if (state === "2") {
                   this.orderingLists.push({
@@ -373,14 +371,15 @@ export default {
           const roomInfo = await OrderRoomInstance.getRoomInfo();
 
           // 시간 나타내는 구문
-          const orderDate = new Date(roomInfo._startTime * 1000).toString();
+          const date = new Date(matched._startTime * 1000);
+          const orderDate = `${date.getFullYear()}/${date.getMonth()}/${date.getDate()} ${date.getHours()}:${date.getSeconds()}`;
 
           this.orderedLists.push({
             storeName: returns._storeName,
             menu: roomInfo._chickenName,
             price: roomInfo._price,
             roomNumber: returns._roomIndex,
-            state: roomInfo._state === "3" ? "성공" : "실패",
+            state: roomInfo._state === "3" ? "픽업 대기중" : "완료",
             date: orderDate
           });
           this.orderingLists = [];
@@ -408,7 +407,7 @@ export default {
           );
           await OrderRoomInstance.refundToAUser();
           const orderList = this.orderingLists[0];
-          orderList.state = "실패";
+          orderList.state = "완료";
           this.orderedLists.push(orderList);
           this.orderingLists = [];
         }
