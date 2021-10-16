@@ -4,7 +4,7 @@ const ChickenHouseRepository = require("./contracts/ChickenHouse");
 const OrderRoomRepository = require("./contracts/OrderRoom");
 
 //상일
-//Admin: 0x2c3040877ab2C6363D9aFc9bc7a922b735CC74f3 / 0x155D388687dD001AD1F7a579844D04B98157952e (mac / window)
+//Admin: 0x5a3CBACD3D0794BA1017fdC724aA574804cF05ec / 0x155D388687dD001AD1F7a579844D04B98157952e (mac / window)
 //Demo: 0x13c97ecd59d2fd674858C7396F900f2761C1A784 / 0x0C0989bdC8c053598BCBfeD5c0A1D597f649008A (mac / window)
 //대영
 //address:   0x0C46ecBC93dc33Bb977072Adc667E400f6d40637
