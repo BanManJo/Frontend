@@ -329,7 +329,6 @@ export default {
         console.log(status);
         if (status === kakao.maps.services.Status.OK) {
           console.log(result[0]);
-          console.log(result[0].address.address_name);
           const address = result[0].road_address
             ? result[0].road_address.address_name
             : result[0].address.address_name;
