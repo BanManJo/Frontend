@@ -87,20 +87,22 @@
                 <v-btn
                   class="ma-2 text-h4"
                   color="primary"
-                  @click="approveOrder(orderRoom.id)"
+                  :id="orderRoom.roomNumber"
+                  v-text="'주문받기'"
+                  @click="approveBtnClicked"
                 >
                   <v-icon left>mdi-checkbox-marked-circle</v-icon>
-                  <span>주문받기</span>
                 </v-btn>
                 <v-spacer></v-spacer>
 
                 <v-btn
                   class="ma-2 text-h4"
                   color="orange"
-                  @click="refundToBothUsers(orderRoom.id)"
+                  :id="orderRoom.roomNumber"
+                  v-text="'거절하기'"
+                  @click="declineBtnClicked"
                 >
                   <v-icon left>mdi-cancel</v-icon>
-                  <span>거절하기</span>
                 </v-btn>
               </v-card-actions>
             </v-card>
@@ -145,7 +147,8 @@
                 fab
                 small
                 color="green"
-                @click="finishCook(orderedList.id)"
+                :id="orderedList.roomNumber"
+                @click="finishBtnClicked()"
               >
                 <v-icon color="white">mdi-minus</v-icon>
               </v-btn>
@@ -155,11 +158,11 @@
         </v-card>
       </base-material-card>
     </v-container>
-    <v-dialog v-model="onOffAlert" max-width="300">
+    <v-dialog v-model="onOffAlert" max-width="400">
       <v-card>
-        <v-card-title>
-          Are you sure?
-
+        <br />
+        <v-card-title v-model="onOff">
+          확인을 누르시면 영업을 {{ onOff }}합니다.
           <v-spacer />
 
           <v-icon aria-label="Close" @click="onOffAlert = false">
@@ -169,10 +172,78 @@
 
         <v-card-text class="pb-6 pt-12 text-center">
           <v-btn class="mr-3" text @click="onOffAlert = false">
-            Nevermind
+            No
           </v-btn>
-
           <v-btn color="success" text @click="isOn ? changeOff() : changeOn()">
+            Yes
+          </v-btn>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
+
+    <v-dialog v-model="approveAlert" max-width="400">
+      <v-card>
+        <br />
+        <v-card-title>
+          주의 ! : 주문을 받으시면 받으신 주문을 취소할수가 없습니다.
+
+          <v-spacer />
+
+          <v-icon aria-label="Close" @click="approveAlert = false">
+            mdi-close
+          </v-icon>
+        </v-card-title>
+
+        <v-card-text class="pb-6 pt-12 text-center">
+          <v-btn class="mr-3" text @click="approveAlert = false">
+            No
+          </v-btn>
+          <v-btn color="success" text @click="approveOrder()">
+            Yes
+          </v-btn>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
+
+    <v-dialog v-model="declineAlert" max-width="400">
+      <v-card>
+        <br />
+        <v-card-title>
+          주의 ! : 한번 거절하시면 다시 받을 수 없습니다.
+          <v-spacer />
+
+          <v-icon aria-label="Close" @click="declineAlert = false">
+            mdi-close
+          </v-icon>
+        </v-card-title>
+
+        <v-card-text class="pb-6 pt-12 text-center">
+          <v-btn class="mr-3" text @click="declineAlert = false">
+            No
+          </v-btn>
+          <v-btn color="success" text @click="refundToBothUsers()">
+            Yes
+          </v-btn>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
+    <v-dialog v-model="finishAlert" max-width="400">
+      <v-card>
+        <br />
+        <v-card-title>
+          주의 : 두명의 손님들이 다 가져가셨나요?
+          <v-spacer />
+
+          <v-icon aria-label="Close" @click="finishAlert = false">
+            mdi-close
+          </v-icon>
+        </v-card-title>
+
+        <v-card-text class="pb-6 pt-12 text-center">
+          <v-btn class="mr-3" text @click="finishAlert = false">
+            No
+          </v-btn>
+          <v-btn color="success" text @click="finishCook()">
             Yes
           </v-btn>
         </v-card-text>
@@ -184,12 +255,12 @@
       v-bind="{
         bottom: true,
         center: true,
-        timeout: 10000
+        timeout: 5000
       }"
+      class="text-h2"
     >
-      Welcome to
-      <span class="font-weight-bold">&nbsp;MATERIAL DASHBOARD&nbsp;</span> — a
-      beautiful admin panel for every web developer.
+      주문이 들어왔습니다.
+      <span class="font-weight-bold"></span>
     </base-material-snackbar>
   </v-app>
 </template>
@@ -230,8 +301,13 @@ export default {
       ],
       items: [],
       onOffAlert: false,
+      approveAlert: false,
+      declineAlert: false,
+      finishAlert: false,
       isOn: true,
-      snackbar: false
+      onOff: "시작",
+      snackbar: false,
+      index: 0
     };
   },
   computed: {
@@ -260,8 +336,6 @@ export default {
         if (!error) {
           console.log("event2");
           console.log(result);
-
-          // 방법 3 (이벤트에서 치킨집 이름이랑, 방의 번호만을 이용해서 블록체인에서 원하는 방의 데이터를 가져오는 방법)
 
           let preResult = result;
 
@@ -299,14 +373,20 @@ export default {
       });
     },
 
-    testInstance() {
-      this.AdminInstance.getStoreCount().then(count => {
-        // resolve
-        alert(`Store Counts : ${count}`);
-      });
-    },
     changeOnOffBtnClicked() {
       this.onOffAlert = true;
+    },
+    approveBtnClicked(event) {
+      this.approveAlert = true;
+      this.index = event.target.id;
+    },
+    declineBtnClicked(event) {
+      this.declineAlert = true;
+      this.index = event.target.id;
+    },
+    finishBtnClicked(event) {
+      this.finishAlert = true;
+      this.index = event.target.id;
     },
     async changeOn() {
       // alert("확인을 누르시면 가게가 영업을 시작합니다.");
@@ -327,6 +407,7 @@ export default {
       } else if (result._onOff == 1) {
         alert("현재 영업중인 상태 입니다.");
       }
+      this.onOff = "종료";
     },
 
     async changeOff() {
@@ -346,8 +427,9 @@ export default {
         this.isOn = false;
         this.onOffAlert = false;
       } else if (result._onOff == 0) {
-        alert("현재 영업이 종료된 상태 입니다.");
+        // alert("현재 영업이 종료된 상태 입니다.");
       }
+      this.onOff = "시작";
     },
 
     Unix_timestamp(t) {
@@ -372,60 +454,57 @@ export default {
       );
     },
 
-    async approveOrder(idx) {
-      console.log("button IDX :" + idx);
-      var con_test = confirm(
-        "주의 : 주문을 받으시면 받으신 주문을 취소할수가 없습니다."
+    async approveOrder() {
+      console.log("button IDX :" + this.index);
+      // var con_test = confirm(
+      //   "주의 : 주문을 받으시면 받으신 주문을 취소할수가 없습니다."
+      // );
+
+      const CHAddress = await this.AdminInstance.findChickenHouse(
+        this.storeName
       );
-      if (con_test == true) {
-        const CHAddress = await this.AdminInstance.findChickenHouse(
-          this.storeName
-        );
-        const ChickenHouseInstance = contractInstance.getChickenHouseInstance(
-          CHAddress
-        );
-        await ChickenHouseInstance.approveOrder(this.storeName, idx);
-        this.getOrderRooms();
-        this.getOrderedLists();
-      } else if (con_test == false) {
-      }
+      const ChickenHouseInstance = contractInstance.getChickenHouseInstance(
+        CHAddress
+      );
+      await ChickenHouseInstance.approveOrder(this.storeName, this.index);
+      this.getOrderRooms();
+      this.getOrderedLists();
+      this.approveAlert = false;
     },
 
-    async refundToBothUsers(idx) {
-      console.log("button IDX :" + idx);
+    async refundToBothUsers() {
+      console.log("button IDX :" + this.index);
 
-      var con_test = confirm(
-        "주의 : 거절하시면 자동으로 환불되며 다시 같은 주문을 받을 수 없습니다."
+      // var con_test = confirm(
+      //   "주의 : 거절하시면 자동으로 환불되며 다시 같은 주문을 받을 수 없습니다."
+      // );
+
+      const CHAddress = await this.AdminInstance.findChickenHouse(
+        this.storeName
       );
-      if (con_test == true) {
-        const CHAddress = await this.AdminInstance.findChickenHouse(
-          this.storeName
-        );
-        const ChickenHouseInstance = await contractInstance.getChickenHouseInstance(
-          CHAddress
-        );
-        await ChickenHouseInstance.refundToBothUsers(idx);
-        this.getOrderRooms();
-        this.getOrderedLists();
-      } else if (con_test == false) {
-      }
+      const ChickenHouseInstance = await contractInstance.getChickenHouseInstance(
+        CHAddress
+      );
+      await ChickenHouseInstance.refundToBothUsers(this.index);
+      this.getOrderRooms();
+      this.getOrderedLists();
+      this.declineAlert = false;
     },
 
-    async finishCook(idx) {
-      console.log("button IDX :" + idx);
-      var con_test = confirm("주의 : 두명의 손님들이 다 가져가셨나요?");
-      if (con_test == true) {
-        const CHAddress = await this.AdminInstance.findChickenHouse(
-          this.storeName
-        );
-        const ChickenHouseInstance = contractInstance.getChickenHouseInstance(
-          CHAddress
-        );
+    async finishCook() {
+      // console.log("button IDX :" + idx);
+      // var con_test = confirm("주의 : 두명의 손님들이 다 가져가셨나요?");
 
-        await ChickenHouseInstance.finishCook(idx);
-        this.getOrderedLists();
-      } else if (con_test == false) {
-      }
+      const CHAddress = await this.AdminInstance.findChickenHouse(
+        this.storeName
+      );
+      const ChickenHouseInstance = contractInstance.getChickenHouseInstance(
+        CHAddress
+      );
+
+      await ChickenHouseInstance.finishCook(this.index);
+      this.getOrderedLists();
+      this.finishAlert = false;
     },
 
     async getOnOff() {
