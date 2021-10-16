@@ -1,13 +1,9 @@
 <template>
-  <v-app
-    style="
-    background: #f5f5f5;"
-  >
+  <v-app style="
+    background: #f5f5f5;">
     <!-- <child-component v-on:update="getResiterMenu"></child-component> -->
     <v-app-bar id="app-bar" absolute app color="transparent" flat height="75">
-      <v-toolbar-title class="text-h3 font-weight-light">
-        나의 주문 목록</v-toolbar-title
-      >
+      <v-toolbar-title class="text-h3 font-weight-light">나의 주문 목록</v-toolbar-title>
 
       <v-spacer />
       <v-btn class="ml-2 text-h4" min-width="0" text to="/UserMyPage">
@@ -35,14 +31,7 @@
           <v-card v-if="orderingLists.length != 0">
             <v-row justify="space-around" class="mb-2">
               &nbsp; &nbsp; &nbsp; &nbsp;
-              <v-chip
-                class="ma-2"
-                color="green"
-                label
-                text-color="white"
-                x-large
-                flat
-              >
+              <v-chip class="ma-2" color="green" label text-color="white" x-large flat>
                 <v-icon size="30" right>mdi-home</v-icon>&nbsp; &nbsp; &nbsp;
                 &nbsp; &nbsp;
                 <span class="matching">
@@ -52,27 +41,15 @@
               </v-chip>
               <v-spacer></v-spacer>
 
-              <v-chip
-                class="ma-2"
-                color="green"
-                label
-                text-color="white"
-                x-large
-                flat
-              >
+              <v-chip class="ma-2" color="green" label text-color="white" x-large flat>
                 <v-icon size="30" right>mdi-widgets</v-icon>&nbsp; &nbsp; &nbsp;
                 &nbsp; &nbsp;
-                <span class="matching">{{ orderingLists[0].state }}</span>
+                <span
+                  class="matching"
+                >{{ orderingLists[0].state }}</span>
               </v-chip>
               <v-spacer></v-spacer>
-              <v-chip
-                class="ma-2"
-                color="green"
-                label
-                text-color="white"
-                x-large
-                flat
-              >
+              <v-chip class="ma-2" color="green" label text-color="white" x-large flat>
                 <v-icon size="30" right>mdi-clock</v-icon>&nbsp; &nbsp; &nbsp;
                 &nbsp; &nbsp;
                 <span class="matching">
@@ -80,20 +57,15 @@
                   <!-- {{ orderedLists1.finish }}{{ orderedLists2.finish }} -->
                   {{ timeout ? "00:00" : Duration }}
                 </span>
-              </v-chip>
-              &nbsp; &nbsp; &nbsp; &nbsp;
+              </v-chip>&nbsp; &nbsp; &nbsp; &nbsp;
             </v-row>
             <v-card-title>
               <div>
-                <span class="blackText">
-                  가게이름 &nbsp; : &nbsp;{{ orderingLists[0].storeName }}
-                </span>
+                <span class="blackText">가게이름 &nbsp; : &nbsp;{{ orderingLists[0].storeName }}</span>
                 <br />
                 <v-spacer></v-spacer>
                 <v-spacer></v-spacer>
-                <span class="blackText">
-                  치킨메뉴 &nbsp; : &nbsp;{{ orderingLists[0].menu }}
-                </span>
+                <span class="blackText">치킨메뉴 &nbsp; : &nbsp;{{ orderingLists[0].menu }}</span>
                 <br />
                 <v-spacer></v-spacer>
                 <v-spacer></v-spacer>
@@ -113,18 +85,14 @@
             <v-card-actions>
               <v-row justify="space-around" class="mb-2">
                 <v-spacer></v-spacer>
-                <v-btn
-                  class="ma-2 text-h4"
-                  color="orange"
-                  @click="cancelAlert = true"
-                >
+                <v-btn class="ma-2 text-h4" color="orange" @click="cancelAlert = true">
                   <v-icon left>mdi-cancel</v-icon>
                   <span>주문취소</span>
                 </v-btn>
                 <!-- <v-btn class="ma-2 text-h4" color="orange" @click="readRoomInfo">
                 <v-icon left>mdi-cancel</v-icon>
                 <span>테스트</span>
-              </v-btn>-->
+                </v-btn>-->
               </v-row>
             </v-card-actions>
           </v-card>
@@ -132,7 +100,6 @@
       </v-flex>
     </v-layout>
     <!-- </div> -->
-
     &nbsp;
     <!--대영 기록 테이블 -->
     <v-container>
@@ -145,11 +112,7 @@
       >
         <!-- <div id="app"> -->
         <!-- <v-app id="inspire"> -->
-        <v-data-table
-          :headers="headers"
-          :items="orderedLists"
-          class="elevation-1"
-        >
+        <v-data-table :headers="headers" :items="orderedLists" class="elevation-1">
           <template v-slot:items="props">
             <td>{{ props.item.storeName }}</td>
             <td class="text-xs-right">{{ props.item.date }}</td>
@@ -168,32 +131,21 @@
       <v-card>
         <v-card-title>
           주문취소 하시겠습니까?
-
           <v-spacer />
 
-          <v-icon aria-label="Close" @click="cancelAlert = false">
-            mdi-close
-          </v-icon>
+          <v-icon aria-label="Close" @click="cancelAlert = false">mdi-close</v-icon>
         </v-card-title>
 
         <v-card-text class="pb-6 pt-12 text-center">
-          <v-btn class="mr-3" text @click="cancelAlert = false">
-            Nevermind
-          </v-btn>
+          <v-btn class="mr-3" text @click="cancelAlert = false">Nevermind</v-btn>
 
-          <v-btn
-            color="success"
-            text
-            @click="refund1(orderingLists[0].roomNumber)"
-          >
-            Yes
-          </v-btn>
+          <v-btn color="success" text @click="refund1(orderingLists[0].roomNumber)">Yes</v-btn>
         </v-card-text>
       </v-card>
     </v-dialog>
     <base-material-snackbar
       v-model="snackbar"
-      :type="color"
+      :type="'warning'"
       v-bind="{
         bottom: true,
         center: true,
@@ -229,15 +181,15 @@ export default {
           text: "가게이름 (storeName)",
           align: "left",
           sortable: false,
-          value: "name"
+          value: "storeName",
         },
         { text: "날짜", value: "date" },
         { text: "치킨메뉴", value: "menu" },
         { text: "가격 (eth)", value: "price" },
         { text: "주문상태 (성공/실패)", value: "state" },
-        { text: "방번호", value: "roomNumber" }
+        { text: "방번호", value: "roomNumber" },
       ],
-      durationData: { timer: 0 }
+      durationData: { timer: 0 },
     };
   },
   computed: {
@@ -249,17 +201,16 @@ export default {
     },
     timeout() {
       if (this.durationData.timer < 0) {
-        clearInterval(timeInterval);
         return true;
       }
       return false;
-    }
+    },
   },
   props: {},
   methods: {
     async readRoomInfo() {
       try {
-        this.AdminInstance.getStoreCount().then(async val => {
+        this.AdminInstance.getStoreCount().then(async (val) => {
           console.log(
             `---- get Each Chicken House Infos by idx, Counts: ${val} ----`
           );
@@ -268,9 +219,8 @@ export default {
             const CHAddress = await this.AdminInstance.findChickenHouseByIndex(
               idx
             );
-            const ChickenHouseInstance = contractInstance.getChickenHouseInstance(
-              CHAddress
-            );
+            const ChickenHouseInstance =
+              contractInstance.getChickenHouseInstance(CHAddress);
             // console.log("pass");
             this.watchEventApprovedOrRejected(ChickenHouseInstance);
             ChickenHouseInstance.roomCreated(async (error, result2) => {
@@ -282,14 +232,12 @@ export default {
                   result2[idx].returnValues._roomNumber
                 );
                 // 6. OrderRoom 인스턴스 생성
-                const OrderRoomInstance = contractInstance.getOrderRoomInstance(
-                  ORAddress
-                );
+                const OrderRoomInstance =
+                  contractInstance.getOrderRoomInstance(ORAddress);
                 const result = await OrderRoomInstance.getStateRoom();
                 // 시간 나타내는 구문
-                const orderDate = new Date(
-                  result2[idx].returnValues._date * 1000
-                ).toString();
+                const date = new Date(result2[idx].returnValues._date * 1000);
+                const orderDate = `${date.getFullYear()}/${date.getMonth()}/${date.getDate()} ${date.getHours()}:${date.getSeconds()}`;
                 console.log(result);
                 if (result === "1") {
                   this.orderingLists.push({
@@ -299,7 +247,7 @@ export default {
                     roomNumber: result2[idx].returnValues._roomNumber,
                     state: "매칭중입니다",
                     finish: result2[idx].returnValues._finish,
-                    date: orderDate
+                    date: orderDate,
                   });
                   const duration =
                     +result2[idx].returnValues._date +
@@ -318,7 +266,7 @@ export default {
                     roomNumber: result2[idx].returnValues._roomNumber,
                     state: "주문 접수중입니다",
                     finish: " ",
-                    date: orderDate
+                    date: orderDate,
                   });
                 } else if (result === "3") {
                   this.orderedLists.push({
@@ -327,7 +275,7 @@ export default {
                     price: result2[idx].returnValues._price,
                     roomNumber: result2[idx].returnValues._roomNumber,
                     state: "픽업 대기중",
-                    date: orderDate
+                    date: orderDate,
                   });
                 } else if (result === "4") {
                   this.orderedLists.push({
@@ -336,7 +284,7 @@ export default {
                     price: result2[idx].returnValues._price,
                     roomNumber: result2[idx].returnValues._roomNumber,
                     state: "완료",
-                    date: orderDate
+                    date: orderDate,
                   });
                 }
               }
@@ -347,18 +295,16 @@ export default {
                 const ORAddress = result3[idx].returnValues.orderRoom;
 
                 // 6. OrderRoom 인스턴스 생성
-                const OrderRoomInstance = contractInstance.getOrderRoomInstance(
-                  ORAddress
-                );
+                const OrderRoomInstance =
+                  contractInstance.getOrderRoomInstance(ORAddress);
                 const state = await OrderRoomInstance.getStateRoom();
                 console.log(state);
                 const matched = await OrderRoomInstance.getRoomInfo();
                 console.log(matched);
 
                 // 시간 나타내는 구문
-                const orderDate = new Date(
-                  matched._startTime * 1000
-                ).toString();
+                const date = new Date(matched._startTime * 1000);
+                const orderDate = `${date.getFullYear()}/${date.getMonth()}/${date.getDate()} ${date.getHours()}:${date.getSeconds()}`;
 
                 if (state === "2") {
                   this.orderingLists.push({
@@ -368,7 +314,7 @@ export default {
                     roomNumber: result3[idx].returnValues._roomIndex,
                     state: "주문 접수중입니다",
                     finish: " ",
-                    date: orderDate
+                    date: orderDate,
                   });
                 } else if (state === "3") {
                   this.orderedLists.push({
@@ -377,7 +323,7 @@ export default {
                     price: matched._price,
                     roomNumber: result3[idx].returnValues._roomIndex,
                     state: "픽업 대기중",
-                    date: orderDate
+                    date: orderDate,
                   });
                 } else if (state === "4") {
                   this.orderedLists.push({
@@ -386,7 +332,7 @@ export default {
                     price: matched._price,
                     roomNumber: result3[idx].returnValues._roomIndex,
                     state: "완료",
-                    date: orderDate
+                    date: orderDate,
                   });
                 }
               }
@@ -410,13 +356,13 @@ export default {
             returns._roomIndex
           );
           // 6. OrderRoom 인스턴스 생성
-          const OrderRoomInstance = contractInstance.getOrderRoomInstance(
-            ORAddress
-          );
+          const OrderRoomInstance =
+            contractInstance.getOrderRoomInstance(ORAddress);
           const roomInfo = await OrderRoomInstance.getRoomInfo();
 
           // 시간 나타내는 구문
-          const orderDate = new Date(roomInfo._startTime * 1000).toString();
+          const date = new Date(roomInfo._startTime * 1000);
+          const orderDate = `${date.getFullYear()}/${date.getMonth()}/${date.getDate()} ${date.getHours()}:${date.getSeconds()}`;
 
           this.orderedLists.push({
             storeName: returns._storeName,
@@ -424,7 +370,7 @@ export default {
             price: roomInfo._price,
             roomNumber: returns._roomIndex,
             state: roomInfo._state === "3" ? "픽업 대기중" : "완료",
-            date: orderDate
+            date: orderDate,
           });
           this.orderingLists = [];
         } else {
@@ -441,13 +387,11 @@ export default {
         const CHAddress = await this.AdminInstance.findChickenHouse(
           this.orderingLists[0].storeName
         );
-        const ChickenHouseInstance = await contractInstance.getChickenHouseInstance(
-          CHAddress
-        );
+        const ChickenHouseInstance =
+          await contractInstance.getChickenHouseInstance(CHAddress);
         const ORAddress = await ChickenHouseInstance.findOrderRoom(idx);
-        const OrderRoomInstance = contractInstance.getOrderRoomInstance(
-          ORAddress
-        );
+        const OrderRoomInstance =
+          contractInstance.getOrderRoomInstance(ORAddress);
         await OrderRoomInstance.refundToAUser();
         const orderList = this.orderingLists[0];
         orderList.state = "완료";
@@ -457,7 +401,18 @@ export default {
       } catch (e) {
         this.error = e.message;
       }
-    }
+    },
+  },
+  watch: {
+    timeout: function (val) {
+      if (val) {
+        if (timeInterval) {
+          clearInterval(timeInterval);
+        }
+        this.snackbar = true;
+        console.log(val);
+      }
+    },
   },
   mounted() {
     // document.body.style.overflowY = "scroll";
@@ -469,7 +424,7 @@ export default {
   beforeDestroy() {
     console.log("=============Destroyed" + timeInterval);
     clearInterval(timeInterval);
-  }
+  },
 };
 </script>
 
