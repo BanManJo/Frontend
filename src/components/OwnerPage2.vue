@@ -81,7 +81,7 @@
                 <div class="text-h4">
                   메뉴 : {{ orderRoom.menu }} / {{ orderRoom.kind }}
                 </div>
-                <div class="text-h4">가격 : {{ orderRoom.price }}</div>
+                <div class="text-h4">가격 : {{ orderRoom.price }} ether</div>
               </v-card-text>
               <v-card-actions>
                 <v-btn

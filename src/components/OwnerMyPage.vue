@@ -90,7 +90,7 @@
                   메뉴 : {{ infor.chickenName }} /
                   {{ infor.kind }}
                 </div>
-                <div class="text-h4">가격 : {{ infor.price }}</div>
+                <div class="text-h4">가격 : {{ infor.price }} ether</div>
               </v-card-text>
               <v-card-actions>
                 <v-btn
