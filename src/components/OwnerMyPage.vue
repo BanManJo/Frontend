@@ -141,7 +141,7 @@
 
         <v-card-text class="pb-6 pt-12 text-center">
           <v-btn class="mr-3" text @click="deleteAlert = false">
-            Nevermind
+            No
           </v-btn>
 
           <v-btn color="success" text @click="deleteMenu">
