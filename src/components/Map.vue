@@ -58,7 +58,8 @@ const contractInstance = new ContractInstance();
 import MakeInfoWindow from "../utils/info_window";
 
 // store Imge
-import storeImg from "../img/storeImg3.png";
+// import storeImg from "../img/storeImg3.png";
+import storeImg from "../img/치킨로고4.png";
 
 let roomCreatedEmitter;
 let roomMatchedEmitter;
@@ -299,7 +300,7 @@ export default {
     /* ============= 치킨집 지도 마커 생성 함수 ============= */
     createMarker(markerData) {
       const imageSrc = storeImg,
-        imageSize = new kakao.maps.Size(48, 48),
+        imageSize = new kakao.maps.Size(64, 64),
         imageOption = { offset: new kakao.maps.Point(27, 50) };
 
       const markerImage = new kakao.maps.MarkerImage(
