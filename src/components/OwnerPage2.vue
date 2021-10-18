@@ -1,12 +1,12 @@
 <template>
-  <v-app
-    style="
-    background: #f5f5f5;"
-  >
+  <v-app style="
+    background: #f5f5f5;">
     <v-app-bar id="app-bar" absolute app color="transparent" flat height="75">
-      <v-toolbar-title class="text-h3 font-weight-light">{{
+      <v-toolbar-title class="text-h3 font-weight-light">
+        {{
         storeName
-      }}</v-toolbar-title>
+        }}
+      </v-toolbar-title>
 
       <v-spacer></v-spacer>
 
@@ -40,7 +40,8 @@
         value="left"
         :color="onColor"
         flat
-        ><v-icon large>mdi-airplane-takeoff</v-icon>영업 시작
+      >
+        <v-icon large>mdi-airplane-takeoff</v-icon>영업 시작
       </v-btn>
       <v-btn
         class="text-h3 text--white"
@@ -54,8 +55,10 @@
         value="right"
         :color="offColor"
         flat
-        >영업 종료 <v-icon large>mdi-airplane-landing</v-icon></v-btn
       >
+        영업 종료
+        <v-icon large>mdi-airplane-landing</v-icon>
+      </v-btn>
     </v-container>
 
     <v-container>
@@ -67,40 +70,34 @@
         outlined
       >
         <v-row row wrap>
-          <v-col
-            v-for="orderRoom in orderRooms"
-            :key="orderRoom.roomNumber"
-            sm="8"
-            md="4"
-            lg="4"
-          >
+          <v-col v-for="orderRoom in orderRooms" :key="orderRoom.roomNumber" sm="8" md="4" lg="4">
             <v-card flat outlined class="text-center" width="381">
               <v-card-text>
                 <div class="text-h3">방번호 : {{ orderRoom.roomNumber }}</div>
                 <br />
-                <div class="text-h4">
-                  메뉴 : {{ orderRoom.menu }} / {{ orderRoom.kind }}
-                </div>
-                <div class="text-h4">가격 : {{ orderRoom.price }}</div>
+                <div class="text-h4">메뉴 : {{ orderRoom.menu }} / {{ orderRoom.kind }}</div>
+                <div class="text-h4">가격 : {{ orderRoom.price }} ether</div>
               </v-card-text>
               <v-card-actions>
                 <v-btn
                   class="ma-2 text-h4"
                   color="primary"
-                  @click="approveOrder(orderRoom.id)"
+                  :id="orderRoom.roomNumber"
+                  v-text="'주문받기'"
+                  @click="approveBtnClicked"
                 >
                   <v-icon left>mdi-checkbox-marked-circle</v-icon>
-                  <span>주문받기</span>
                 </v-btn>
                 <v-spacer></v-spacer>
 
                 <v-btn
                   class="ma-2 text-h4"
                   color="orange"
-                  @click="refundToBothUsers(orderRoom.id)"
+                  :id="orderRoom.roomNumber"
+                  v-text="'거절하기'"
+                  @click="declineBtnClicked"
                 >
                   <v-icon left>mdi-cancel</v-icon>
-                  <span>거절하기</span>
                 </v-btn>
               </v-card-actions>
             </v-card>
@@ -117,11 +114,7 @@
         flat
         outlined
       >
-        <v-card
-          flat
-          v-for="orderedList in orderedLists"
-          :key="orderedList.title"
-        >
+        <v-card flat v-for="orderedList in orderedLists" :key="orderedList.title">
           <v-row row wrap :class="`pa-3 orderedList ${orderedList.kind}`">
             <v-col xs12 md5>
               <div class="caption grey--text">주문 받은 시간</div>
@@ -145,7 +138,8 @@
                 fab
                 small
                 color="green"
-                @click="finishCook(orderedList.id)"
+                :id="orderedList.roomNumber"
+                @click="finishBtnClicked()"
               >
                 <v-icon color="white">mdi-minus</v-icon>
               </v-btn>
@@ -155,26 +149,70 @@
         </v-card>
       </base-material-card>
     </v-container>
-    <v-dialog v-model="onOffAlert" max-width="300">
+    <!-- <v-dialog v-model="onOffAlert" max-width="400">
       <v-card>
+        <br />
         <v-card-title>
-          Are you sure?
-
+          확인을 누르시면 영업을 {{ isOn ? "종료" : "시작" }}합니다.
           <v-spacer />
 
-          <v-icon aria-label="Close" @click="onOffAlert = false">
-            mdi-close
-          </v-icon>
+          <v-icon aria-label="Close" @click="onOffAlert = false">mdi-close</v-icon>
         </v-card-title>
 
         <v-card-text class="pb-6 pt-12 text-center">
-          <v-btn class="mr-3" text @click="onOffAlert = false">
-            Nevermind
-          </v-btn>
+          <v-btn class="mr-3" text @click="onOffAlert = false">No</v-btn>
+          <v-btn color="success" text @click="isOn ? changeOff() : changeOn()">Yes</v-btn>
+        </v-card-text>
+      </v-card>
+    </v-dialog>-->
+    <alert-dialog :content="content" :alert="alert" @confirm="confrim(1)"></alert-dialog>
 
-          <v-btn color="success" text @click="isOn ? changeOff() : changeOn()">
-            Yes
-          </v-btn>
+    <!-- <v-dialog v-model="approveAlert" max-width="400">
+      <v-card>
+        <br />
+        <v-card-title>
+          주의 ! : 주문을 받으시면 받으신 주문을 취소할수가 없습니다.
+          <v-spacer />
+
+          <v-icon aria-label="Close" @click="approveAlert = false">mdi-close</v-icon>
+        </v-card-title>
+
+        <v-card-text class="pb-6 pt-12 text-center">
+          <v-btn class="mr-3" text @click="approveAlert = false">No</v-btn>
+          <v-btn color="success" text @click="approveOrder()">Yes</v-btn>
+        </v-card-text>
+      </v-card>
+    </v-dialog>-->
+
+    <v-dialog v-model="declineAlert" max-width="400">
+      <v-card>
+        <br />
+        <v-card-title>
+          주의 ! : 한번 거절하시면 다시 받을 수 없습니다.
+          <v-spacer />
+
+          <v-icon aria-label="Close" @click="declineAlert = false">mdi-close</v-icon>
+        </v-card-title>
+
+        <v-card-text class="pb-6 pt-12 text-center">
+          <v-btn class="mr-3" text @click="declineAlert = false">No</v-btn>
+          <v-btn color="success" text @click="refundToBothUsers()">Yes</v-btn>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
+    <v-dialog v-model="finishAlert" max-width="400">
+      <v-card>
+        <br />
+        <v-card-title>
+          주의 : 두명의 손님들이 다 가져가셨나요?
+          <v-spacer />
+
+          <v-icon aria-label="Close" @click="finishAlert = false">mdi-close</v-icon>
+        </v-card-title>
+
+        <v-card-text class="pb-6 pt-12 text-center">
+          <v-btn class="mr-3" text @click="finishAlert = false">No</v-btn>
+          <v-btn color="success" text @click="finishCook()">Yes</v-btn>
         </v-card-text>
       </v-card>
     </v-dialog>
@@ -184,12 +222,12 @@
       v-bind="{
         bottom: true,
         center: true,
-        timeout: 10000
+        timeout: 5000
       }"
+      class="text-h2"
     >
-      Welcome to
-      <span class="font-weight-bold">&nbsp;MATERIAL DASHBOARD&nbsp;</span> — a
-      beautiful admin panel for every web developer.
+      주문이 들어왔습니다.
+      <span class="font-weight-bold"></span>
     </base-material-snackbar>
   </v-app>
 </template>
@@ -200,6 +238,9 @@ import ContractInstance from "../ContractInstance";
 const contractInstance = new ContractInstance();
 
 export default {
+  components: {
+    AlertDialog: () => import("./AlertDialog.vue"),
+  },
   data() {
     return {
       AdminInstance: contractInstance.getAdminInstance(), // Admin Instance data
@@ -225,19 +266,28 @@ export default {
           text: "result",
           align: "center",
           sortable: false,
-          value: "hash"
-        }
+          value: "hash",
+        },
       ],
       items: [],
       onOffAlert: false,
+      approveAlert: false,
+      declineAlert: false,
+      finishAlert: false,
       isOn: true,
-      snackbar: false
+      onOff: "시작",
+      snackbar: false,
+      index: 0,
+      alert: {
+        modal: false,
+      },
+      content: "",
     };
   },
   computed: {
     storeName() {
       return this.$route.params.storeName;
-    }
+    },
   },
   methods: {
     deleteOrderRoom() {
@@ -252,16 +302,13 @@ export default {
       const CHAddress = await this.AdminInstance.findChickenHouse(
         this.storeName
       );
-      const ChickenHouseInstance = await contractInstance.getChickenHouseInstance(
-        CHAddress
-      );
+      const ChickenHouseInstance =
+        await contractInstance.getChickenHouseInstance(CHAddress);
       let self = this;
       ChickenHouseInstance.watchIfMatched(async (error, result) => {
         if (!error) {
           console.log("event2");
           console.log(result);
-
-          // 방법 3 (이벤트에서 치킨집 이름이랑, 방의 번호만을 이용해서 블록체인에서 원하는 방의 데이터를 가져오는 방법)
 
           let preResult = result;
 
@@ -272,14 +319,14 @@ export default {
             ORAddress
           );
           OrderRoomInstance.getRoomInfo()
-            .then(result => {
+            .then((result) => {
               if (result._menuState === "2") {
                 self.orderRooms.push({
                   roomNumber: preResult.returnValues._roomIndex,
                   menu: result._chickenName,
                   kind: "순살",
                   price: result._price,
-                  id: preResult.returnValues._roomIndex
+                  id: preResult.returnValues._roomIndex,
                 });
               } else if (result._menuState === "1") {
                 self.orderRooms.push({
@@ -287,26 +334,44 @@ export default {
                   menu: result._chickenName,
                   kind: "뼈",
                   price: result._price,
-                  id: preResult.returnValues._roomIndex
+                  id: preResult.returnValues._roomIndex,
                 });
               }
               this.snackbar = true;
             })
-            .catch(error => {
+            .catch((error) => {
               console.error(error);
             });
         }
       });
-    },
-
-    testInstance() {
-      this.AdminInstance.getStoreCount().then(count => {
-        // resolve
-        alert(`Store Counts : ${count}`);
-      });
+    },₩
+    confirm(flag) {
+      console.log(flag);
+      if (this.isOn) {
+        this.confirm(this.changeOff);
+      } else {
+        this.confirm(this.changeOn);
+      }
+      return;
     },
     changeOnOffBtnClicked() {
-      this.onOffAlert = true;
+      // this.onOffAlert = true;
+      this.alert.modal = true;
+      this.content = `확인을 누르시면 영업을 ${
+        this.isOn ? "종료" : "시작"
+      }합니다.`;
+    },
+    approveBtnClicked(event) {
+      this.approveAlert = true;
+      this.index = event.target.id;
+    },
+    declineBtnClicked(event) {
+      this.declineAlert = true;
+      this.index = event.target.id;
+    },
+    finishBtnClicked(event) {
+      this.finishAlert = true;
+      this.index = event.target.id;
     },
     async changeOn() {
       // alert("확인을 누르시면 가게가 영업을 시작합니다.");
@@ -314,9 +379,8 @@ export default {
       const CHAddress = await this.AdminInstance.findChickenHouse(
         this.storeName
       );
-      const ChickenHouseInstance = contractInstance.getChickenHouseInstance(
-        CHAddress
-      );
+      const ChickenHouseInstance =
+        contractInstance.getChickenHouseInstance(CHAddress);
       const result = await ChickenHouseInstance.getChickenHouse();
       if (result._onOff == 0) {
         await ChickenHouseInstance.changeOnOff();
@@ -327,6 +391,7 @@ export default {
       } else if (result._onOff == 1) {
         alert("현재 영업중인 상태 입니다.");
       }
+      this.onOff = "종료";
     },
 
     async changeOff() {
@@ -335,9 +400,8 @@ export default {
       const CHAddress = await this.AdminInstance.findChickenHouse(
         this.storeName
       );
-      const ChickenHouseInstance = contractInstance.getChickenHouseInstance(
-        CHAddress
-      );
+      const ChickenHouseInstance =
+        contractInstance.getChickenHouseInstance(CHAddress);
       const result = await ChickenHouseInstance.getChickenHouse();
       if (result._onOff == 1) {
         await ChickenHouseInstance.changeOnOff();
@@ -346,8 +410,9 @@ export default {
         this.isOn = false;
         this.onOffAlert = false;
       } else if (result._onOff == 0) {
-        alert("현재 영업이 종료된 상태 입니다.");
+        // alert("현재 영업이 종료된 상태 입니다.");
       }
+      this.onOff = "시작";
     },
 
     Unix_timestamp(t) {
@@ -372,69 +437,62 @@ export default {
       );
     },
 
-    async approveOrder(idx) {
-      console.log("button IDX :" + idx);
-      var con_test = confirm(
-        "주의 : 주문을 받으시면 받으신 주문을 취소할수가 없습니다."
+    async approveOrder() {
+      console.log("button IDX :" + this.index);
+      // var con_test = confirm(
+      //   "주의 : 주문을 받으시면 받으신 주문을 취소할수가 없습니다."
+      // );
+
+      const CHAddress = await this.AdminInstance.findChickenHouse(
+        this.storeName
       );
-      if (con_test == true) {
-        const CHAddress = await this.AdminInstance.findChickenHouse(
-          this.storeName
-        );
-        const ChickenHouseInstance = contractInstance.getChickenHouseInstance(
-          CHAddress
-        );
-        await ChickenHouseInstance.approveOrder(this.storeName, idx);
-        this.getOrderRooms();
-        this.getOrderedLists();
-      } else if (con_test == false) {
-      }
+      const ChickenHouseInstance =
+        contractInstance.getChickenHouseInstance(CHAddress);
+      await ChickenHouseInstance.approveOrder(this.storeName, this.index);
+      this.getOrderRooms();
+      this.getOrderedLists();
+      this.approveAlert = false;
     },
 
-    async refundToBothUsers(idx) {
-      console.log("button IDX :" + idx);
+    async refundToBothUsers() {
+      console.log("button IDX :" + this.index);
 
-      var con_test = confirm(
-        "주의 : 거절하시면 자동으로 환불되며 다시 같은 주문을 받을 수 없습니다."
+      // var con_test = confirm(
+      //   "주의 : 거절하시면 자동으로 환불되며 다시 같은 주문을 받을 수 없습니다."
+      // );
+
+      const CHAddress = await this.AdminInstance.findChickenHouse(
+        this.storeName
       );
-      if (con_test == true) {
-        const CHAddress = await this.AdminInstance.findChickenHouse(
-          this.storeName
-        );
-        const ChickenHouseInstance = await contractInstance.getChickenHouseInstance(
-          CHAddress
-        );
-        await ChickenHouseInstance.refundToBothUsers(idx);
-        this.getOrderRooms();
-        this.getOrderedLists();
-      } else if (con_test == false) {
-      }
+      const ChickenHouseInstance =
+        await contractInstance.getChickenHouseInstance(CHAddress);
+      await ChickenHouseInstance.refundToBothUsers(this.index);
+      this.getOrderRooms();
+      this.getOrderedLists();
+      this.declineAlert = false;
     },
 
-    async finishCook(idx) {
-      console.log("button IDX :" + idx);
-      var con_test = confirm("주의 : 두명의 손님들이 다 가져가셨나요?");
-      if (con_test == true) {
-        const CHAddress = await this.AdminInstance.findChickenHouse(
-          this.storeName
-        );
-        const ChickenHouseInstance = contractInstance.getChickenHouseInstance(
-          CHAddress
-        );
+    async finishCook() {
+      // console.log("button IDX :" + idx);
+      // var con_test = confirm("주의 : 두명의 손님들이 다 가져가셨나요?");
 
-        await ChickenHouseInstance.finishCook(idx);
-        this.getOrderedLists();
-      } else if (con_test == false) {
-      }
+      const CHAddress = await this.AdminInstance.findChickenHouse(
+        this.storeName
+      );
+      const ChickenHouseInstance =
+        contractInstance.getChickenHouseInstance(CHAddress);
+
+      await ChickenHouseInstance.finishCook(this.index);
+      this.getOrderedLists();
+      this.finishAlert = false;
     },
 
     async getOnOff() {
       const CHAddress = await this.AdminInstance.findChickenHouse(
         this.storeName
       );
-      const ChickenHouseInstance = contractInstance.getChickenHouseInstance(
-        CHAddress
-      );
+      const ChickenHouseInstance =
+        contractInstance.getChickenHouseInstance(CHAddress);
       const result = await ChickenHouseInstance.getChickenHouse();
       console.log(result);
       if (result._onOff == 0) {
@@ -454,9 +512,8 @@ export default {
       const CHAddress = await this.AdminInstance.findChickenHouse(
         this.storeName
       );
-      const ChickenHouseInstance = contractInstance.getChickenHouseInstance(
-        CHAddress
-      );
+      const ChickenHouseInstance =
+        contractInstance.getChickenHouseInstance(CHAddress);
 
       const roomCount = await ChickenHouseInstance.getRoomsCount();
 
@@ -464,12 +521,11 @@ export default {
       this.orderRooms = [];
       for (let idx = 0; idx < roomCount; idx++) {
         const ORAddress = await ChickenHouseInstance.findOrderRoom(idx);
-        const OrderRoomInstance = contractInstance.getOrderRoomInstance(
-          ORAddress
-        );
+        const OrderRoomInstance =
+          contractInstance.getOrderRoomInstance(ORAddress);
 
         await OrderRoomInstance.getRoomInfo()
-          .then(result => {
+          .then((result) => {
             if (result._state === "2") {
               if (result._menuState === "2") {
                 this.orderRooms.push({
@@ -477,7 +533,7 @@ export default {
                   menu: result._chickenName,
                   kind: "순살",
                   price: result._price,
-                  id: idx
+                  id: idx,
                 });
               } else if (result._menuState === "1") {
                 this.orderRooms.push({
@@ -485,12 +541,12 @@ export default {
                   menu: result._chickenName,
                   kind: "뼈",
                   price: result._price,
-                  id: idx
+                  id: idx,
                 });
               }
             }
           })
-          .catch(error => {
+          .catch((error) => {
             console.error(error);
           });
       }
@@ -501,9 +557,8 @@ export default {
       const CHAddress = await this.AdminInstance.findChickenHouse(
         this.storeName
       );
-      const ChickenHouseInstance = contractInstance.getChickenHouseInstance(
-        CHAddress
-      );
+      const ChickenHouseInstance =
+        contractInstance.getChickenHouseInstance(CHAddress);
       const roomCount = await ChickenHouseInstance.getRoomsCount();
 
       console.log(
@@ -513,11 +568,10 @@ export default {
 
       for (let idx = 0; idx < roomCount; idx++) {
         const ORAddress = await ChickenHouseInstance.findOrderRoom(idx);
-        const OrderRoomInstance = contractInstance.getOrderRoomInstance(
-          ORAddress
-        );
+        const OrderRoomInstance =
+          contractInstance.getOrderRoomInstance(ORAddress);
         await OrderRoomInstance.getRoomInfo()
-          .then(result => {
+          .then((result) => {
             // console.log(result);
             if (result._state === "3") {
               if (result._menuState === "2") {
@@ -526,7 +580,7 @@ export default {
                   kind: "순살",
                   menu: result._chickenName,
                   time: this.Unix_timestamp(result._receiveTime),
-                  id: idx
+                  id: idx,
                 });
               } else if (result._menuState === "1") {
                 this.orderedLists.push({
@@ -534,17 +588,17 @@ export default {
                   kind: "뼈",
                   menu: result._chickenName,
                   time: this.Unix_timestamp(result._receiveTime),
-                  id: idx
+                  id: idx,
                 });
               }
             }
           })
-          .catch(error => {
+          .catch((error) => {
             console.error(error);
           });
       }
       console.log("=== Done Show OrderedLists (state = 3) ===");
-    }
+    },
 
     // async matchRoomEvent5() {
     //   alert("김현수");
@@ -573,7 +627,7 @@ export default {
 
   mounted() {
     this.matchRoomEvent();
-  }
+  },
 };
 </script>
 

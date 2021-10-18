@@ -5,8 +5,8 @@
   >
     <!-- <child-component v-on:update="getResiterMenu"></child-component> -->
     <v-app-bar id="app-bar" absolute app color="transparent" flat height="75">
-      <v-toolbar-title class="text-h3 font-weight-light">
-        나의 주문 목록</v-toolbar-title
+      <v-toolbar-title class="text-h3 font-weight-light"
+        >나의 주문 목록</v-toolbar-title
       >
 
       <v-spacer />
@@ -79,21 +79,22 @@
                   만료시간 &nbsp; :&nbsp;
                   <!-- {{ orderedLists1.finish }}{{ orderedLists2.finish }} -->
                   {{ timeout ? "00:00" : Duration }}
-                </span>
-              </v-chip>
-              &nbsp; &nbsp; &nbsp; &nbsp;
+                </span> </v-chip
+              >&nbsp; &nbsp; &nbsp; &nbsp;
             </v-row>
             <v-card-title>
               <div>
-                <span class="blackText">
-                  가게이름 &nbsp; : &nbsp;{{ orderingLists[0].storeName }}
-                </span>
+                <span class="blackText"
+                  >가게이름 &nbsp; : &nbsp;{{
+                    orderingLists[0].storeName
+                  }}</span
+                >
                 <br />
                 <v-spacer></v-spacer>
                 <v-spacer></v-spacer>
-                <span class="blackText">
-                  치킨메뉴 &nbsp; : &nbsp;{{ orderingLists[0].menu }}
-                </span>
+                <span class="blackText"
+                  >치킨메뉴 &nbsp; : &nbsp;{{ orderingLists[0].menu }}</span
+                >
                 <br />
                 <v-spacer></v-spacer>
                 <v-spacer></v-spacer>
@@ -124,7 +125,7 @@
                 <!-- <v-btn class="ma-2 text-h4" color="orange" @click="readRoomInfo">
                 <v-icon left>mdi-cancel</v-icon>
                 <span>테스트</span>
-              </v-btn>-->
+                </v-btn>-->
               </v-row>
             </v-card-actions>
           </v-card>
@@ -132,7 +133,6 @@
       </v-flex>
     </v-layout>
     <!-- </div> -->
-
     &nbsp;
     <!--대영 기록 테이블 -->
     <v-container>
@@ -167,42 +167,38 @@
     <v-dialog v-model="cancelAlert" max-width="300">
       <v-card>
         <v-card-title>
-          주문취소 하시겠습니까?
-
+          주문을 취소 하시겠습니까?
           <v-spacer />
 
-          <v-icon aria-label="Close" @click="cancelAlert = false">
-            mdi-close
-          </v-icon>
+          <v-icon aria-label="Close" @click="cancelAlert = false"
+            >mdi-close</v-icon
+          >
         </v-card-title>
 
         <v-card-text class="pb-6 pt-12 text-center">
-          <v-btn class="mr-3" text @click="cancelAlert = false">
-            Nevermind
-          </v-btn>
+          <v-btn class="mr-3" text @click="cancelAlert = false">No</v-btn>
 
           <v-btn
             color="success"
             text
             @click="refund1(orderingLists[0].roomNumber)"
+            >Yes</v-btn
           >
-            Yes
-          </v-btn>
         </v-card-text>
       </v-card>
     </v-dialog>
     <base-material-snackbar
       v-model="snackbar"
-      :type="color"
+      :type="'warning'"
       v-bind="{
-        bottom: true,
+        top: true,
         center: true,
-        timeout: 10000
+        timeout: 30000
       }"
     >
-      Welcome to
-      <span class="font-weight-bold">&nbsp;MATERIAL DASHBOARD&nbsp;</span> — a
-      beautiful admin panel for every web developer.
+      매칭하는 인원이 없습니다.
+      <span class="font-weight-bold">&nbsp;&nbsp;</span>
+      방의 만료시간이 지나 매칭종료합니다.주문취소버튼을 눌러 환불 받아주세요.
     </base-material-snackbar>
     <!-- </v-app> -->
     <!-- </div> -->
@@ -229,7 +225,7 @@ export default {
           text: "가게이름 (storeName)",
           align: "left",
           sortable: false,
-          value: "name"
+          value: "storeName"
         },
         { text: "날짜", value: "date" },
         { text: "치킨메뉴", value: "menu" },
@@ -249,7 +245,6 @@ export default {
     },
     timeout() {
       if (this.durationData.timer < 0) {
-        clearInterval(timeInterval);
         return true;
       }
       return false;
@@ -287,9 +282,8 @@ export default {
                 );
                 const result = await OrderRoomInstance.getStateRoom();
                 // 시간 나타내는 구문
-                const orderDate = new Date(
-                  result2[idx].returnValues._date * 1000
-                ).toString();
+                const date = new Date(result2[idx].returnValues._date * 1000);
+                const orderDate = `${date.getFullYear()}/${date.getMonth()}/${date.getDate()} ${date.getHours()}:${date.getSeconds()}`;
                 console.log(result);
                 if (result === "1") {
                   this.orderingLists.push({
@@ -356,9 +350,8 @@ export default {
                 console.log(matched);
 
                 // 시간 나타내는 구문
-                const orderDate = new Date(
-                  matched._startTime * 1000
-                ).toString();
+                const date = new Date(matched._startTime * 1000);
+                const orderDate = `${date.getFullYear()}/${date.getMonth()}/${date.getDate()} ${date.getHours()}:${date.getSeconds()}`;
 
                 if (state === "2") {
                   this.orderingLists.push({
@@ -416,7 +409,8 @@ export default {
           const roomInfo = await OrderRoomInstance.getRoomInfo();
 
           // 시간 나타내는 구문
-          const orderDate = new Date(roomInfo._startTime * 1000).toString();
+          const date = new Date(roomInfo._startTime * 1000);
+          const orderDate = `${date.getFullYear()}/${date.getMonth()}/${date.getDate()} ${date.getHours()}:${date.getSeconds()}`;
 
           this.orderedLists.push({
             storeName: returns._storeName,
@@ -456,6 +450,17 @@ export default {
         this.cancelAlert = false;
       } catch (e) {
         this.error = e.message;
+      }
+    }
+  },
+  watch: {
+    timeout: function(val) {
+      if (val) {
+        if (timeInterval) {
+          clearInterval(timeInterval);
+        }
+        this.snackbar = true;
+        console.log(val);
       }
     }
   },

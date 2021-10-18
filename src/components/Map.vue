@@ -8,8 +8,8 @@
    #f5f5f5"
       flat
     >
-      <v-toolbar-title class="text-h3 font-weight-light">
-        반 만 조</v-toolbar-title
+      <v-toolbar-title class="text-h3 font-weight-light"
+        >반 만 조</v-toolbar-title
       >
       <v-spacer></v-spacer>
 
@@ -78,7 +78,8 @@ const contractInstance = new ContractInstance();
 import MakeInfoWindow from "../utils/info_window";
 
 // store Imge
-import storeImg from "../img/storeImg3.png";
+// import storeImg from "../img/storeImg3.png";
+import storeImg from "../img/치킨로고4.png";
 
 let roomCreatedEmitter;
 let roomMatchedEmitter;
@@ -322,7 +323,7 @@ export default {
     /* ============= 치킨집 지도 마커 생성 함수 ============= */
     createMarker(markerData) {
       const imageSrc = storeImg,
-        imageSize = new kakao.maps.Size(48, 48),
+        imageSize = new kakao.maps.Size(64, 64),
         imageOption = { offset: new kakao.maps.Point(27, 50) };
 
       const markerImage = new kakao.maps.MarkerImage(
@@ -351,8 +352,11 @@ export default {
       const callback = (result, status) => {
         console.log(status);
         if (status === kakao.maps.services.Status.OK) {
-          console.log(result[0].address.address_name);
-          const address = result[0].address.address_name;
+          console.log(result[0]);
+          const address = result[0].road_address
+            ? result[0].road_address.address_name
+            : result[0].address.address_name;
+
           const iwContent = MakeInfoWindow(
             markerData,
             this.createOrderRoom,
