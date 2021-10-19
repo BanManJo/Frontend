@@ -113,7 +113,7 @@
           </v-col>
           <v-col sm="8" md="6" lg="4">
             <v-card class="text-center" flat>
-              <v-btn @click="menuDialog" color="info" rounded>
+              <v-btn @click="menuDialog" color="info" rounded class="text-h4">
                 메뉴추가
                 <v-icon>mdi-plus</v-icon>
               </v-btn>
@@ -179,16 +179,6 @@ export default {
         menuModal: false
       },
       location: {},
-
-      // 입력한 데이터들
-      // information: [
-      //   { name: "뿌링클", price: "21000" },
-      //   { name: "맛초킹", price: "20000" },
-      //   { name: "골드킹", price: "18000" },
-      //   { name: "레드킹", price: "18000" },
-      //   { name: "초초", price: "17000" },
-      //   {}
-      // ],
 
       information: [],
       deleteAlert: false,

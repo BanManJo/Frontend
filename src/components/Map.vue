@@ -4,11 +4,12 @@
       id="app-bar"
       absolute
       app
+      outlined
       color="
    #f5f5f5"
       flat
     >
-      <v-toolbar-title class="text-h3 font-weight-light"
+      <v-toolbar-title class="text-h3 font-weight-medium"
         >반 만 조</v-toolbar-title
       >
       <v-spacer></v-spacer>

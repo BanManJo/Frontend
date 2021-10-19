@@ -28,11 +28,11 @@
     <br />
     <br />
     <br />
-
-    <v-layout>
-      <v-flex xs12 sm6 offset-sm3>
-        <base-material-card color="success" class="px-5 py-3">
-          <v-card v-if="orderingLists.length != 0">
+    <br />
+    <v-row justify="space-around">
+      <v-col sm="12" md="12" lg="5">
+        <base-material-card flat outlined color="success" class="px-5 py-3">
+          <v-card outlined v-if="orderingLists.length != 0">
             <v-row justify="space-around" class="mb-2">
               &nbsp; &nbsp; &nbsp; &nbsp;
               <v-chip
@@ -40,12 +40,12 @@
                 color="green"
                 label
                 text-color="white"
-                x-large
+                large
                 flat
               >
                 <v-icon size="30" right>mdi-home</v-icon>&nbsp; &nbsp; &nbsp;
                 &nbsp; &nbsp;
-                <span class="matching">
+                <span class="matching text-h4">
                   방번호 &nbsp; :&nbsp;
                   {{ orderingLists[0].roomNumber }}
                 </span>
@@ -57,55 +57,54 @@
                 color="green"
                 label
                 text-color="white"
-                x-large
+                large
                 flat
               >
                 <v-icon size="30" right>mdi-widgets</v-icon>&nbsp; &nbsp; &nbsp;
                 &nbsp; &nbsp;
-                <span class="matching">{{ orderingLists[0].state }}</span>
+                <span class="matching text-h4">{{
+                  orderingLists[0].state
+                }}</span>
               </v-chip>
               <v-spacer></v-spacer>
               <v-chip
-                class="ma-2"
+                class="ma-2 "
                 color="green"
                 label
                 text-color="white"
-                x-large
+                large
                 flat
               >
                 <v-icon size="30" right>mdi-clock</v-icon>&nbsp; &nbsp; &nbsp;
                 &nbsp; &nbsp;
-                <span class="matching">
+                <span class="matching text-h4">
                   만료시간 &nbsp; :&nbsp;
                   <!-- {{ orderedLists1.finish }}{{ orderedLists2.finish }} -->
                   {{ timeout ? "00:00" : Duration }}
                 </span> </v-chip
               >&nbsp; &nbsp; &nbsp; &nbsp;
             </v-row>
+
             <v-card-title>
               <div>
-                <span class="blackText"
+                <span class="blackText text-h3"
                   >가게이름 &nbsp; : &nbsp;{{
                     orderingLists[0].storeName
                   }}</span
                 >
-                <br />
                 <v-spacer></v-spacer>
-                <v-spacer></v-spacer>
-                <span class="blackText"
+                <span class="blackText text-h3"
                   >치킨메뉴 &nbsp; : &nbsp;{{ orderingLists[0].menu }}</span
                 >
-                <br />
+
                 <v-spacer></v-spacer>
-                <v-spacer></v-spacer>
-                <span class="blackText">
+                <span class="blackText text-h3">
                   가격 &nbsp; : &nbsp;
                   {{ orderingLists[0].price }}
                 </span>
-                <br />
+
                 <v-spacer></v-spacer>
-                <v-spacer></v-spacer>
-                <span class="blackText">
+                <span class="blackText text-h3">
                   방 생성 시간 &nbsp; : &nbsp;
                   {{ orderingLists[0].date }}
                 </span>
@@ -130,38 +129,41 @@
             </v-card-actions>
           </v-card>
         </base-material-card>
-      </v-flex>
-    </v-layout>
+      </v-col>
+    </v-row>
     <!-- </div> -->
     &nbsp;
     <!--대영 기록 테이블 -->
     <v-container>
-      <base-material-card
-        icon="mdi-clipboard-text"
-        title="내가 주문한 목록"
-        class="px-5 py-3"
-        flat
-        outlined
-      >
-        <!-- <div id="app"> -->
-        <!-- <v-app id="inspire"> -->
-        <v-data-table
-          :headers="headers"
-          :items="orderedLists"
-          class="elevation-1"
-        >
-          <template v-slot:items="props">
-            <td>{{ props.item.storeName }}</td>
-            <td class="text-xs-right">{{ props.item.date }}</td>
-            <td class="text-xs-right">{{ props.item.menu }}</td>
-            <td class="text-xs-right">{{ props.item.price }}</td>
-            <td class="text-xs-right">{{ props.item.state }}</td>
-            <td class="text-xs-right">{{ props.item.roomNumber }}</td>
-          </template>
-        </v-data-table>
-        <!-- </v-app> -->
-        <!-- </div> -->
-      </base-material-card>
+      <v-row justify="space-around">
+        <v-col sm="12" md="6" lg="8">
+          <base-material-card
+            icon="mdi-clipboard-text"
+            title="내가 주문한 목록"
+            class="px-5 py-3 text-h3"
+            flat
+            outlined
+          >
+            <!-- <div id="app"> -->
+            <!-- <v-app id="inspire"> -->
+
+            <v-data-table :headers="headers" :items="orderedLists" outlined>
+              <template v-slot:items="props">
+                <td class="text-h3">{{ props.item.storeName }}</td>
+                <td class="text-xs-right text-h3">{{ props.item.date }}</td>
+                <td class="text-xs-right text-h3">{{ props.item.menu }}</td>
+                <td class="text-xs-right text-h3">{{ props.item.price }}</td>
+                <td class="text-xs-right text-h3">{{ props.item.state }}</td>
+                <td class="text-xs-right text-h3">
+                  {{ props.item.roomNumber }}
+                </td>
+              </template>
+            </v-data-table>
+            <!-- </v-app> -->
+            <!-- </div> -->
+          </base-material-card>
+        </v-col>
+      </v-row>
     </v-container>
     <!-- </div> -->
     <v-dialog v-model="cancelAlert" max-width="300">

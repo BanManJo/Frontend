@@ -3,10 +3,12 @@
     <v-card>
       <br />
       <v-card-title>
-        {{content}}
+        {{ content }}
         <v-spacer />
 
-        <v-icon aria-label="Close" @click="alert.modal = false">mdi-close</v-icon>
+        <v-icon aria-label="Close" @click="alert.modal = false"
+          >mdi-close</v-icon
+        >
       </v-card-title>
 
       <v-card-text class="pb-6 pt-12 text-center">
@@ -23,21 +25,24 @@ export default {
   props: {
     content: {
       type: String,
-      default: "",
+      default: ""
     },
     alert: {
       type: Object,
-      default: {},
-    },
-    confirm: {
-      type: Function,
-      default: () => {
-        return;
-      },
-    },
-  },
+      default: {}
+    }
+    // flag: {
+    //   type: String,
+    //   default: ""
+    // }
+    // confirm: {
+    //   type: Function,
+    //   default: () => {
+    //     return;
+    //   }
+    // }
+  }
 };
 </script>
 
-<style>
-</style>
+<style></style>
