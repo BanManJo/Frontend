@@ -1,11 +1,11 @@
 <template>
-  <v-app style="
-    background: #f5f5f5;">
+  <v-app
+    style="
+    background: #f5f5f5;"
+  >
     <v-app-bar id="app-bar" absolute app color="transparent" flat height="75">
       <v-toolbar-title class="text-h3 font-weight-light">
-        {{
-        storeName
-        }}
+        {{ storeName }}
       </v-toolbar-title>
 
       <v-spacer></v-spacer>
@@ -70,12 +70,20 @@
         outlined
       >
         <v-row row wrap>
-          <v-col v-for="orderRoom in orderRooms" :key="orderRoom.roomNumber" sm="8" md="4" lg="4">
+          <v-col
+            v-for="orderRoom in orderRooms"
+            :key="orderRoom.roomNumber"
+            sm="8"
+            md="4"
+            lg="4"
+          >
             <v-card flat outlined class="text-center" width="381">
               <v-card-text>
                 <div class="text-h3">방번호 : {{ orderRoom.roomNumber }}</div>
                 <br />
-                <div class="text-h4">메뉴 : {{ orderRoom.menu }} / {{ orderRoom.kind }}</div>
+                <div class="text-h4">
+                  메뉴 : {{ orderRoom.menu }} / {{ orderRoom.kind }}
+                </div>
                 <div class="text-h4">가격 : {{ orderRoom.price }} ether</div>
               </v-card-text>
               <v-card-actions>
@@ -114,7 +122,11 @@
         flat
         outlined
       >
-        <v-card flat v-for="orderedList in orderedLists" :key="orderedList.title">
+        <v-card
+          flat
+          v-for="orderedList in orderedLists"
+          :key="orderedList.title"
+        >
           <v-row row wrap :class="`pa-3 orderedList ${orderedList.kind}`">
             <v-col xs12 md5>
               <div class="caption grey--text">주문 받은 시간</div>
@@ -165,7 +177,11 @@
         </v-card-text>
       </v-card>
     </v-dialog>-->
-    <alert-dialog :content="content" :alert="alert" @confirm="confrim(1)"></alert-dialog>
+    <alert-dialog
+      :content="content"
+      :alert="alert"
+      @confirm="confrim(1)"
+    ></alert-dialog>
 
     <!-- <v-dialog v-model="approveAlert" max-width="400">
       <v-card>
@@ -191,7 +207,9 @@
           주의 ! : 한번 거절하시면 다시 받을 수 없습니다.
           <v-spacer />
 
-          <v-icon aria-label="Close" @click="declineAlert = false">mdi-close</v-icon>
+          <v-icon aria-label="Close" @click="declineAlert = false"
+            >mdi-close</v-icon
+          >
         </v-card-title>
 
         <v-card-text class="pb-6 pt-12 text-center">
@@ -207,7 +225,9 @@
           주의 : 두명의 손님들이 다 가져가셨나요?
           <v-spacer />
 
-          <v-icon aria-label="Close" @click="finishAlert = false">mdi-close</v-icon>
+          <v-icon aria-label="Close" @click="finishAlert = false"
+            >mdi-close</v-icon
+          >
         </v-card-title>
 
         <v-card-text class="pb-6 pt-12 text-center">
@@ -239,7 +259,7 @@ const contractInstance = new ContractInstance();
 
 export default {
   components: {
-    AlertDialog: () => import("./AlertDialog.vue"),
+    AlertDialog: () => import("./AlertDialog.vue")
   },
   data() {
     return {
@@ -266,8 +286,8 @@ export default {
           text: "result",
           align: "center",
           sortable: false,
-          value: "hash",
-        },
+          value: "hash"
+        }
       ],
       items: [],
       onOffAlert: false,
@@ -279,15 +299,15 @@ export default {
       snackbar: false,
       index: 0,
       alert: {
-        modal: false,
+        modal: false
       },
-      content: "",
+      content: ""
     };
   },
   computed: {
     storeName() {
       return this.$route.params.storeName;
-    },
+    }
   },
   methods: {
     deleteOrderRoom() {
@@ -302,8 +322,9 @@ export default {
       const CHAddress = await this.AdminInstance.findChickenHouse(
         this.storeName
       );
-      const ChickenHouseInstance =
-        await contractInstance.getChickenHouseInstance(CHAddress);
+      const ChickenHouseInstance = await contractInstance.getChickenHouseInstance(
+        CHAddress
+      );
       let self = this;
       ChickenHouseInstance.watchIfMatched(async (error, result) => {
         if (!error) {
@@ -319,14 +340,14 @@ export default {
             ORAddress
           );
           OrderRoomInstance.getRoomInfo()
-            .then((result) => {
+            .then(result => {
               if (result._menuState === "2") {
                 self.orderRooms.push({
                   roomNumber: preResult.returnValues._roomIndex,
                   menu: result._chickenName,
                   kind: "순살",
                   price: result._price,
-                  id: preResult.returnValues._roomIndex,
+                  id: preResult.returnValues._roomIndex
                 });
               } else if (result._menuState === "1") {
                 self.orderRooms.push({
@@ -334,17 +355,17 @@ export default {
                   menu: result._chickenName,
                   kind: "뼈",
                   price: result._price,
-                  id: preResult.returnValues._roomIndex,
+                  id: preResult.returnValues._roomIndex
                 });
               }
               this.snackbar = true;
             })
-            .catch((error) => {
+            .catch(error => {
               console.error(error);
             });
         }
       });
-    },₩
+    },
     confirm(flag) {
       console.log(flag);
       if (this.isOn) {
@@ -379,8 +400,9 @@ export default {
       const CHAddress = await this.AdminInstance.findChickenHouse(
         this.storeName
       );
-      const ChickenHouseInstance =
-        contractInstance.getChickenHouseInstance(CHAddress);
+      const ChickenHouseInstance = contractInstance.getChickenHouseInstance(
+        CHAddress
+      );
       const result = await ChickenHouseInstance.getChickenHouse();
       if (result._onOff == 0) {
         await ChickenHouseInstance.changeOnOff();
@@ -400,8 +422,9 @@ export default {
       const CHAddress = await this.AdminInstance.findChickenHouse(
         this.storeName
       );
-      const ChickenHouseInstance =
-        contractInstance.getChickenHouseInstance(CHAddress);
+      const ChickenHouseInstance = contractInstance.getChickenHouseInstance(
+        CHAddress
+      );
       const result = await ChickenHouseInstance.getChickenHouse();
       if (result._onOff == 1) {
         await ChickenHouseInstance.changeOnOff();
@@ -446,8 +469,9 @@ export default {
       const CHAddress = await this.AdminInstance.findChickenHouse(
         this.storeName
       );
-      const ChickenHouseInstance =
-        contractInstance.getChickenHouseInstance(CHAddress);
+      const ChickenHouseInstance = contractInstance.getChickenHouseInstance(
+        CHAddress
+      );
       await ChickenHouseInstance.approveOrder(this.storeName, this.index);
       this.getOrderRooms();
       this.getOrderedLists();
@@ -464,8 +488,9 @@ export default {
       const CHAddress = await this.AdminInstance.findChickenHouse(
         this.storeName
       );
-      const ChickenHouseInstance =
-        await contractInstance.getChickenHouseInstance(CHAddress);
+      const ChickenHouseInstance = await contractInstance.getChickenHouseInstance(
+        CHAddress
+      );
       await ChickenHouseInstance.refundToBothUsers(this.index);
       this.getOrderRooms();
       this.getOrderedLists();
@@ -479,8 +504,9 @@ export default {
       const CHAddress = await this.AdminInstance.findChickenHouse(
         this.storeName
       );
-      const ChickenHouseInstance =
-        contractInstance.getChickenHouseInstance(CHAddress);
+      const ChickenHouseInstance = contractInstance.getChickenHouseInstance(
+        CHAddress
+      );
 
       await ChickenHouseInstance.finishCook(this.index);
       this.getOrderedLists();
@@ -491,8 +517,9 @@ export default {
       const CHAddress = await this.AdminInstance.findChickenHouse(
         this.storeName
       );
-      const ChickenHouseInstance =
-        contractInstance.getChickenHouseInstance(CHAddress);
+      const ChickenHouseInstance = contractInstance.getChickenHouseInstance(
+        CHAddress
+      );
       const result = await ChickenHouseInstance.getChickenHouse();
       console.log(result);
       if (result._onOff == 0) {
@@ -512,8 +539,9 @@ export default {
       const CHAddress = await this.AdminInstance.findChickenHouse(
         this.storeName
       );
-      const ChickenHouseInstance =
-        contractInstance.getChickenHouseInstance(CHAddress);
+      const ChickenHouseInstance = contractInstance.getChickenHouseInstance(
+        CHAddress
+      );
 
       const roomCount = await ChickenHouseInstance.getRoomsCount();
 
@@ -521,11 +549,12 @@ export default {
       this.orderRooms = [];
       for (let idx = 0; idx < roomCount; idx++) {
         const ORAddress = await ChickenHouseInstance.findOrderRoom(idx);
-        const OrderRoomInstance =
-          contractInstance.getOrderRoomInstance(ORAddress);
+        const OrderRoomInstance = contractInstance.getOrderRoomInstance(
+          ORAddress
+        );
 
         await OrderRoomInstance.getRoomInfo()
-          .then((result) => {
+          .then(result => {
             if (result._state === "2") {
               if (result._menuState === "2") {
                 this.orderRooms.push({
@@ -533,7 +562,7 @@ export default {
                   menu: result._chickenName,
                   kind: "순살",
                   price: result._price,
-                  id: idx,
+                  id: idx
                 });
               } else if (result._menuState === "1") {
                 this.orderRooms.push({
@@ -541,12 +570,12 @@ export default {
                   menu: result._chickenName,
                   kind: "뼈",
                   price: result._price,
-                  id: idx,
+                  id: idx
                 });
               }
             }
           })
-          .catch((error) => {
+          .catch(error => {
             console.error(error);
           });
       }
@@ -557,8 +586,9 @@ export default {
       const CHAddress = await this.AdminInstance.findChickenHouse(
         this.storeName
       );
-      const ChickenHouseInstance =
-        contractInstance.getChickenHouseInstance(CHAddress);
+      const ChickenHouseInstance = contractInstance.getChickenHouseInstance(
+        CHAddress
+      );
       const roomCount = await ChickenHouseInstance.getRoomsCount();
 
       console.log(
@@ -568,10 +598,11 @@ export default {
 
       for (let idx = 0; idx < roomCount; idx++) {
         const ORAddress = await ChickenHouseInstance.findOrderRoom(idx);
-        const OrderRoomInstance =
-          contractInstance.getOrderRoomInstance(ORAddress);
+        const OrderRoomInstance = contractInstance.getOrderRoomInstance(
+          ORAddress
+        );
         await OrderRoomInstance.getRoomInfo()
-          .then((result) => {
+          .then(result => {
             // console.log(result);
             if (result._state === "3") {
               if (result._menuState === "2") {
@@ -580,7 +611,7 @@ export default {
                   kind: "순살",
                   menu: result._chickenName,
                   time: this.Unix_timestamp(result._receiveTime),
-                  id: idx,
+                  id: idx
                 });
               } else if (result._menuState === "1") {
                 this.orderedLists.push({
@@ -588,17 +619,17 @@ export default {
                   kind: "뼈",
                   menu: result._chickenName,
                   time: this.Unix_timestamp(result._receiveTime),
-                  id: idx,
+                  id: idx
                 });
               }
             }
           })
-          .catch((error) => {
+          .catch(error => {
             console.error(error);
           });
       }
       console.log("=== Done Show OrderedLists (state = 3) ===");
-    },
+    }
 
     // async matchRoomEvent5() {
     //   alert("김현수");
@@ -627,7 +658,7 @@ export default {
 
   mounted() {
     this.matchRoomEvent();
-  },
+  }
 };
 </script>
 

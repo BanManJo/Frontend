@@ -253,8 +253,23 @@ export class ChickenHouseRepository {
     }
   }
   //대영 roomCreated event
+  async getUserHistory() {
+    await this._checkAccountAvailable();
+    let history = [];
+    const result1 = await this.contractInstance.getPastEvents("roomCreated", {
+      filter: { _Ownedby: [this.account] },
+      fromBlock: 0,
+      toBlock: "latest"
+    });
+    const result2 = await this.contractInstance.getPastEvents("matchFinish", {
+      filter: { _matchedby: [this.account] },
+      fromBlock: 0,
+      toBlock: "latest"
+    });
+    return history.concat(result1, result2);
+  }
+
   async roomCreated(cb) {
-    const currentBlock = await this.getCurrentBlock();
     await this._checkAccountAvailable();
     this.contractInstance.getPastEvents(
       "roomCreated",
@@ -268,7 +283,6 @@ export class ChickenHouseRepository {
   }
 
   async matchFinish(cb) {
-    const currentBlock = await this.getCurrentBlock();
     await this._checkAccountAvailable();
     this.contractInstance.getPastEvents(
       "matchFinish",

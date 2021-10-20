@@ -36,7 +36,7 @@
         치킨집 등록
         <v-icon>mdi-store-plus</v-icon>
       </v-btn>
-      <v-btn class="ml-2 text-h4" min-width="0" text to="/UserMyPage">
+      <v-btn class="ml-2 text-h4" min-width="0" text @click="readRoomInfo">
         내 주문 현황
         <v-icon>mdi-account-check</v-icon>
       </v-btn>
@@ -63,6 +63,7 @@
     <register-chicken-house-dialog
       :registerCH="registerCH"
     ></register-chicken-house-dialog>
+    <user-my-page :userPageInfo="userPageInfo"></user-my-page>
   </v-app>
 </template>
 
@@ -90,7 +91,8 @@ export default {
     RegisterChickenHouseDialog: () =>
       import("./RegisterChickenHouseDialog.vue"),
     CreateRoomDialog: () => import("./CreateRoomDialog"),
-    OrderRoomNavigationDrawer: () => import("./OrderRoomNavigationDrawer")
+    OrderRoomNavigationDrawer: () => import("./OrderRoomNavigationDrawer"),
+    UserMyPage: () => import("./UserMyPage.vue")
   },
   data() {
     return {
@@ -120,6 +122,11 @@ export default {
         notifications: false,
         sound: true,
         widgets: false
+      },
+      userPageInfo: {
+        modal: false,
+        orderingLists: [],
+        orderedLists: []
       },
       showWhereUserIs: true,
       userMarker: null
@@ -320,6 +327,165 @@ export default {
       );
       console.log("=== Done Show Order Room ===");
     },
+    /* ============= 마이페이지 정보 불러오기 함수 ============= */
+    async readRoomInfo() {
+      try {
+        this.userPageInfo.modal = true;
+        this.userPageInfo.orderingLists = [];
+        this.userPageInfo.orderedLists = [];
+        this.AdminInstance.getStoreCount().then(async val => {
+          console.log(
+            `---- get Each Chicken House Infos by idx, Counts: ${val} ----`
+          );
+          for (let idx = 0; idx < val; idx++) {
+            // idx를 통해 chicken House를 바로 가져옴..
+            const CHAddress = await this.AdminInstance.findChickenHouseByIndex(
+              idx
+            );
+            const ChickenHouseInstance = contractInstance.getChickenHouseInstance(
+              CHAddress
+            );
+            // console.log("pass");
+            this.watchEventApprovedOrRejected(ChickenHouseInstance);
+            ChickenHouseInstance.roomCreated(async (error, result2) => {
+              console.log(result2);
+              for (let idx = 0; idx < result2.length; idx++) {
+                const eventReturns = result2[idx].returnValues;
+                const storeName = eventReturns._storeName,
+                  menu = eventReturns._chickenName,
+                  price = eventReturns._price,
+                  roomNumber = eventReturns._roomNumber,
+                  start = eventReturns._date,
+                  finish = eventReturns._finish;
+                // 5. OrderRoom 주소를 가져옴
+                const ORAddress = await ChickenHouseInstance.findOrderRoom(
+                  eventReturns._roomNumber
+                );
+                // 6. OrderRoom 인스턴스 생성
+                const OrderRoomInstance = contractInstance.getOrderRoomInstance(
+                  ORAddress
+                );
+                const result = await OrderRoomInstance.getStateRoom();
+                // 시간 나타내는 구문
+                const date = new Date(start * 1000);
+                const orderDate = `${date.getFullYear()}/${date.getMonth()}/${date.getDate()} ${date.getHours()}:${date.getSeconds()}`;
+                console.log(result);
+                if (result === "1" || result === "2") {
+                  this.userPageInfo.orderingLists.push({
+                    storeName: storeName,
+                    menu: menu,
+                    price: price,
+                    roomNumber: roomNumber,
+                    state:
+                      result === "1" ? "매칭중입니다" : "주문 접수중입니다.",
+                    start: start,
+                    finish: finish,
+                    date: orderDate
+                  });
+                } else if (result === "3" || result === "4") {
+                  this.userPageInfo.orderedLists.push({
+                    storeName: storeName,
+                    menu: menu,
+                    price: price,
+                    roomNumber: roomNumber,
+                    state: result === "3" ? "픽업 대기중" : "완료",
+                    date: orderDate
+                  });
+                }
+              }
+            });
+
+            ChickenHouseInstance.matchFinish(async (error, result3) => {
+              console.log(result3);
+              for (let idx = 0; idx < result3.length; idx++) {
+                const ORAddress = result3[idx].returnValues.orderRoom;
+
+                // 6. OrderRoom 인스턴스 생성
+                const OrderRoomInstance = contractInstance.getOrderRoomInstance(
+                  ORAddress
+                );
+                const matched = await OrderRoomInstance.getRoomInfo();
+                const state = matched._state;
+                // 시간 나타내는 구문
+                const date = new Date(matched._startTime * 1000);
+                const orderDate = `${date.getFullYear()}/${date.getMonth()}/${date.getDate()} ${date.getHours()}:${date.getSeconds()}`;
+
+                if (state === "2") {
+                  this.userPageInfo.orderingLists.push({
+                    storeName: result3[idx].returnValues._storeName,
+                    menu: matched._chickenName,
+                    price: matched._price,
+                    roomNumber: result3[idx].returnValues._roomIndex,
+                    state: "주문 접수중입니다",
+                    finish: " ",
+                    date: orderDate
+                  });
+                } else if (state === "3") {
+                  this.userPageInfo.orderedLists.push({
+                    storeName: result3[idx].returnValues._storeName,
+                    menu: matched._chickenName,
+                    price: matched._price,
+                    roomNumber: result3[idx].returnValues._roomIndex,
+                    state: "픽업 대기중",
+                    date: orderDate
+                  });
+                } else if (state === "4") {
+                  this.userPageInfo.orderedLists.push({
+                    storeName: result3[idx].returnValues._storeName,
+                    menu: matched._chickenName,
+                    price: matched._price,
+                    roomNumber: result3[idx].returnValues._roomIndex,
+                    state: "완료",
+                    date: orderDate
+                  });
+                }
+              }
+            });
+          }
+        });
+      } catch (e) {
+        this.error = e.message;
+      }
+    },
+    /* ============= 치킨집 지도 마커 생성 함수 ============= */
+    watchEventApprovedOrRejected(storeInstance) {
+      const callback = async (error, result) => {
+        if (!error) {
+          console.log(result);
+          const returns = result.returnValues;
+          const roomNumber = this.userPageInfo.orderingLists[0].roomNumber;
+          if (returns._roomIndex !== roomNumber) {
+            return;
+          }
+          const ORAddress = await storeInstance.findOrderRoom(
+            returns._roomIndex
+          );
+          // 6. OrderRoom 인스턴스 생성
+          const OrderRoomInstance = contractInstance.getOrderRoomInstance(
+            ORAddress
+          );
+          const roomInfo = await OrderRoomInstance.getRoomInfo();
+
+          // 시간 나타내는 구문
+          const date = new Date(roomInfo._startTime * 1000);
+          const orderDate = `${date.getFullYear()}/${date.getMonth()}/${date.getDate()} ${date.getHours()}:${date.getSeconds()}`;
+
+          this.userPageInfo.orderedLists.push({
+            storeName: returns._storeName,
+            menu: roomInfo._chickenName,
+            price: roomInfo._price,
+            roomNumber: returns._roomIndex,
+            state: roomInfo._state === "3" ? "픽업 대기중" : "완료",
+            date: orderDate
+          });
+          this.userPageInfo.orderingLists = [];
+        } else {
+          console.log(error);
+        }
+      };
+      storeInstance.watchIfApproved(callback);
+      storeInstance.watchIfRejected(callback);
+    }, //주문취소하기 버튼
     /* ============= 치킨집 지도 마커 생성 함수 ============= */
     createMarker(markerData) {
       const imageSrc = storeImg,
