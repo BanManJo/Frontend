@@ -133,7 +133,8 @@ export default {
         this.DemoInstance.watchIfCreated2((error, result) => {
           if (!error) {
             console.log(result);
-            this.$socket.send(JSON.stringify(result));
+            const message = { key: "matchingRoom", info: "ddd", key: "aa" };
+            this.$socket.send(JSON.stringify(message));
             this.room.isLoading = false;
             this.room.roomModal = false;
             this.items.push({ hash: transaction });
