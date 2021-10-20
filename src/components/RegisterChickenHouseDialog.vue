@@ -17,8 +17,8 @@
             <v-btn dark text @click="registerChickenHouse">등록</v-btn>
           </v-toolbar-items>
         </v-toolbar> -->
-        <v-card-title class="text-h5 grey lighten-2">
-          <span class="headline">아래 양식을 작성해주세요</span>
+        <v-card-title class=" grey lighten-4">
+          <span class="headline">치킨집 등록</span>
         </v-card-title>
         <v-row justify="center" align="center">
           <v-col cols="12" sm="2" lg="2">

@@ -1,37 +1,8 @@
 <template>
-  <!-- <v-app
-    style="
-    background: #f5f5f5;"
-  > -->
-  <!-- <child-component v-on:update="getResiterMenu"></child-component> -->
-  <!-- <v-app-bar id="app-bar" absolute app color="transparent" flat height="75">
-      <v-toolbar-title class="text-h3 font-weight-light"
-        >나의 주문 목록</v-toolbar-title
-      >
-
-      <v-spacer />
-      <v-btn class="ml-2 text-h4" min-width="0" text to="/UserMyPage">
-        내 주문 현황
-        <v-icon>mdi-account-check</v-icon>
-      </v-btn>
-      <v-btn class="ml-2 text-h4" min-width="0" text>
-        알림
-        <v-icon>mdi-alert-circle</v-icon>
-      </v-btn>
-      <v-btn class="ml-2 text-h4" min-width="0" text to="/map">
-        지도
-        <v-icon>mdi-arrow-expand-all</v-icon>
-      </v-btn>
-    </v-app-bar> -->
-
-  <!-- <br />
-    <br />
-    <br />
-    <br /> -->
   <v-dialog v-model="userPageInfo.modal" width="80%">
     <v-card>
-      <v-card-title class="text-h5 grey lighten-2">
-        <span class="headline">User My Page</span>
+      <v-card-title class="grey lighten-4 mb-7">
+        <span class="headline">내 주문 현황</span>
       </v-card-title>
       <v-layout>
         <v-flex xs12 sm6 offset-sm3>
