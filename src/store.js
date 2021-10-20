@@ -39,7 +39,10 @@ export default new Vuex.Store({
     barImage:
       "https://demos.creative-tim.com/material-dashboard/assets/img/sidebar-1.jpg",
 
-    wsMessage: null
+    wsMessage: null,
+    roomNumber: null,
+    alert: false,
+    content: ""
   },
   mutations: {
     SET_BAR_IMAGE(state, payload) {
@@ -50,8 +53,16 @@ export default new Vuex.Store({
       console.log(
         "=============== Received message from websocket server. ==============="
       );
-      console.log(JSON.stringify(message.data));
-      state.wsMessage = JSON.stringify(message.data);
+      const data = JSON.parse(message.data);
+      console.log(data);
+      // console.log(data.info, data.key);
+      // state.wsMessage = data.info;
+      if (key === "matchingRoom" && !state.roomNumber) {
+        if (state.roomNumber === data.roomNumber) {
+          state.alert = true;
+          state.content = "안내해주세요.";
+        }
+      }
       console.log(
         "======================================================================="
       );
