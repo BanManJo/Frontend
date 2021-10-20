@@ -1,6 +1,11 @@
 <template>
   <v-container>
-    <v-navigation-drawer style="overflow: hidden" v-model="drawer" absolute width="400">
+    <v-navigation-drawer
+      style="overflow: hidden"
+      v-model="drawer"
+      absolute
+      width="400"
+    >
       <v-list align="center" dense app>
         <v-row class="mt-1" align="center" justify="center">
           <v-btn
@@ -16,7 +21,12 @@
           >
             <v-icon>mdi-arrow-left-thick</v-icon>
           </v-btn>
-          <v-text-field :label="$t('search')" color="secondary" hide-details style="max-width: 70%">
+          <v-text-field
+            :label="$t('search')"
+            color="secondary"
+            hide-details
+            style="max-width: 70%"
+          >
             <template v-if="$vuetify.breakpoint.mdAndUp" v-slot:append-outer>
               <v-btn class="mt-n2" elevation="1" color="orange" fab x-small>
                 <v-icon>mdi-magnify</v-icon>
@@ -75,6 +85,17 @@
         </v-col>
       </v-list>
     </v-navigation-drawer>
+    <base-material-snackbar
+      v-model="alertWhenStoreOff"
+      :type="'warning'"
+      v-bind="{
+        top: true,
+        center: true
+      }"
+    >
+      <span class="font-weight-bold">Warning</span> — 죄송해요! 가게가 지금
+      준비중입니다!
+    </base-material-snackbar>
   </v-container>
 </template>
 
@@ -92,14 +113,15 @@ export default {
       //   drawer: this.navDrawer.drawer,
       items: [
         { title: "Home", icon: "dashboard" },
-        { title: "About", icon: "question_answer" },
+        { title: "About", icon: "question_answer" }
       ],
       right: null,
+      alertWhenStoreOff: false
     };
   },
   props: {
     navDrawer: Object,
-    createOrderRoom: Function,
+    createOrderRoom: Function
     // orderRooms: Array,
     // drawer: Boolean,
   },
@@ -116,24 +138,26 @@ export default {
       },
       set(val) {
         this.$store.commit("SET_DRAWER", val);
-      },
-    },
+      }
+    }
   },
   methods: {
     async matchRoom(storeName, roomNumber, price) {
       console.log(storeName, roomNumber);
+      const message = { key: "matchingRoom", roomNumber: roomNumber };
+      this.$socket.send(JSON.stringify(message));
+
       console.log("=== Create Match Room ===");
 
       // find Chicken House address and get instance
       const CHAddress = await this.AdminInstance.findChickenHouse(storeName);
-      const ChickenHouseInstance =
-        contractInstance.getChickenHouseInstance(CHAddress);
+      const ChickenHouseInstance = contractInstance.getChickenHouseInstance(
+        CHAddress
+      );
       const storeState = await ChickenHouseInstance.getChickenHouse();
       console.log(storeState);
       if (storeState._onOff == 0) {
-        alert(
-          `죄송합니다. ${storeName}는 방금 영업을 마감하였습니다. My Page로 가셔서 주문취소 버튼을 눌러주세요. 자동으로 환불처리 됩니다.`
-        );
+        this.alertWhenStoreOff = true;
         return;
       }
 
@@ -142,15 +166,16 @@ export default {
       await ChickenHouseInstance.matchRoom(
         roomNumber,
         ethUserPay.toString()
-      ).then((result) => {
+      ).then(result => {
         console.log(result);
       });
 
       // 5. OrderRoom 주소를 가져옴
       const ORAddress = await ChickenHouseInstance.findOrderRoom(roomNumber);
       // 6. OrderRoom 인스턴스 생성
-      const OrderRoomInstance =
-        contractInstance.getOrderRoomInstance(ORAddress);
+      const OrderRoomInstance = contractInstance.getOrderRoomInstance(
+        ORAddress
+      );
       const balance = await OrderRoomInstance.getBalance();
       console.log(`====== room;s balance ${balance} =====`);
       // storeIdx (if needed)
@@ -161,8 +186,8 @@ export default {
       this.navDrawer.orderRooms = [];
     },
     ...mapMutations({
-      setDrawer: "SET_DRAWER",
-    }),
+      setDrawer: "SET_DRAWER"
+    })
   },
   mounted() {
     console.log("=== Mounted Navigation Drawer ===");
@@ -170,7 +195,7 @@ export default {
   },
   updated() {
     console.log("=== Updated Navigation Drawer ===");
-  },
+  }
 };
 </script>
 
