@@ -82,6 +82,16 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+    <base-material-snackbar
+      v-model="alert"
+      :type="color"
+      v-bind="{
+        top: true,
+        center: true
+      }"
+    >
+      <span class="font-weight-bold">{{ color }}</span> — {{ content }}
+    </base-material-snackbar>
   </div>
 </template>
 
@@ -96,7 +106,10 @@ export default {
   data() {
     return {
       AdminInstance: contractInstance.getAdminInstance(), // Admin Instance data,
-      isCreating: false
+      isCreating: false,
+      alert: false,
+      color: "",
+      content: ""
       // not loaded on map page
       // isLoading: false,
     };
@@ -118,9 +131,10 @@ export default {
       const storeState = await ChickenHouseInstance.getChickenHouse();
       console.log(storeState);
       if (storeState._onOff == 0) {
-        alert(
-          `죄송합니다. 지금 선택하신 ${this.room.storeName} 가게는 영업중인 가게가 아닙니다.`
-        );
+        this.alert = true;
+        this.color = "warning";
+        this.content = "죄송해요! 가게가 지금 준비중입니다!";
+        return;
       } else {
         this.createOrderRoom();
       }
@@ -131,7 +145,9 @@ export default {
         const menu = this.room.menus.filter(data => data.selected)[0];
         console.log(`---- get Menu and Create Room, menu: ${menu}`);
         if (menu === undefined) {
-          alert("메뉴를 선택해 주세요.");
+          this.alert = true;
+          this.color = "warning";
+          this.content = "메뉴를 선택해 주세요!~";
           return;
         }
         // storeName
