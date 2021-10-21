@@ -390,7 +390,7 @@ export default {
                 const result = await OrderRoomInstance.getStateRoom();
                 // 시간 나타내는 구문
                 const date = new Date(start * 1000);
-                const orderDate = `${date.getFullYear()}/${date.getMonth()}/${date.getDate()} ${date.getHours()}:${date.getSeconds()}`;
+                const orderDate = `${date.getFullYear()}년${date.getMonth()}월${date.getDate()}일 ${date.getHours()}시${date.getMinutes()}분`;
                 console.log(result);
                 if (result === "1" || result === "2") {
                   this.userPageInfo.orderingLists.push({
@@ -430,7 +430,7 @@ export default {
                 const state = matched._state;
                 // 시간 나타내는 구문
                 const date = new Date(matched._startTime * 1000);
-                const orderDate = `${date.getFullYear()}/${date.getMonth()}/${date.getDate()} ${date.getHours()}:${date.getSeconds()}`;
+                const orderDate = `${date.getFullYear()}년${date.getMonth()}월${date.getDate()}일 ${date.getHours()}시${date.getMinutes()}분`;
 
                 if (state === "2") {
                   this.userPageInfo.orderingLists.push({

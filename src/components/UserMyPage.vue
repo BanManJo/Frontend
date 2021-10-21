@@ -219,7 +219,7 @@ export default {
     },
     orderDate() {
       const date = new Date(this.userPageInfo.orderingLists[0].date * 1000);
-      return `${date.getFullYear()}년${date.getMonth()}월${date.getDate()}일 ${date.getHours()}시${date.getSeconds()}분`;
+      return `${date.getFullYear()}년${date.getMonth()}월${date.getDate()}일 ${date.getHours()}시${date.getMinutes()}분`;
     },
     orderingList() {
       return this.userPageInfo.orderingLists[0];
