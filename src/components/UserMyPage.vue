@@ -60,7 +60,7 @@
                 >&nbsp; &nbsp; &nbsp; &nbsp;
               </v-row>
               <div>
-                <span class="blackText"
+                <span class="blackText text-h3"
                   >가게이름 &nbsp; : &nbsp;{{
                     userPageInfo.orderingLists[0].storeName
                   }}</span
@@ -88,83 +88,58 @@
                   {{ userPageInfo.orderingLists[0].date }}
                 </span>
               </div>
-              <v-card-actions>
-                <v-row justify="space-around" class="mb-2">
-                  <v-spacer></v-spacer>
-                  <v-btn
-                    class="ma-2 text-h4"
-                    color="orange"
-                    @click="cancelAlert = true"
-                  >
-                    <v-icon left>mdi-cancel</v-icon>
-                    <span>주문취소</span>
-                  </v-btn>
-                  <!-- <v-btn class="ma-2 text-h4" color="orange" @click="readRoomInfo">
+            <v-card-actions>
+              <v-row justify="space-around" class="mb-2">
+                <v-spacer></v-spacer>
+                <v-btn
+                  class="ma-2 text-h4"
+                  color="orange"
+                  @click="deleteBtnClicked()"
+                >
+                  <v-icon left>mdi-cancel</v-icon>
+                  <span>주문취소</span>
+                </v-btn>
+                <!-- <v-btn class="ma-2 text-h4" color="orange" @click="readRoomInfo">
                 <v-icon left>mdi-cancel</v-icon>
                 <span>테스트</span>
                 </v-btn>-->
-                </v-row>
-              </v-card-actions>
-            </v-card>
-          </base-material-card>
-        </v-flex>
-      </v-layout>
-      <!-- </div> -->
-      &nbsp;
-      <!--대영 기록 테이블 -->
-      <v-container>
-        <base-material-card
-          icon="mdi-clipboard-text"
-          title="내가 주문한 목록"
-          class="px-5 py-3"
-          flat
-          outlined
-        >
-          <!-- <div id="app"> -->
-          <!-- <v-app id="inspire"> -->
-          <v-data-table
-            :headers="headers"
-            :items="userPageInfo.orderedLists"
-            class="elevation-1 "
-          >
-            <!-- <template v-slot:items="props"> -->
-            <!-- <span>{{ props.item.storeName }}</span>
-              <span class="text-s-right">{{ props.item.date }}</span>
-              <span class="text-s-right">{{ props.item.menu }}</span>
-              <span class="text-s-right">{{ props.item.price }}</span>
-              <span class="text-xs-right">{{ props.item.state }}</span>
-              <span class="text-xs-right">{{ props.item.roomNumber }}</span> -->
-            <!-- </template> -->
-          </v-data-table>
-          <!-- </v-app> -->
-          <!-- </div> -->
+              </v-row>
+            </v-card-actions>
+          </v-card>
         </base-material-card>
-      </v-container>
-      <!-- </div> -->
-      <v-dialog v-model="cancelAlert" max-width="300">
-        <v-card>
-          <v-card-title>
-            주문을 취소 하시겠습니까?
-            <v-spacer />
+      </v-col>
+    </v-row>
+    <!-- </div> -->
+    &nbsp;
+    <!--대영 기록 테이블 -->
+    <v-container>
+      <v-row justify="space-around">
+        <v-col sm="12" md="6" lg="8">
+          <base-material-card
+            icon="mdi-clipboard-text"
+            title="내가 주문한 목록"
+            class="px-5 py-3 text-h3"
+            flat
+            outlined
+          >
+            <!-- <div id="app"> -->
+            <!-- <v-app id="inspire"> -->
 
-            <v-icon aria-label="Close" @click="cancelAlert = false"
-              >mdi-close</v-icon
-            >
-          </v-card-title>
+            <v-data-table :headers="headers" :items="userPageInfo.orderedLists" outlined>
 
-          <v-card-text class="pb-6 pt-12 text-center">
-            <v-btn class="mr-3" text @click="cancelAlert = false">No</v-btn>
-
-            <v-btn
-              color="success"
-              text
-              @click="refund1(userPageInfo.orderingLists[0].roomNumber)"
-              >Yes</v-btn
-            >
-          </v-card-text>
-        </v-card>
-      </v-dialog>
-
+            </v-data-table>
+            <!-- </v-app> -->
+            <!-- </div> -->
+          </base-material-card>
+        </v-col>
+      </v-row>
+    </v-container>
+    <!-- </div> -->
+    <alert-dialog
+      :content="content"
+      :alert="alert"
+      v-on:confirm="refund1(orderingLists[0].roomNumber)"
+    ></alert-dialog>
       <base-material-snackbar
         v-model="snackbar"
         :type="'warning'"
@@ -191,6 +166,9 @@ const contractInstance = new ContractInstance();
 
 let timeInterval;
 export default {
+  components: {
+    AlertDialog: () => import("./AlertDialog.vue")
+  },
   data() {
     return {
       AdminInstance: contractInstance.getAdminInstance(),
@@ -213,7 +191,11 @@ export default {
         { text: "주문상태 (성공/실패)", value: "state" },
         { text: "방번호", value: "roomNumber" }
       ],
-      durationData: { timer: 0 }
+      durationData: { timer: 0 },
+      alert: {
+        modal: false
+      },
+      content: ""
     };
   },
   computed: {
@@ -242,6 +224,11 @@ export default {
   },
   methods: {
     //주문취소하기 버튼
+    deleteBtnClicked() {
+      this.alert.modal = true;
+      this.content = "주문을 취소 하시겠습니까 ?";
+      // this.approveAlert = true;
+    },
     async refund1(idx) {
       try {
         //var con_test = confirm("주의 : 주문을 취소하시겠습니까?");
@@ -261,7 +248,7 @@ export default {
         orderList.state = "완료";
         this.userPageInfo.orderedLists.push(orderList);
         this.userPageInfo.orderingLists = [];
-        this.cancelAlert = false;
+        this.alert.modal = false;
       } catch (e) {
         this.error = e.message;
       }

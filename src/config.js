@@ -17,7 +17,7 @@ const OrderRoomRepository = require("./contracts/OrderRoom");
 //Admin: 0x6ad5D36b0dF1c4D3f24379509A4f81315C349420
 //OrderRoom:
 module.exports = {
-  DEMO_ADDRESS: "0x25Ba8d4b9cD74D377621C89B5473BC9F5c1A938E",
+  DEMO_ADDRESS: "0xFcC8f1d56B91de29649824c354D54197371C2073",
   DEMO_ABI: DemoRepository.abi,
   ADMIN_ADDRESS: "0x155D388687dD001AD1F7a579844D04B98157952e",
   ADMIN_ABI: AdminRepository.abi,

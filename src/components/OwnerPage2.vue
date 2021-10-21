@@ -77,7 +77,7 @@
             md="4"
             lg="4"
           >
-            <v-card flat outlined class="text-center" width="381">
+            <v-card flat outlined class="text-center">
               <v-card-text>
                 <div class="text-h3">방번호 : {{ orderRoom.roomNumber }}</div>
                 <br />
@@ -168,19 +168,24 @@
           확인을 누르시면 영업을 {{ isOn ? "종료" : "시작" }}합니다.
           <v-spacer />
 
-          <v-icon aria-label="Close" @click="onOffAlert = false">mdi-close</v-icon>
+          <v-icon aria-label="Close" @click="onOffAlert = false"
+            >mdi-close</v-icon
+          >
         </v-card-title>
 
         <v-card-text class="pb-6 pt-12 text-center">
           <v-btn class="mr-3" text @click="onOffAlert = false">No</v-btn>
-          <v-btn color="success" text @click="isOn ? changeOff() : changeOn()">Yes</v-btn>
+          <v-btn color="success" text @click="isOn ? changeOff() : changeOn()"
+            >Yes</v-btn
+          >
         </v-card-text>
       </v-card>
-    </v-dialog>-->
+    </v-dialog> -->
+
     <alert-dialog
       :content="content"
       :alert="alert"
-      @confirm="confrim(1)"
+      v-on:confirm="confirm"
     ></alert-dialog>
 
     <!-- <v-dialog v-model="approveAlert" max-width="400">
@@ -200,7 +205,7 @@
       </v-card>
     </v-dialog>-->
 
-    <v-dialog v-model="declineAlert" max-width="400">
+    <!-- <v-dialog v-model="declineAlert" max-width="400">
       <v-card>
         <br />
         <v-card-title>
@@ -217,8 +222,9 @@
           <v-btn color="success" text @click="refundToBothUsers()">Yes</v-btn>
         </v-card-text>
       </v-card>
-    </v-dialog>
-    <v-dialog v-model="finishAlert" max-width="400">
+    </v-dialog> -->
+
+    <!-- <v-dialog v-model="finishAlert" max-width="400">
       <v-card>
         <br />
         <v-card-title>
@@ -235,7 +241,7 @@
           <v-btn color="success" text @click="finishCook()">Yes</v-btn>
         </v-card-text>
       </v-card>
-    </v-dialog>
+    </v-dialog> -->
     <base-material-snackbar
       v-model="snackbar"
       type="info"
@@ -267,28 +273,12 @@ export default {
       onColor: "white",
       offColor: "white",
       clicked: true,
-      // color1: "backgroundColor: blue",
-      // color2: "backgroundColor: red",
+
       state: "",
-      // text: "center",
-      // icon: "justify",
-      // toggle_none: null,
-      // toggle_one: 0,
-      // toggle_exclusive: 2,
-      // toggle_multiple: [0, 1, 2],
 
       orderRooms: [],
-
       orderedLists: [],
 
-      headers: [
-        {
-          text: "result",
-          align: "center",
-          sortable: false,
-          value: "hash"
-        }
-      ],
       items: [],
       onOffAlert: false,
       approveAlert: false,
@@ -301,7 +291,8 @@ export default {
       alert: {
         modal: false
       },
-      content: ""
+      content: "",
+      flag: 0
     };
   },
   computed: {
@@ -366,32 +357,52 @@ export default {
         }
       });
     },
-    confirm(flag) {
-      console.log(flag);
-      if (this.isOn) {
-        this.confirm(this.changeOff);
-      } else {
-        this.confirm(this.changeOn);
+    confirm() {
+      console.log(this.flag);
+      if (this.flag == 0) {
+        if (this.isOn) {
+          this.changeOff();
+        } else {
+          this.changeOn();
+        }
+      } else if (this.flag == 1) {
+        this.approveOrder();
+      } else if (this.flag == 2) {
+        this.refundToBothUsers();
+      } else if (this.flag == 3) {
+        this.finishCook();
       }
       return;
     },
     changeOnOffBtnClicked() {
+      console.log("click");
       // this.onOffAlert = true;
       this.alert.modal = true;
       this.content = `확인을 누르시면 영업을 ${
         this.isOn ? "종료" : "시작"
       }합니다.`;
+      this.flag = 0;
     },
     approveBtnClicked(event) {
-      this.approveAlert = true;
+      this.alert.modal = true;
+      this.content =
+        "주의 : 주문을 받으시면 받으신 주문을 취소할수가 없습니다.";
+      // this.approveAlert = true;
+      this.flag = 1;
       this.index = event.target.id;
     },
     declineBtnClicked(event) {
-      this.declineAlert = true;
+      // this.declineAlert = true;
+      this.alert.modal = true;
+      this.content = "주의 ! : 한번 거절하시면 다시 받을 수 없습니다.";
+      this.flag = 2;
       this.index = event.target.id;
     },
     finishBtnClicked(event) {
-      this.finishAlert = true;
+      // this.finishAlert = true;
+      this.alert.modal = true;
+      this.content = "주의 : 두명의 손님들이 다 가져가셨나요?";
+      this.flag = 3;
       this.index = event.target.id;
     },
     async changeOn() {
@@ -409,7 +420,8 @@ export default {
         this.onColor = "blue";
         this.offColor = "white";
         this.isOn = true;
-        this.onOffAlert = false;
+        // this.onOffAlert = false;
+        this.alert.modal = false;
       } else if (result._onOff == 1) {
         alert("현재 영업중인 상태 입니다.");
       }
@@ -431,7 +443,8 @@ export default {
         this.onColor = "white";
         this.offColor = "red";
         this.isOn = false;
-        this.onOffAlert = false;
+        // this.onOffAlert = false;
+        this.alert.modal = false;
       } else if (result._onOff == 0) {
         // alert("현재 영업이 종료된 상태 입니다.");
       }
@@ -447,10 +460,6 @@ export default {
       var minute = "0" + date.getMinutes();
       var second = "0" + date.getSeconds();
       return (
-        // month.substr(-2) +
-        // "월 " +
-        // day.substr(-2) +
-        // "일 " +
         hour.substr(-2) +
         "시 " +
         minute.substr(-2) +
@@ -462,9 +471,6 @@ export default {
 
     async approveOrder() {
       console.log("button IDX :" + this.index);
-      // var con_test = confirm(
-      //   "주의 : 주문을 받으시면 받으신 주문을 취소할수가 없습니다."
-      // );
 
       const CHAddress = await this.AdminInstance.findChickenHouse(
         this.storeName
@@ -475,15 +481,12 @@ export default {
       await ChickenHouseInstance.approveOrder(this.storeName, this.index);
       this.getOrderRooms();
       this.getOrderedLists();
-      this.approveAlert = false;
+      // this.approveAlert = false;
+      this.alert.modal = false;
     },
 
     async refundToBothUsers() {
       console.log("button IDX :" + this.index);
-
-      // var con_test = confirm(
-      //   "주의 : 거절하시면 자동으로 환불되며 다시 같은 주문을 받을 수 없습니다."
-      // );
 
       const CHAddress = await this.AdminInstance.findChickenHouse(
         this.storeName
@@ -494,13 +497,11 @@ export default {
       await ChickenHouseInstance.refundToBothUsers(this.index);
       this.getOrderRooms();
       this.getOrderedLists();
-      this.declineAlert = false;
+      // this.declineAlert = false;
+      this.alert.modal = false;
     },
 
     async finishCook() {
-      // console.log("button IDX :" + idx);
-      // var con_test = confirm("주의 : 두명의 손님들이 다 가져가셨나요?");
-
       const CHAddress = await this.AdminInstance.findChickenHouse(
         this.storeName
       );
@@ -510,7 +511,8 @@ export default {
 
       await ChickenHouseInstance.finishCook(this.index);
       this.getOrderedLists();
-      this.finishAlert = false;
+      // this.finishAlert = false;
+      this.alert.modal = false;
     },
 
     async getOnOff() {
@@ -668,22 +670,5 @@ export default {
 }
 .orderedList.뼈 {
   border-left: 6px solid #f8a529;
-}
-/* .button1 {
-  background-color: blue;
-}
-.button2 {
-  background-color: red;
-}
-*/
-.title_color {
-  color: white;
-}
-.blue_style {
-  background-color: blue;
-}
-.centered {
-  display: inline-block;
-  vertical-align: middle;
 }
 </style>
