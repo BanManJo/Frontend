@@ -1,20 +1,41 @@
 <template>
-  <v-dialog v-model="userPageInfo.modal" width="80%">
+  <v-dialog
+    v-model="userPageInfo.modal"
+    transition="dialog-bottom-transition"
+    width="80%"
+  >
     <v-card>
-      <v-card-title class="grey lighten-4 mb-7">
-        <span class="headline">내 주문 현황</span>
-      </v-card-title>
+      <v-app-bar color="grey lighten-4 " dark elevation="1">
+        <v-spacer></v-spacer>
 
+        <v-toolbar-title class="black--text text-h3 font-weight-bold"
+          >내 주문 현황</v-toolbar-title
+        >
+
+        <v-spacer></v-spacer>
+
+        <v-btn
+          class="ma-0 pa-0 text-h4"
+          text
+          color="black"
+          icon
+          @click="userPageInfo.modal = false"
+          ><v-icon large>mdi-backspace </v-icon></v-btn
+        >
+      </v-app-bar>
+      <br />
+      <br />
       <v-container>
         <v-row>
           <v-col sm="12" md="6" lg="4" offset-sm3>
             <base-material-card
               icon="mdi-clipboard-text"
               title="현재 주문한 방 상황 "
-              class="px-5 py-2"
+              class="px-5 py-2 "
               flat
               outlined
             >
+              <br />
               <v-card
                 flat
                 outlined
@@ -83,7 +104,7 @@
                   <v-spacer></v-spacer> -->
                   <span class="blackText">
                     가격:
-                    {{ userPageInfo.orderingLists[0].price }}
+                    {{ userPageInfo.orderingLists[0].price }} ether
                   </span>
                   <br />
                   <!-- <v-spacer></v-spacer>
@@ -194,7 +215,7 @@ export default {
         { text: "날짜", value: "date" },
         { text: "치킨메뉴", value: "menu" },
         { text: "가격 (eth)", value: "price" },
-        { text: "주문상태 (성공/실패)", value: "state" },
+        { text: "주문상태 (픽업대기중/완료)", value: "state" },
         { text: "방번호", value: "roomNumber" }
       ],
       durationData: { timer: 0 },

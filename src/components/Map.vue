@@ -10,7 +10,7 @@
       elevation="1"
       flat
     >
-      <v-toolbar-title class="text-h3 font-weight-medium"
+      <v-toolbar-title class="text-h3 font-weight-bold"
         >반 만 조</v-toolbar-title
       >
       <v-spacer></v-spacer>

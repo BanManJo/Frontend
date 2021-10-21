@@ -2,18 +2,17 @@
   <div>
     <v-dialog
       v-model="registerCH.dialog"
-      transition="dialog-top-transition"
+      transition="dialog-bottom-transition"
       width="80%"
     >
       <v-card class="overflow-y-hidden" max-height="600">
         <v-app-bar color="grey lighten-4 " dark elevation="1">
           <v-btn
-            class="ma-0 pa-0 text-h4"
+            class="ma-0 pa-0 text-h4 font-weight-bold"
             text
-            color="orange"
-            icon
-            @click="registerCH.dialog = false"
-            ><v-icon large>mdi-close</v-icon></v-btn
+            color="green"
+            @click="registerChickenHouse"
+            ><v-icon large>mdi-account-edit </v-icon>등록하기</v-btn
           >
           <v-spacer></v-spacer>
 
@@ -26,9 +25,10 @@
           <v-btn
             class="ma-0 pa-0 text-h4"
             text
-            color="orange"
-            @click="registerChickenHouse"
-            >등록</v-btn
+            color="black"
+            icon
+            @click="registerCH.dialog = false"
+            ><v-icon large>mdi-backspace </v-icon></v-btn
           >
         </v-app-bar>
         <v-sheet class="overflow-y-auto" height="600">
@@ -46,10 +46,20 @@
               ></v-text-field>
             </v-col>
             <v-col cols="12" sm="1" lg="1">
-              <v-btn v-if="!nameOk" @click="checkNameRedundancy" color="primary"
+              <v-btn
+                v-if="!nameOk"
+                @click="checkNameRedundancy"
+                color="primary"
+                class="font-weight-bold text-h5"
+                small
                 >중복 확인</v-btn
               >
-              <v-btn v-else @click="nameOk = false" color="primary"
+              <v-btn
+                v-else
+                @click="nameOk = false"
+                color="primary"
+                class="font-weight-bold"
+                small
                 >수정 하기</v-btn
               >
             </v-col>
@@ -71,7 +81,13 @@
               ></v-text-field>
             </v-col>
             <v-col cols="12" sm="1" lg="1">
-              <v-btn @click="execDaumPostcod" color="primary">주소 찾기</v-btn>
+              <v-btn
+                @click="execDaumPostcod"
+                color="primary"
+                class="font-weight-bold text-h5"
+                small
+                >주소 찾기</v-btn
+              >
             </v-col>
           </v-row>
           <v-row justify="center" align="center">
@@ -120,7 +136,7 @@
                 small
                 color="indigo"
               >
-                <v-icon dark>mdi-plus</v-icon>
+                <v-icon large dark>mdi-plus</v-icon>
               </v-btn>
             </v-col>
           </v-row>

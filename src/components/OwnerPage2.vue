@@ -4,7 +4,7 @@
     background: #f5f5f5;"
   >
     <v-app-bar id="app-bar" absolute app color="transparent" flat height="75">
-      <v-toolbar-title class="text-h3 font-weight-light">
+      <v-toolbar-title class="text-h3 font-weight-bold">
         {{ storeName }}
       </v-toolbar-title>
 
@@ -244,16 +244,16 @@
     </v-dialog> -->
     <base-material-snackbar
       v-model="snackbar"
-      type="info"
+      color="indigo"
       v-bind="{
         bottom: true,
         center: true,
         timeout: 5000
       }"
-      class="text-h2"
     >
-      주문이 들어왔습니다.
-      <span class="font-weight-bold"></span>
+      <span class="text-h4 font-weight-medium text-center"
+        >주문이 들어왔습니다.</span
+      >
     </base-material-snackbar>
   </v-app>
 </template>

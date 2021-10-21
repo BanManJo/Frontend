@@ -137,7 +137,7 @@
       :type="color"
       v-bind="{
         [parsedDirection[0]]: true,
-        [parsedDirection[1]]: true,
+        [parsedDirection[1]]: true
       }"
     >
       Welcome to
@@ -300,21 +300,21 @@ export default {
       "top right",
       "bottom left",
       "bottom center",
-      "bottom right",
+      "bottom right"
     ],
-    snackbar: false,
+    snackbar: false
   }),
 
   computed: {
     parsedDirection() {
       return this.direction.split(" ");
-    },
+    }
   },
 
   methods: {
     randomColor() {
       this.color = this.colors[Math.floor(Math.random() * this.colors.length)];
-    },
-  },
+    }
+  }
 };
 </script>

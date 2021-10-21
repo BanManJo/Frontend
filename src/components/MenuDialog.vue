@@ -10,15 +10,9 @@
           v-show="owner.isLoading"
         ></v-progress-circular>
         <v-col style="height: 100%; padding-bottom: 5px" xs12 sm12 md12>
-          <!-- <v-text-field
-                v-model="owner.roomNumber"
-                placeholder="1"
-                label="사진"
-                persistent-hint
-              ></v-text-field>-->
           <v-text-field
             v-model="menu"
-            placeholder="BBQ"
+            placeholder="예) 황올 양념 치킨"
             label="메뉴"
             persistent-hint
           ></v-text-field>
@@ -26,13 +20,13 @@
 
           <v-text-field
             v-model="price"
-            placeholder="Chicken"
-            label="가격"
+            placeholder="예) 2"
+            label="가격 (ether)"
             persistent-hint
           ></v-text-field>
         </v-col>
         <v-col style="height: 100%; padding-bottom: 5px" xs12 sm12 md12>
-          <v-btn @click="addOneMenu" color="teal">확인</v-btn>
+          <v-btn @click="addOneMenu" color="indigo" class="text-h4">확인</v-btn>
         </v-col>
       </v-card-text>
       <v-card-actions>
@@ -53,8 +47,8 @@ export default {
 
   data() {
     return {
-      price: 1000,
-      menu: "후라이드",
+      price: null,
+      menu: "",
       sunsal: false,
 
       AdminInstance: contractInstance.getAdminInstance(), // Admin Instance data,

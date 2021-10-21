@@ -5,7 +5,7 @@
   >
     <!-- <child-component v-on:update="getResiterMenu"></child-component> -->
     <v-app-bar id="app-bar" absolute app color="transparent" flat height="75">
-      <v-toolbar-title class="text-h3 font-weight-light">{{
+      <v-toolbar-title class="text-h3 font-weight-bold">{{
         storeName
       }}</v-toolbar-title>
 
@@ -113,7 +113,7 @@
           </v-col>
           <v-col sm="8" md="6" lg="4">
             <v-card class="text-center" flat>
-              <v-btn @click="menuDialog" color="info" rounded class="text-h4">
+              <v-btn @click="menuDialog" color="indigo" rounded class="text-h4">
                 메뉴추가
                 <v-icon>mdi-plus</v-icon>
               </v-btn>

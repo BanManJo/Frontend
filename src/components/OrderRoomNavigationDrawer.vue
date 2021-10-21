@@ -62,7 +62,7 @@
           style="bottom: 20px; right: 5px"
           absolute
         >
-          <v-icon>mdi-plus</v-icon>
+          <v-icon large>mdi-plus</v-icon>
         </v-btn>
         <v-col v-for="(orderRoom, idx) in orderRooms" :key="idx" text>
           <base-material-order-room-card
