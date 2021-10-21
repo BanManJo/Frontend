@@ -4,116 +4,119 @@
       <v-card-title class="grey lighten-4 mb-7">
         <span class="headline">내 주문 현황</span>
       </v-card-title>
-      <v-row>
-        <v-col xs12 sm6 offset-sm3>
-          <base-material-card color="success" class="px-5 py-3">
-            <v-card v-if="userPageInfo.orderingLists.length != 0">
-              <v-row justify="space-around" class="mb-2">
-                &nbsp; &nbsp; &nbsp; &nbsp;
-                <v-chip
-                  class="ma-2"
-                  color="green"
-                  label
-                  text-color="white"
-                  x-large
-                  flat
-                >
-                  <v-icon size="30" right>mdi-home</v-icon>&nbsp; &nbsp; &nbsp;
-                  &nbsp; &nbsp;
-                  <span class="matching">
-                    방번호 &nbsp; :&nbsp;
-                    {{ userPageInfo.orderingLists[0].roomNumber }}
-                  </span>
-                </v-chip>
-                <v-spacer></v-spacer>
 
-                <v-chip
-                  class="ma-2"
-                  color="green"
-                  label
-                  text-color="white"
-                  x-large
-                  flat
-                >
-                  <v-icon size="30" right>mdi-widgets</v-icon>&nbsp; &nbsp;
-                  &nbsp; &nbsp; &nbsp;
-                  <span class="matching">{{
-                    userPageInfo.orderingLists[0].state
-                  }}</span>
-                </v-chip>
-                <v-spacer></v-spacer>
-                <v-chip
-                  class="ma-2"
-                  color="green"
-                  label
-                  text-color="white"
-                  x-large
-                  flat
-                >
-                  <v-icon size="30" right>mdi-clock</v-icon>&nbsp; &nbsp; &nbsp;
-                  &nbsp; &nbsp;
-                  <span class="matching">
-                    만료시간 &nbsp; :&nbsp;
-                    <!-- {{ orderedLists1.finish }}{{ orderedLists2.finish }} -->
-                    {{ timeout ? "00:00" : Duration }}
-                  </span> </v-chip
-                >&nbsp; &nbsp; &nbsp; &nbsp;
-              </v-row>
-              <div>
-                <span class="blackText text-h3"
-                  >가게이름 &nbsp; : &nbsp;{{
-                    userPageInfo.orderingLists[0].storeName
-                  }}</span
-                >
-                <br />
-                <!-- <v-spacer></v-spacer>
-                  <v-spacer></v-spacer> -->
-                <span class="blackText"
-                  >치킨메뉴 &nbsp; : &nbsp;{{
-                    userPageInfo.orderingLists[0].menu
-                  }}</span
-                >
-                <br />
-                <!-- <v-spacer></v-spacer>
-                  <v-spacer></v-spacer> -->
-                <span class="blackText">
-                  가격 &nbsp; : &nbsp;
-                  {{ userPageInfo.orderingLists[0].price }}
-                </span>
-                <br />
-                <!-- <v-spacer></v-spacer>
-                  <v-spacer></v-spacer> -->
-                <span class="blackText">
-                  방 생성 시간 &nbsp; : &nbsp;
-                  {{ userPageInfo.orderingLists[0].date }}
-                </span>
-              </div>
-              <v-card-actions>
+      <v-container>
+        <v-row>
+          <v-col sm="12" md="6" lg="4" offset-sm3>
+            <base-material-card
+              icon="mdi-clipboard-text"
+              title="현재 주문한 방 상황 "
+              class="px-5 py-2"
+              flat
+              outlined
+            >
+              <v-card
+                flat
+                outlined
+                v-if="userPageInfo.orderingLists.length != 0"
+              >
                 <v-row justify="space-around" class="mb-2">
-                  <v-spacer></v-spacer>
-                  <v-btn
-                    class="ma-2 text-h4"
-                    color="orange"
-                    @click="deleteBtnClicked()"
+                  <v-chip
+                    class="ma-2"
+                    color="green"
+                    label
+                    text-color="white"
+                    flat
                   >
-                    <v-icon left>mdi-cancel</v-icon>
-                    <span>주문취소</span>
-                  </v-btn>
-                  <!-- <v-btn class="ma-2 text-h4" color="orange" @click="readRoomInfo">
+                    <v-icon>mdi-home</v-icon>
+
+                    <span class="matching">
+                      방번호
+                      {{ userPageInfo.orderingLists[0].roomNumber }}
+                    </span>
+                  </v-chip>
+                  <v-spacer></v-spacer>
+
+                  <v-chip
+                    class="ma-2"
+                    color="green"
+                    label
+                    text-color="white"
+                    flat
+                  >
+                    <v-icon>mdi-widgets</v-icon>
+
+                    <span class="matching">{{
+                      userPageInfo.orderingLists[0].state
+                    }}</span>
+                  </v-chip>
+                  <v-spacer></v-spacer>
+                  <v-chip
+                    class="ma-2"
+                    color="green"
+                    label
+                    text-color="white"
+                    flat
+                  >
+                    <v-icon>mdi-clock</v-icon>
+
+                    <span class="matching">
+                      만료시간
+                      <!-- {{ orderedLists1.finish }}{{ orderedLists2.finish }} -->
+                      {{ timeout ? "00:00" : Duration }}
+                    </span>
+                  </v-chip>
+                </v-row>
+                <div>
+                  <span class="blackText"
+                    >가게 이름:
+                    {{ userPageInfo.orderingLists[0].storeName }}</span
+                  >
+                  <br />
+                  <!-- <v-spacer></v-spacer>
+                  <v-spacer></v-spacer> -->
+                  <span class="blackText"
+                    >치킨 메뉴: {{ userPageInfo.orderingLists[0].menu }}</span
+                  >
+                  <br />
+                  <!-- <v-spacer></v-spacer>
+                  <v-spacer></v-spacer> -->
+                  <span class="blackText">
+                    가격:
+                    {{ userPageInfo.orderingLists[0].price }}
+                  </span>
+                  <br />
+                  <!-- <v-spacer></v-spacer>
+                  <v-spacer></v-spacer> -->
+                  <span class="blackText">
+                    방 생성 시간 :
+                    {{ userPageInfo.orderingLists[0].date }}
+                  </span>
+                </div>
+                <v-card-actions>
+                  <v-row justify="space-around" class="mb-2">
+                    <v-spacer></v-spacer>
+                    <v-btn
+                      class="ma-2 text-h4"
+                      color="orange"
+                      @click="deleteBtnClicked()"
+                    >
+                      <v-icon left>mdi-cancel</v-icon>
+                      <span>주문취소</span>
+                    </v-btn>
+                    <!-- <v-btn class="ma-2 text-h4" color="orange" @click="readRoomInfo">
                 <v-icon left>mdi-cancel</v-icon>
                 <span>테스트</span>
                 </v-btn>-->
-                </v-row>
-              </v-card-actions>
-            </v-card>
-          </base-material-card>
-        </v-col>
-      </v-row>
-      <!-- </div> -->
-      &nbsp;
-      <!--대영 기록 테이블 -->
-      <v-container>
-        <v-row justify="space-around">
+                  </v-row>
+                </v-card-actions>
+              </v-card>
+            </base-material-card>
+          </v-col>
+
+          <!-- </div> -->
+          <!--대영 기록 테이블 -->
+
           <v-col sm="12" md="6" lg="8">
             <base-material-card
               icon="mdi-clipboard-text"
@@ -216,7 +219,7 @@ export default {
     },
     orderDate() {
       const date = new Date(this.userPageInfo.orderingLists[0].date * 1000);
-      return `${date.getFullYear()}/${date.getMonth()}/${date.getDate()} ${date.getHours()}:${date.getSeconds()}`;
+      return `${date.getFullYear()}년${date.getMonth()}월${date.getDate()}일 ${date.getHours()}시${date.getSeconds()}분`;
     },
     orderingList() {
       return this.userPageInfo.orderingLists[0];
