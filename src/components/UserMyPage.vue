@@ -116,7 +116,7 @@
                 <v-btn
                   class="ma-2 text-h4"
                   color="orange"
-                  @click="cancelAlert = true"
+                  @click="deleteBtnClicked()"
                 >
                   <v-icon left>mdi-cancel</v-icon>
                   <span>주문취소</span>
@@ -166,7 +166,13 @@
       </v-row>
     </v-container>
     <!-- </div> -->
-    <v-dialog v-model="cancelAlert" max-width="300">
+    <alert-dialog
+      :content="content"
+      :alert="alert"
+      v-on:confirm="refund1(orderingLists[0].roomNumber)"
+    ></alert-dialog>
+
+    <!-- <v-dialog v-model="cancelAlert" max-width="300">
       <v-card>
         <v-card-title>
           주문을 취소 하시겠습니까?
@@ -188,7 +194,7 @@
           >
         </v-card-text>
       </v-card>
-    </v-dialog>
+    </v-dialog> -->
     <base-material-snackbar
       v-model="snackbar"
       :type="'warning'"
@@ -213,6 +219,9 @@ const contractInstance = new ContractInstance();
 
 let timeInterval;
 export default {
+  components: {
+    AlertDialog: () => import("./AlertDialog.vue")
+  },
   data() {
     return {
       AdminInstance: contractInstance.getAdminInstance(),
@@ -235,7 +244,11 @@ export default {
         { text: "주문상태 (성공/실패)", value: "state" },
         { text: "방번호", value: "roomNumber" }
       ],
-      durationData: { timer: 0 }
+      durationData: { timer: 0 },
+      alert: {
+        modal: false
+      },
+      content: ""
     };
   },
   computed: {
@@ -254,6 +267,11 @@ export default {
   },
   props: {},
   methods: {
+    deleteBtnClicked() {
+      this.alert.modal = true;
+      this.content = "주문을 취소 하시겠습니까 ?";
+      // this.approveAlert = true;
+    },
     async readRoomInfo() {
       try {
         this.AdminInstance.getStoreCount().then(async val => {
@@ -449,7 +467,7 @@ export default {
         orderList.state = "완료";
         this.orderedLists.push(orderList);
         this.orderingLists = [];
-        this.cancelAlert = false;
+        this.alert.modal = false;
       } catch (e) {
         this.error = e.message;
       }

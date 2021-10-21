@@ -126,8 +126,13 @@
     <!-- modal  -->
     <owner-dialog :owner="owner" @reload="getResiterMenu"></owner-dialog>
     <menu-dialog :owner="owner" @reload="getResiterMenu"></menu-dialog>
+    <alert-dialog
+      :content="content"
+      :alert="alert"
+      v-on:confirm="deleteMenu"
+    ></alert-dialog>
 
-    <v-dialog v-model="deleteAlert" max-width="300">
+    <!-- <v-dialog v-model="deleteAlert" max-width="300">
       <v-card>
         <v-card-title>
           Are you sure?
@@ -149,7 +154,7 @@
           </v-btn>
         </v-card-text>
       </v-card>
-    </v-dialog>
+    </v-dialog> -->
   </v-app>
 </template>
 
@@ -162,7 +167,8 @@ const contractInstance = new ContractInstance();
 export default {
   components: {
     OwnerDialog: () => import("./OwnerDialog"),
-    MenuDialog: () => import("./MenuDialog")
+    MenuDialog: () => import("./MenuDialog"),
+    AlertDialog: () => import("./AlertDialog")
     // "child-component": childComponent
   },
 
@@ -178,10 +184,13 @@ export default {
         chosenIndex: "",
         menuModal: false
       },
+      alert: {
+        modal: false
+      },
+      content: "",
       location: {},
 
       information: [],
-      deleteAlert: false,
       index: 0
     };
   },
@@ -192,9 +201,15 @@ export default {
   },
   methods: {
     openDeleteAlert(event) {
-      this.deleteAlert = true;
+      this.alert.modal = true;
+      this.content = "메뉴를 삭제하시겠습니까 ?";
+      this.flag = 1;
       this.index = event.target.id;
     },
+    // openDeleteAlert(event) {
+    //   this.deleteAlert = true;
+    //   this.index = event.target.id;
+    // },
     open(index) {
       console.log("open");
 
@@ -231,7 +246,7 @@ export default {
       //   // this.information.splice(0, 1);
       // } else if (con_test == false) {
       // }
-      this.deleteAlert = false;
+      this.alert.modal = false;
       this.getResiterMenu();
     },
 
