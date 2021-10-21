@@ -331,6 +331,19 @@ export class ChickenHouseRepository {
     return emitter;
   }
 
+  watchIfOn(cb) {
+    const emitter = this.contractInstance.events
+      .onOffAlert(
+        {
+          fromBlock: "latest",
+          ToBlock: "latest"
+        },
+        cb
+      )
+      .on("data", console.log);
+    return emitter;
+  }
+
   async watchIfApproved(cb) {
     await this._checkAccountAvailable();
     const emitter = this.contractInstance.events

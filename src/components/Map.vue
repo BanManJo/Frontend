@@ -42,7 +42,7 @@
         내 주문 현황
         <v-icon>mdi-account-check</v-icon>
       </v-btn>
-      <v-btn class="ml-2 text-h4" min-width="0" text>
+      <v-btn class="ml-2 text-h4" min-width="0" text @click="test">
         알림
         <v-icon>mdi-alert-circle</v-icon>
       </v-btn>
@@ -77,6 +77,20 @@
       <span class="font-weight-bold">치킨집 등록 알림!</span> — "{{
         lastRegisteredStoreName
       }}" 치킨집이 등록되었습니다! 확인해보세요~
+    </base-material-snackbar>
+
+    <base-material-snackbar
+      v-model="snackbar"
+      color="indigo"
+      v-bind="{
+        bottom: true,
+        center: true,
+        timeout: 5000
+      }"
+    >
+      <span class="text-h4 font-weight-medium text-right">
+        {{ chickenStore }} 영업 개시 ~</span
+      >
     </base-material-snackbar>
   </v-app>
 </template>
@@ -144,7 +158,10 @@ export default {
       },
       showWhereUserIs: true,
       userMarker: null,
-      alertWhenStoreRegisterd: false
+      alertWhenStoreRegisterd: false,
+      snackbar: false,
+      snackbarColor: "",
+      chickenStore: "교촌치킨 가산점"
     };
   },
   computed: {
@@ -163,6 +180,25 @@ export default {
     ...mapMutations({
       setDrawer: "SET_DRAWER"
     }),
+    test() {
+      this.snackbar = "true";
+    },
+    async onOffEvent(ChickenHouseInstance) {
+      ChickenHouseInstance.watchIfOn(async (error, result) => {
+        if (!error) {
+          console.log(result);
+          if (result.returnValues.onOff == 1) {
+            this.chickenStore = result.returnValues._storeName;
+
+            this.snackbar = true;
+          } else if (result.returnValues.onOff == 2) {
+            this.chickenStore = result.returnValues._storeName;
+            this.snackbar = true;
+            return;
+          }
+        }
+      });
+    },
     /* ============= 주문방 만들기 함수 ============= */
     createOrderRoom(event, flag = false) {
       console.log("=== Create Order Room ===");
@@ -638,6 +674,9 @@ export default {
             const ChickenHouseInstance = contractInstance.getChickenHouseInstance(
               CHAddress
             );
+
+            // onOff 감지 event 실행
+            this.onOffEvent(ChickenHouseInstance);
 
             await ChickenHouseInstance.getChickenHouse().then(async result => {
               const _orderCount = await ChickenHouseInstance.getRoomsCount();

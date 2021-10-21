@@ -58,7 +58,7 @@
                 v-else
                 @click="nameOk = false"
                 color="primary"
-                class="font-weight-bold"
+                class="font-weight-bold text-h5"
                 small
                 >수정 하기</v-btn
               >
