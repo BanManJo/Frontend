@@ -745,28 +745,6 @@ export default {
   },
   created() {
     this.setDrawer(false);
-    console.log("=== Created Map.vue ===");
-    console.log("---- Set Window Size ----");
-    // const resizeWindow = function() {
-    //   document.body.style.width = `${window.screen.width}px`;
-    //   document.body.style.height = `${window.innerHeight ||
-    //     document.documentElement.clientHeight ||
-    //     document.body.clientHeight}px`;
-    // };
-    // resizeWindow();
-    // window.addEventListener("resize", resizeWindow);
-    // console.log("---- Initialize kakao Object and Map Object ----");
-    // if (window.kakao && window.kakao.maps) {
-    //   this.initMap();
-    // } else {
-    //   const script = document.createElement("script");
-    //   /* global kakao */
-    //   script.onload = () => kakao.maps.load(this.initMap);
-    //   script.src =
-    //     "http://dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=f16dcaffdef9152c39799852d826d9c4&libraries=services";
-    //   document.head.appendChild(script);
-    // }
-    console.log("=== Done Created Map.vue ===");
   },
   beforeCreate() {
     this.AdminInstance = contractInstance.getAdminInstance();

@@ -1,151 +1,175 @@
 <template>
   <div>
     <v-dialog
-      content-class="dialog"
       v-model="registerCH.dialog"
       transition="dialog-top-transition"
       width="80%"
     >
-      <v-card>
-        <!-- <v-toolbar dark color="#f5f5f5">
-          <v-btn icon dark @click="registerCH.dialog = false">
-            <v-icon>mdi-close</v-icon>
-          </v-btn>
-          <v-toolbar-title>치킨 집 등록하기</v-toolbar-title>
+      <v-card class="overflow-y-hidden" max-height="600">
+        <v-app-bar color="grey lighten-4 " dark elevation="1">
+          <v-btn
+            class="ma-0 pa-0 text-h4"
+            text
+            color="orange"
+            icon
+            @click="registerCH.dialog = false"
+            ><v-icon large>mdi-close</v-icon></v-btn
+          >
           <v-spacer></v-spacer>
-          <v-toolbar-items>
-            <v-btn dark text @click="registerChickenHouse">등록</v-btn>
-          </v-toolbar-items>
-        </v-toolbar> -->
-        <v-card-title class=" grey lighten-4">
-          <span class="headline">치킨집 등록</span>
-        </v-card-title>
-        <v-row justify="center" align="center">
-          <v-col cols="12" sm="2" lg="2">
-            <h3>치킨집 이름</h3>
-          </v-col>
-          <v-col cols="12" sm="3" lg="3">
-            <v-text-field
-              v-model="storeName"
-              label="Store Name"
-              placeholder="BBQ 부천점"
-              :rules="[required]"
-              :disabled="nameOk"
-            ></v-text-field>
-          </v-col>
-          <v-col cols="12" sm="1" lg="1">
-            <v-btn v-if="!nameOk" @click="checkNameRedundancy" color="primary"
-              >중복 확인</v-btn
-            >
-            <v-btn v-else @click="nameOk = false" color="primary"
-              >수정 하기</v-btn
-            >
-          </v-col>
-        </v-row>
 
-        <v-row justify="center" align="center">
-          <v-col cols="12" sm="2" lg="2">
-            <h3>주소 입력</h3>
-          </v-col>
-          <v-col cols="12" sm="3" lg="3">
-            <v-text-field
-              id="addressField"
-              label="Address"
-              placeholder="도로명 주소"
-              suffix-inner-icon="mdi-map-marker"
-              v-model="address"
-              :rules="[required]"
-              readonly
-            ></v-text-field>
-          </v-col>
-          <v-col cols="12" sm="1" lg="1">
-            <v-btn @click="execDaumPostcod" color="primary">주소 찾기</v-btn>
-          </v-col>
-        </v-row>
-        <v-row justify="center" align="center">
-          <v-col cols="12" sm="2" lg="2"></v-col>
-          <v-col cols="12" sm="4" lg="4">
-            <div
-              id="map-chicken-house"
-              style="
+          <v-toolbar-title class="black--text">치킨집 등록</v-toolbar-title>
+
+          <v-spacer></v-spacer>
+
+          <v-btn
+            class="ma-0 pa-0 text-h4"
+            text
+            color="orange"
+            @click="registerChickenHouse"
+            >등록</v-btn
+          >
+        </v-app-bar>
+        <v-sheet class="overflow-y-auto" height="600">
+          <v-row justify="center" align="center">
+            <v-col cols="12" sm="2" lg="2">
+              <h3>치킨집 이름</h3>
+            </v-col>
+            <v-col cols="12" sm="3" lg="3">
+              <v-text-field
+                v-model="storeName"
+                label="Store Name"
+                placeholder="BBQ 부천점"
+                :rules="[required]"
+                :disabled="nameOk"
+              ></v-text-field>
+            </v-col>
+            <v-col cols="12" sm="1" lg="1">
+              <v-btn v-if="!nameOk" @click="checkNameRedundancy" color="primary"
+                >중복 확인</v-btn
+              >
+              <v-btn v-else @click="nameOk = false" color="primary"
+                >수정 하기</v-btn
+              >
+            </v-col>
+          </v-row>
+
+          <v-row justify="center" align="center">
+            <v-col cols="12" sm="2" lg="2">
+              <h3>주소 입력</h3>
+            </v-col>
+            <v-col cols="12" sm="3" lg="3">
+              <v-text-field
+                id="addressField"
+                label="Address"
+                placeholder="도로명 주소"
+                suffix-inner-icon="mdi-map-marker"
+                v-model="address"
+                :rules="[required]"
+                readonly
+              ></v-text-field>
+            </v-col>
+            <v-col cols="12" sm="1" lg="1">
+              <v-btn @click="execDaumPostcod" color="primary">주소 찾기</v-btn>
+            </v-col>
+          </v-row>
+          <v-row justify="center" align="center">
+            <v-col cols="12" sm="2" lg="2"></v-col>
+            <v-col cols="12" sm="4" lg="4">
+              <div
+                id="map-chicken-house"
+                style="
                 width: 100%;
                 height: 200px;
                 margin-top: 10px;
                 display: none;
               "
-            ></div>
-          </v-col>
-        </v-row>
-        <v-row justify="center" align="center">
-          <v-col cols="12" sm="2" lg="2">
-            <h3>메뉴 등록</h3>
-          </v-col>
-          <v-col cols="12" sm="2" lg="1">
-            <v-text-field
-              v-model="chicken"
-              color="purple darken-2"
-              label="치킨 이름"
-              required
-            ></v-text-field>
-          </v-col>
-          <v-col cols="12" sm="2" lg="1">
-            <v-text-field
-              v-model="price"
-              color="blue darken-2"
-              label="가격"
-              required
-            ></v-text-field>
-          </v-col>
-          <v-col cols="12" sm="2" lg="1">
-            <v-checkbox v-model="sunsal" label="순살?"></v-checkbox>
-          </v-col>
-          <v-col cols="12" sm="1" lg="1">
-            <v-btn @click="addMenu" class="mx-1" fab dark small color="indigo">
-              <v-icon dark>mdi-plus</v-icon>
-            </v-btn>
-          </v-col>
-        </v-row>
-        <v-row justify="center" align="center">
-          <v-col cols="1"></v-col>
-          <v-col cols="5">
-            <v-textarea
-              v-model="description"
-              label="메뉴 설명"
-              clearable
-              no-resize
-              outlined
-              rows="1"
-            ></v-textarea>
-          </v-col>
-        </v-row>
-        <v-row justify="center" align="start">
-          <v-col cols="12" sm="2" lg="2">
-            <h3>등록된 메뉴</h3>
-          </v-col>
-          <v-col cols="12" sm="7" lg="6">
-            <v-row>
-              <template v-for="(menu, idx) in menus">
-                <v-col v-if="menu.appended" :key="idx" cols="12" sm="6" lg="4">
-                  <base-material-menu-card
-                    color="#FF8C00"
-                    icon="mdi-food-drumstick"
-                    :title="menu.chicken"
-                    :value="`${menu.price}`"
-                    :sub-icon="
-                      menu.sunsal
-                        ? 'mdi-checkbox-marked'
-                        : 'mdi-checkbox-blank-outline'
-                    "
-                    :menu-description="menu.description"
-                    sub-text="순살 치킨! "
-                    smallValue="ETH"
-                    @removeMenu="menu.appended = false"
-                  />
-                </v-col>
-              </template>
-            </v-row>
-          </v-col>
-        </v-row>
+              ></div>
+            </v-col>
+          </v-row>
+          <v-row justify="center" align="center">
+            <v-col cols="12" sm="2" lg="2">
+              <h3>메뉴 등록</h3>
+            </v-col>
+            <v-col cols="12" sm="2" lg="1">
+              <v-text-field
+                v-model="chicken"
+                color="purple darken-2"
+                label="치킨 이름"
+                required
+              ></v-text-field>
+            </v-col>
+            <v-col cols="12" sm="2" lg="1">
+              <v-text-field
+                v-model="price"
+                color="blue darken-2"
+                label="가격"
+                required
+              ></v-text-field>
+            </v-col>
+            <v-col cols="12" sm="2" lg="1">
+              <v-checkbox v-model="sunsal" label="순살?"></v-checkbox>
+            </v-col>
+            <v-col cols="12" sm="1" lg="1">
+              <v-btn
+                @click="addMenu"
+                class="mx-1"
+                fab
+                dark
+                small
+                color="indigo"
+              >
+                <v-icon dark>mdi-plus</v-icon>
+              </v-btn>
+            </v-col>
+          </v-row>
+          <v-row justify="center" align="center">
+            <v-col cols="1"></v-col>
+            <v-col cols="5">
+              <v-textarea
+                v-model="description"
+                label="메뉴 설명"
+                clearable
+                no-resize
+                outlined
+                rows="1"
+              ></v-textarea>
+            </v-col>
+          </v-row>
+          <v-row class="mb-10" justify="center" align="start">
+            <v-col cols="12" sm="2" lg="2">
+              <h3>등록된 메뉴</h3>
+            </v-col>
+            <v-col cols="12" sm="7" lg="6">
+              <v-row>
+                <template v-for="(menu, idx) in menus">
+                  <v-col
+                    v-if="menu.appended"
+                    :key="idx"
+                    cols="12"
+                    sm="6"
+                    lg="6"
+                  >
+                    <base-material-menu-card
+                      color="#FF8C00"
+                      icon="mdi-food-drumstick"
+                      :title="menu.chicken"
+                      :value="`${menu.price}`"
+                      :sub-icon="
+                        menu.sunsal
+                          ? 'mdi-checkbox-marked'
+                          : 'mdi-checkbox-blank-outline'
+                      "
+                      :menu-description="menu.description"
+                      sub-text="순살 치킨! "
+                      smallValue="ETH"
+                      @removeMenu="menu.appended = false"
+                    />
+                  </v-col>
+                </template>
+              </v-row>
+            </v-col>
+          </v-row>
+        </v-sheet>
       </v-card>
     </v-dialog>
     <base-material-snackbar
@@ -183,7 +207,8 @@ export default {
       nameOk: false,
       alert: false,
       content: "",
-      color: ""
+      color: "",
+      collapseOnScroll: true
     };
   },
   computed: {},
@@ -356,9 +381,6 @@ export default {
 </script>
 
 <style>
-.v-dialog {
-  overflow-y: scroll;
-}
 .item {
   width: 180px;
   height: 50px;

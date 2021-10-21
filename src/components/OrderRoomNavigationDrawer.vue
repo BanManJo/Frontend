@@ -177,7 +177,7 @@ export default {
         ORAddress
       );
       const balance = await OrderRoomInstance.getBalance();
-      console.log(`====== room;s balance ${balance} =====`);
+      console.log(`===== room;s balance ${balance} =====`);
       // storeIdx (if needed)
       console.log("=== Done Create Match Room ===");
     },
