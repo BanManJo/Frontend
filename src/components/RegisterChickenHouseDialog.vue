@@ -17,7 +17,9 @@
           >
           <v-spacer></v-spacer>
 
-          <v-toolbar-title class="black--text">치킨집 등록</v-toolbar-title>
+          <v-toolbar-title class="black--text text-h3 font-weight-bold"
+            >치킨집 등록</v-toolbar-title
+          >
 
           <v-spacer></v-spacer>
 

@@ -66,6 +66,18 @@
       :registerCH="registerCH"
     ></register-chicken-house-dialog>
     <user-my-page :userPageInfo="userPageInfo"></user-my-page>
+    <base-material-snackbar
+      v-model="alertWhenStoreRegisterd"
+      :type="'info'"
+      v-bind="{
+        bottom: true,
+        center: true
+      }"
+    >
+      <span class="font-weight-bold">치킨집 등록 알림!</span> — "{{
+        lastRegisteredStoreName
+      }}" 치킨집이 등록되었습니다! 확인해보세요~
+    </base-material-snackbar>
   </v-app>
 </template>
 
@@ -131,13 +143,21 @@ export default {
         orderedLists: []
       },
       showWhereUserIs: true,
-      userMarker: null
+      userMarker: null,
+      alertWhenStoreRegisterd: false
     };
   },
   computed: {
     ...mapState({
       drawer: state => state.OrderRoomDrawer.drawer
-    })
+    }),
+    lastRegisteredStoreName() {
+      const length = this.markerDatas.length;
+      if (length !== 0) {
+        return this.markerDatas[length - 1].storeName;
+      }
+      return "";
+    }
   },
   methods: {
     ...mapMutations({
@@ -735,6 +755,7 @@ export default {
         };
         this.markerDatas.push(markerData);
         this.createMarker(markerData);
+        this.alertWhenStoreRegisterd = true;
         // this.map.setCenter(new kakao.maps.LatLng(latitude, longitude));
       } else {
         throw error;
