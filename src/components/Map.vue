@@ -77,6 +77,17 @@
       <span class="font-weight-bold">{{ snackbarTitle }}</span> —
       {{ snackbarContent }}
     </base-material-snackbar>
+    <base-material-snackbar
+      v-model="$store.state.snackbar"
+      :type="color"
+      v-bind="{
+        top: true,
+        right: true
+      }"
+    >
+      <span class="font-weight-bold">{{ $store.state.title }}</span> —
+      {{ $store.state.content }}
+    </base-material-snackbar>
   </v-app>
 </template>
 
@@ -394,52 +405,26 @@ export default {
               }
             });
 
-            // ChickenHouseInstance.matchFinish(async (error, result3) => {
-            //   console.log(result3);
-            //   for (let idx = 0; idx < result3.length; idx++) {
-            //     const ORAddress = result3[idx].returnValues.orderRoom;
+            ChickenHouseInstance.matchFinish(async (error, result3) => {
+              for (let idx = 0; idx < result3.length; idx++) {
+                const ORAddress = result3[idx].returnValues.orderRoom;
 
-            //     // 6. OrderRoom 인스턴스 생성
-            //     const OrderRoomInstance = contractInstance.getOrderRoomInstance(
-            //       ORAddress
-            //     );
-            //     const matched = await OrderRoomInstance.getRoomInfo();
-            //     const state = matched._state;
-            //     // 시간 나타내는 구문
-            //     const date = new Date(matched._startTime * 1000);
-            //     const orderDate = `${date.getFullYear()}년${date.getMonth()}월${date.getDate()}일 ${date.getHours()}시${date.getMinutes()}분`;
+                // 6. OrderRoom 인스턴스 생성
+                const OrderRoomInstance = contractInstance.getOrderRoomInstance(
+                  ORAddress
+                );
+                const matched = await OrderRoomInstance.getRoomInfo();
 
-            //     if (state === "2") {
-            //       this.userPageInfo.orderingLists.push({
-            //         storeName: result3[idx].returnValues._storeName,
-            //         menu: matched._chickenName,
-            //         price: matched._price,
-            //         roomNumber: result3[idx].returnValues._roomIndex,
-            //         state: "주문 접수중입니다",
-            //         finish: " ",
-            //         date: orderDate
-            //       });
-            //     } else if (state === "3") {
-            //       this.userPageInfo.orderedLists.push({
-            //         storeName: result3[idx].returnValues._storeName,
-            //         menu: matched._chickenName,
-            //         price: matched._price,
-            //         roomNumber: result3[idx].returnValues._roomIndex,
-            //         state: "픽업 대기중",
-            //         date: orderDate
-            //       });
-            //     } else if (state === "4") {
-            //       this.userPageInfo.orderedLists.push({
-            //         storeName: result3[idx].returnValues._storeName,
-            //         menu: matched._chickenName,
-            //         price: matched._price,
-            //         roomNumber: result3[idx].returnValues._roomIndex,
-            //         state: "완료",
-            //         date: orderDate
-            //       });
-            //     }
-            //   }
-            // });
+                this.userPageInfo.orderingLists.push({
+                  storeName: result3[idx].returnValues._storeName,
+                  menu: matched._chickenName,
+                  price: matched._price,
+                  roomNumber: result3[idx].returnValues._roomIndex,
+                  state: matched._state,
+                  date: matched._startTime
+                });
+              }
+            });
           }
         });
       } catch (e) {
@@ -452,35 +437,28 @@ export default {
         if (!error) {
           console.log(result);
           const returns = result.returnValues;
-          const roomNumber = this.userPageInfo.orderingLists[0].roomNumber;
-          if (returns._roomIndex !== roomNumber) {
+          let index = 0;
+          for (let i = 0; i < this.userPageInfo.orderingLists.length; i++) {
+            if (this.userPageInfo.orderingLists[i].state === "2") {
+              index = i;
+              break;
+            }
+          }
+
+          if (
+            returns._roomIndex !==
+            this.userPageInfo.orderingLists[index].roomNumber
+          ) {
             return;
           }
-          const ORAddress = await storeInstance.findOrderRoom(
-            returns._roomIndex
-          );
-          // 6. OrderRoom 인스턴스 생성
-          const OrderRoomInstance = contractInstance.getOrderRoomInstance(
-            ORAddress
-          );
-          const roomInfo = await OrderRoomInstance.getRoomInfo();
+
+          this.userPageInfo.orderingLists[index].state = returns._state;
 
           // 시간 나타내는 구문
-          const date = new Date(roomInfo._startTime * 1000);
-          const orderDate = `${date.getFullYear()}/${date.getMonth()}/${date.getDate()} ${date.getHours()}:${date.getSeconds()}`;
-
-          this.userPageInfo.orderedLists.push({
-            storeName: returns._storeName,
-            menu: roomInfo._chickenName,
-            price: roomInfo._price,
-            roomNumber: returns._roomIndex,
-            state: roomInfo._state === "3" ? "픽업 대기중" : "완료",
-            date: orderDate
-          });
-          this.userPageInfo.orderingLists = [];
+          // vuex alert!
           this.snackbar = true;
           this.color = "info";
-          if (roomInfo._state === "3") {
+          if (returns._state === "3") {
             this.snackbarTitle = "주문방 승인 안내";
             this.snackbarContent = `요청하신 주문방 ${returns._roomIndex}번이 현재 승인 되었습니다! 치킨을 픽업해주세요!`;
           } else {
@@ -488,7 +466,7 @@ export default {
             this.snackbarContent = `요청하신 주문방 ${returns._roomIndex}번이 사장님의 사정으로 거절 되었습니다! 다음에 다시 요청해주세요..!`;
           }
         } else {
-          console.log(error);
+          console.log(rror);
         }
       };
       storeInstance.watchIfApproved(callback);

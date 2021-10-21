@@ -43,7 +43,11 @@
                     >
                       <v-icon>mdi-widgets</v-icon>
 
-                      <span class="matching">{{ currentOrder.state }}</span>
+                      <span class="matching">{{
+                        currentOrder.state === "1"
+                          ? "매칭중입니다."
+                          : "주문 접수중입니다."
+                      }}</span>
                     </v-chip>
                     <v-spacer></v-spacer>
                     <v-chip
@@ -58,7 +62,7 @@
                       <span class="matching">
                         만료시간
                         <!-- {{ orderedLists1.finish }}{{ orderedLists2.finish }} -->
-                        {{ timer() }}
+                        {{ timer(currentOrder.state) }}
                       </span>
                     </v-chip>
                   </v-row>
@@ -206,7 +210,10 @@ export default {
     userPageInfo: Object
   },
   methods: {
-    timer() {
+    timer(state) {
+      if (state === "2") {
+        return "00:00";
+      }
       if (this.timeout) {
         this.snackbar = true;
         this.$store.commit("STOP_TIMER");
