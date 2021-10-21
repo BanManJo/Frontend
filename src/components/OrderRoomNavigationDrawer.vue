@@ -143,10 +143,6 @@ export default {
   },
   methods: {
     async matchRoom(storeName, roomNumber, price) {
-      console.log(storeName, roomNumber);
-      const message = { key: "matchingRoom", roomNumber: roomNumber };
-      this.$socket.send(JSON.stringify(message));
-
       console.log("=== Create Match Room ===");
 
       // find Chicken House address and get instance
@@ -168,16 +164,17 @@ export default {
         ethUserPay.toString()
       ).then(result => {
         console.log(result);
+        // this.$store.commit("STOP_TIMER");
+        // socket!
+        const message = {
+          key: "ROOM-MATCHED",
+          storeName: storeName,
+          roomNumber: roomNumber
+        };
+        this.$socket.send(JSON.stringify(message));
+        // alert! Your room Matched!
       });
 
-      // 5. OrderRoom 주소를 가져옴
-      const ORAddress = await ChickenHouseInstance.findOrderRoom(roomNumber);
-      // 6. OrderRoom 인스턴스 생성
-      const OrderRoomInstance = contractInstance.getOrderRoomInstance(
-        ORAddress
-      );
-      const balance = await OrderRoomInstance.getBalance();
-      console.log(`===== room;s balance ${balance} =====`);
       // storeIdx (if needed)
       console.log("=== Done Create Match Room ===");
     },

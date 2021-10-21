@@ -180,11 +180,20 @@ export default {
           _menuState,
           ethPaidByUser.toString()
         )
-          .then(transaction => {
+          .then(async transaction => {
             console.log(`---- Create Order Room Succeed : ${transaction}`);
+            const roomNumber = (await ChickenHouseInstance.getRoomsCount()) - 1;
+            this.$store.commit("START_TIMER", +_timer);
+            console.log(roomNumber);
+            this.$store.commit("SET_ROOM_INFO", {
+              storeName: _storeName,
+              roomNumber: roomNumber
+            });
+
             this.room.isLoading = false;
             this.room.roomModal = false;
             this.isCreating = false;
+            // alert 방생성되었습니다! by socket
           })
           .catch(error => {
             if (error.code === 4001) {

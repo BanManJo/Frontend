@@ -39,12 +39,55 @@ export default new Vuex.Store({
     barImage:
       "https://demos.creative-tim.com/material-dashboard/assets/img/sidebar-1.jpg",
 
-    wsMessage: null,
-    roomNumber: null,
-    alert: false,
-    content: ""
+    snackbar: false,
+    title: "",
+    content: "",
+    orderRoomTimer: 0,
+    myCounterInterval: null,
+    myRoomNumber: null,
+    storeNameOfRoom: null
+  },
+  getters: {
+    timeout: state => {
+      if (state.orderRoomTimer < 0) {
+        return true;
+      }
+      return false;
+    },
+    Duration: state => {
+      const seconds = state.orderRoomTimer;
+      return (
+        Math.floor(seconds / 60) + ":" + (seconds % 60 ? seconds % 60 : "00")
+      );
+    }
   },
   mutations: {
+    SET_ROOM_INFO(state, payload) {
+      state.storeNameOfRoom = payload.storeName;
+      state.myRoomNumber = payload.roomNumber;
+    },
+    INIT_ROOM_INFO(state) {
+      state.storeNameOfRoom = null;
+      state.myRoomNumber = null;
+    },
+    SNACKBAR_ALERT(state, payload) {
+      state.title = payload.title;
+      state.content = payload.content;
+      state.snackbar = true;
+    },
+    START_TIMER(state, finish) {
+      // const duration = start + finish * 60;
+      state.orderRoomTimer = finish * 60;
+      state.myCounterInterval = setInterval(
+        () => (state.orderRoomTimer -= 1),
+        1000
+      );
+    },
+    STOP_TIMER(state) {
+      console.log("stop!!");
+      clearInterval(state.myCounterInterval);
+      state.myCounterInterval = null;
+    },
     SET_BAR_IMAGE(state, payload) {
       state.barImage = payload;
     },
@@ -54,13 +97,22 @@ export default new Vuex.Store({
         "=============== Received message from websocket server. ==============="
       );
       const data = JSON.parse(message.data);
-      console.log(data);
-      // console.log(data.info, data.key);
-      // state.wsMessage = data.info;
-      if (key === "matchingRoom" && !state.roomNumber) {
-        if (state.roomNumber === data.roomNumber) {
-          state.alert = true;
-          state.content = "안내해주세요.";
+
+      if (data.key === "ROOM-MATCHED") {
+        if (!state.myRoomNumber) return;
+        // 내 방인지 체크
+        if (
+          state.myRoomNumber == data.roomNumber &&
+          state.storeNameOfRoom === data.storeName
+        ) {
+          clearInterval(state.myCounterInterval);
+          state.myCounterInterval = null;
+          state.storeNameOfRoom = null;
+          state.myRoomNumber = null;
+          state.title = "방 매칭 알림!";
+          state.content = "방이 매칭 되었습니다! 주문 내역을 확인해주세요~";
+          state.snackbar = true;
+          // alert!!
         }
       }
       console.log(
