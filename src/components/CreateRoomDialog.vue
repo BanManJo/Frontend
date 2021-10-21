@@ -185,6 +185,7 @@ export default {
             this.room.isLoading = false;
             this.room.roomModal = false;
             this.isCreating = false;
+            this.$store.commit("START_TIMER", +_timer);
           })
           .catch(error => {
             if (error.code === 4001) {

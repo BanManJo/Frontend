@@ -42,9 +42,38 @@ export default new Vuex.Store({
     wsMessage: null,
     roomNumber: null,
     alert: false,
-    content: ""
+    content: "",
+    orderRoomTimer: 0,
+    myCounterInterval: null
+  },
+  getters: {
+    timeout: state => {
+      if (state.orderRoomTimer < 0) {
+        return true;
+      }
+      return false;
+    },
+    Duration: state => {
+      const seconds = state.orderRoomTimer;
+      return (
+        Math.floor(seconds / 60) + ":" + (seconds % 60 ? seconds % 60 : "00")
+      );
+    }
   },
   mutations: {
+    START_TIMER(state, finish) {
+      // const duration = start + finish * 60;
+      state.orderRoomTimer = finish * 60;
+      state.myCounterInterval = setInterval(
+        () => (state.orderRoomTimer -= 1),
+        1000
+      );
+    },
+    STOP_TIMER(state) {
+      console.log("stop!!");
+      clearInterval(state.myCounterInterval);
+      state.myCounterInterval = null;
+    },
     SET_BAR_IMAGE(state, payload) {
       state.barImage = payload;
     },

@@ -67,23 +67,22 @@
     ></register-chicken-house-dialog>
     <user-my-page :userPageInfo="userPageInfo"></user-my-page>
     <base-material-snackbar
-      v-model="alertWhenStoreRegisterd"
-      :type="'info'"
+      v-model="snackbar"
+      :type="color"
       v-bind="{
         bottom: true,
         center: true
       }"
     >
-      <span class="font-weight-bold">치킨집 등록 알림!</span> — "{{
-        lastRegisteredStoreName
-      }}" 치킨집이 등록되었습니다! 확인해보세요~
+      <span class="font-weight-bold">{{ snackbarTitle }}</span> —
+      {{ snackbarContent }}
     </base-material-snackbar>
   </v-app>
 </template>
 
 <script>
 // Utilities
-import { mapState, mapMutations } from "vuex";
+import { mapState, mapMutations, mapGetters } from "vuex";
 
 // Instance 사용하기 위한 구문
 import ContractInstance from "../ContractInstance";
@@ -98,6 +97,8 @@ import storeImg from "../img/치킨로고4.png";
 
 let roomCreatedEmitter;
 let roomMatchedEmitter;
+
+let timeInterval = null;
 export default {
   name: "map",
   // store,
@@ -139,17 +140,24 @@ export default {
       },
       userPageInfo: {
         modal: false,
+        // currentOrders: [],
         orderingLists: [],
-        orderedLists: []
+        orderedLists: [],
+        timer: 0
       },
       showWhereUserIs: true,
       userMarker: null,
-      alertWhenStoreRegisterd: false
+      snackbar: false,
+      color: "info",
+      snackbarTitle: "",
+      snackbarContent: ""
     };
   },
   computed: {
+    ...mapGetters(["timeout"]),
     ...mapState({
-      drawer: state => state.OrderRoomDrawer.drawer
+      drawer: state => state.OrderRoomDrawer.drawer,
+      timer: state => state.myCounterInterval
     }),
     lastRegisteredStoreName() {
       const length = this.markerDatas.length;
@@ -188,14 +196,6 @@ export default {
             console.log("---- get store menus from ETH ----");
             console.log(menus);
 
-            // for (let i = 0; i < result._chickens.length; i++) {
-            //   this.room.menus.push({
-            //     chicken: result._chickens[i],
-            //     price: `${result._prices[i]}`,
-            //     description: "고소한 올리브유로 티킨 바삭한 프라이드 치킨!",
-            //     selected: false
-            //   });
-            // }
             menus.forEach(menu => {
               this.room.menus.push({
                 ...menu,
@@ -370,15 +370,9 @@ export default {
             // console.log("pass");
             this.watchEventApprovedOrRejected(ChickenHouseInstance);
             ChickenHouseInstance.roomCreated(async (error, result2) => {
-              console.log(result2);
+              // console.log(result2);
               for (let idx = 0; idx < result2.length; idx++) {
                 const eventReturns = result2[idx].returnValues;
-                const storeName = eventReturns._storeName,
-                  menu = eventReturns._chickenName,
-                  price = eventReturns._price,
-                  roomNumber = eventReturns._roomNumber,
-                  start = eventReturns._date,
-                  finish = eventReturns._finish;
                 // 5. OrderRoom 주소를 가져옴
                 const ORAddress = await ChickenHouseInstance.findOrderRoom(
                   eventReturns._roomNumber
@@ -389,80 +383,63 @@ export default {
                 );
                 const result = await OrderRoomInstance.getStateRoom();
                 // 시간 나타내는 구문
-                const date = new Date(start * 1000);
-                const orderDate = `${date.getFullYear()}년${date.getMonth()}월${date.getDate()}일 ${date.getHours()}시${date.getMinutes()}분`;
-                console.log(result);
-                if (result === "1" || result === "2") {
-                  this.userPageInfo.orderingLists.push({
-                    storeName: storeName,
-                    menu: menu,
-                    price: price,
-                    roomNumber: roomNumber,
-                    state:
-                      result === "1" ? "매칭중입니다" : "주문 접수중입니다.",
-                    start: start,
-                    finish: finish,
-                    date: orderDate
-                  });
-                } else if (result === "3" || result === "4") {
-                  this.userPageInfo.orderedLists.push({
-                    storeName: storeName,
-                    menu: menu,
-                    price: price,
-                    roomNumber: roomNumber,
-                    state: result === "3" ? "픽업 대기중" : "완료",
-                    date: orderDate
-                  });
-                }
+                this.userPageInfo.orderingLists.push({
+                  storeName: eventReturns._storeName,
+                  menu: eventReturns._chickenName,
+                  price: eventReturns._price,
+                  roomNumber: eventReturns._roomNumber,
+                  state: result,
+                  date: eventReturns._date
+                });
               }
             });
 
-            ChickenHouseInstance.matchFinish(async (error, result3) => {
-              console.log(result3);
-              for (let idx = 0; idx < result3.length; idx++) {
-                const ORAddress = result3[idx].returnValues.orderRoom;
+            // ChickenHouseInstance.matchFinish(async (error, result3) => {
+            //   console.log(result3);
+            //   for (let idx = 0; idx < result3.length; idx++) {
+            //     const ORAddress = result3[idx].returnValues.orderRoom;
 
-                // 6. OrderRoom 인스턴스 생성
-                const OrderRoomInstance = contractInstance.getOrderRoomInstance(
-                  ORAddress
-                );
-                const matched = await OrderRoomInstance.getRoomInfo();
-                const state = matched._state;
-                // 시간 나타내는 구문
-                const date = new Date(matched._startTime * 1000);
-                const orderDate = `${date.getFullYear()}년${date.getMonth()}월${date.getDate()}일 ${date.getHours()}시${date.getMinutes()}분`;
+            //     // 6. OrderRoom 인스턴스 생성
+            //     const OrderRoomInstance = contractInstance.getOrderRoomInstance(
+            //       ORAddress
+            //     );
+            //     const matched = await OrderRoomInstance.getRoomInfo();
+            //     const state = matched._state;
+            //     // 시간 나타내는 구문
+            //     const date = new Date(matched._startTime * 1000);
+            //     const orderDate = `${date.getFullYear()}년${date.getMonth()}월${date.getDate()}일 ${date.getHours()}시${date.getMinutes()}분`;
 
-                if (state === "2") {
-                  this.userPageInfo.orderingLists.push({
-                    storeName: result3[idx].returnValues._storeName,
-                    menu: matched._chickenName,
-                    price: matched._price,
-                    roomNumber: result3[idx].returnValues._roomIndex,
-                    state: "주문 접수중입니다",
-                    finish: " ",
-                    date: orderDate
-                  });
-                } else if (state === "3") {
-                  this.userPageInfo.orderedLists.push({
-                    storeName: result3[idx].returnValues._storeName,
-                    menu: matched._chickenName,
-                    price: matched._price,
-                    roomNumber: result3[idx].returnValues._roomIndex,
-                    state: "픽업 대기중",
-                    date: orderDate
-                  });
-                } else if (state === "4") {
-                  this.userPageInfo.orderedLists.push({
-                    storeName: result3[idx].returnValues._storeName,
-                    menu: matched._chickenName,
-                    price: matched._price,
-                    roomNumber: result3[idx].returnValues._roomIndex,
-                    state: "완료",
-                    date: orderDate
-                  });
-                }
-              }
-            });
+            //     if (state === "2") {
+            //       this.userPageInfo.orderingLists.push({
+            //         storeName: result3[idx].returnValues._storeName,
+            //         menu: matched._chickenName,
+            //         price: matched._price,
+            //         roomNumber: result3[idx].returnValues._roomIndex,
+            //         state: "주문 접수중입니다",
+            //         finish: " ",
+            //         date: orderDate
+            //       });
+            //     } else if (state === "3") {
+            //       this.userPageInfo.orderedLists.push({
+            //         storeName: result3[idx].returnValues._storeName,
+            //         menu: matched._chickenName,
+            //         price: matched._price,
+            //         roomNumber: result3[idx].returnValues._roomIndex,
+            //         state: "픽업 대기중",
+            //         date: orderDate
+            //       });
+            //     } else if (state === "4") {
+            //       this.userPageInfo.orderedLists.push({
+            //         storeName: result3[idx].returnValues._storeName,
+            //         menu: matched._chickenName,
+            //         price: matched._price,
+            //         roomNumber: result3[idx].returnValues._roomIndex,
+            //         state: "완료",
+            //         date: orderDate
+            //       });
+            //     }
+            //   }
+            // });
           }
         });
       } catch (e) {
@@ -501,6 +478,15 @@ export default {
             date: orderDate
           });
           this.userPageInfo.orderingLists = [];
+          this.snackbar = true;
+          this.color = "info";
+          if (roomInfo._state === "3") {
+            this.snackbarTitle = "주문방 승인 안내";
+            this.snackbarContent = `요청하신 주문방 ${returns._roomIndex}번이 현재 승인 되었습니다! 치킨을 픽업해주세요!`;
+          } else {
+            this.snackbarTitle = "주문방 거절 안내";
+            this.snackbarContent = `요청하신 주문방 ${returns._roomIndex}번이 사장님의 사정으로 거절 되었습니다! 다음에 다시 요청해주세요..!`;
+          }
         } else {
           console.log(error);
         }
@@ -755,7 +741,10 @@ export default {
         };
         this.markerDatas.push(markerData);
         this.createMarker(markerData);
-        this.alertWhenStoreRegisterd = true;
+        this.snackbar = true;
+        this.color = "info";
+        this.snackbarTitle = "치킨집 등록 알림!";
+        this.snackbarContent = `"${this.lastRegisteredStoreName}" 치킨집이 등록되었습니다! 확인해보세요~`;
         // this.map.setCenter(new kakao.maps.LatLng(latitude, longitude));
       } else {
         throw error;
@@ -787,6 +776,16 @@ export default {
         console.log(drawerState);
         this.infowindows.forEach(iw => iw.close());
         this.markerDatas.forEach(md => (md.removed = true));
+      }
+    },
+    timeout: function(val) {
+      if (val) {
+        this.$store.commit("STOP_TIMER");
+        this.snackbar = true;
+        this.color = "warning";
+        this.snackbarTitle = "매칭하는 인원이 없습니다.";
+        this.snackbarContent =
+          "방의 만료시간이 지나 매칭종료합니다.주문취소버튼을 눌러 환불 받아주세요.";
       }
     }
   }
