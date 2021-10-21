@@ -4,8 +4,8 @@
       <v-card-title class="grey lighten-4 mb-7">
         <span class="headline">내 주문 현황</span>
       </v-card-title>
-      <v-layout>
-        <v-flex xs12 sm6 offset-sm3>
+      <v-row>
+        <v-col xs12 sm6 offset-sm3>
           <base-material-card color="success" class="px-5 py-3">
             <v-card v-if="userPageInfo.orderingLists.length != 0">
               <v-row justify="space-around" class="mb-2">
@@ -88,58 +88,61 @@
                   {{ userPageInfo.orderingLists[0].date }}
                 </span>
               </div>
-            <v-card-actions>
-              <v-row justify="space-around" class="mb-2">
-                <v-spacer></v-spacer>
-                <v-btn
-                  class="ma-2 text-h4"
-                  color="orange"
-                  @click="deleteBtnClicked()"
-                >
-                  <v-icon left>mdi-cancel</v-icon>
-                  <span>주문취소</span>
-                </v-btn>
-                <!-- <v-btn class="ma-2 text-h4" color="orange" @click="readRoomInfo">
+              <v-card-actions>
+                <v-row justify="space-around" class="mb-2">
+                  <v-spacer></v-spacer>
+                  <v-btn
+                    class="ma-2 text-h4"
+                    color="orange"
+                    @click="deleteBtnClicked()"
+                  >
+                    <v-icon left>mdi-cancel</v-icon>
+                    <span>주문취소</span>
+                  </v-btn>
+                  <!-- <v-btn class="ma-2 text-h4" color="orange" @click="readRoomInfo">
                 <v-icon left>mdi-cancel</v-icon>
                 <span>테스트</span>
                 </v-btn>-->
-              </v-row>
-            </v-card-actions>
-          </v-card>
-        </base-material-card>
-      </v-col>
-    </v-row>
-    <!-- </div> -->
-    &nbsp;
-    <!--대영 기록 테이블 -->
-    <v-container>
-      <v-row justify="space-around">
-        <v-col sm="12" md="6" lg="8">
-          <base-material-card
-            icon="mdi-clipboard-text"
-            title="내가 주문한 목록"
-            class="px-5 py-3 text-h3"
-            flat
-            outlined
-          >
-            <!-- <div id="app"> -->
-            <!-- <v-app id="inspire"> -->
-
-            <v-data-table :headers="headers" :items="userPageInfo.orderedLists" outlined>
-
-            </v-data-table>
-            <!-- </v-app> -->
-            <!-- </div> -->
+                </v-row>
+              </v-card-actions>
+            </v-card>
           </base-material-card>
         </v-col>
       </v-row>
-    </v-container>
-    <!-- </div> -->
-    <alert-dialog
-      :content="content"
-      :alert="alert"
-      v-on:confirm="refund1(orderingLists[0].roomNumber)"
-    ></alert-dialog>
+      <!-- </div> -->
+      &nbsp;
+      <!--대영 기록 테이블 -->
+      <v-container>
+        <v-row justify="space-around">
+          <v-col sm="12" md="6" lg="8">
+            <base-material-card
+              icon="mdi-clipboard-text"
+              title="내가 주문한 목록"
+              class="px-5 py-3 text-h3"
+              flat
+              outlined
+            >
+              <!-- <div id="app"> -->
+              <!-- <v-app id="inspire"> -->
+
+              <v-data-table
+                :headers="headers"
+                :items="userPageInfo.orderedLists"
+                outlined
+              >
+              </v-data-table>
+              <!-- </v-app> -->
+              <!-- </div> -->
+            </base-material-card>
+          </v-col>
+        </v-row>
+      </v-container>
+      <!-- </div> -->
+      <alert-dialog
+        :content="content"
+        :alert="alert"
+        v-on:confirm="refund1(orderingList.roomNumber)"
+      ></alert-dialog>
       <base-material-snackbar
         v-model="snackbar"
         :type="'warning'"

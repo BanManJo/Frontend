@@ -7,6 +7,7 @@
       outlined
       color="
    #f5f5f5"
+      elevation="1"
       flat
     >
       <v-toolbar-title class="text-h3 font-weight-medium"
@@ -45,9 +46,9 @@
         알림
         <v-icon>mdi-alert-circle</v-icon>
       </v-btn>
-      <v-btn class="ml-2 text-h4" min-width="0" text to="/map">
-        지도
-        <v-icon>mdi-arrow-expand-all</v-icon>
+      <v-btn class="ml-2 text-h4" min-width="0" text @click="$router.go()">
+        새로고침
+        <v-icon>mdi-autorenew</v-icon>
       </v-btn>
     </v-app-bar>
     <!-- Map -->
