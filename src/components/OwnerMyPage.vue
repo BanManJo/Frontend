@@ -206,10 +206,7 @@ export default {
       this.flag = 1;
       this.index = event.target.id;
     },
-    // openDeleteAlert(event) {
-    //   this.deleteAlert = true;
-    //   this.index = event.target.id;
-    // },
+
     open(index) {
       console.log("open");
 
@@ -239,13 +236,7 @@ export default {
       );
 
       const result = await ChickenHouseInstance.deleteMenu(this.index);
-      console.log("ggggglllll");
-      // if (result == this.owner.chosenIndex) {
-      //   // await ChickenHouseRepository.deleteMenu();
-      //   console.log("제발 ~ ~");
-      //   // this.information.splice(0, 1);
-      // } else if (con_test == false) {
-      // }
+
       this.alert.modal = false;
       this.getResiterMenu();
     },
