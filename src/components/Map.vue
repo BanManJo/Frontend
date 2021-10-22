@@ -1,18 +1,8 @@
 <template>
   <v-app>
-    <v-app-bar
-      id="app-bar"
-      absolute
-      app
-      outlined
-      color="
-   #f5f5f5"
-      elevation="1"
-      flat
-    >
-      <v-toolbar-title class="text-h3 font-weight-bold"
-        >반 만 조</v-toolbar-title
-      >
+    <v-app-bar id="app-bar" absolute app outlined color="
+   #f5f5f5" elevation="1" flat>
+      <v-toolbar-title class="text-h3 font-weight-bold">반 만 조</v-toolbar-title>
       <v-spacer></v-spacer>
 
       <v-text-field :label="$t('search')" color="secondary" hide-details>
@@ -24,17 +14,10 @@
       </v-text-field>
 
       <v-btn class="ml-2 text-h4" min-width="0" text @click="setCurrentPos">
-        <v-icon large :color="showWhereUserIs ? 'yellow darken-2' : 'black'"
-          >mdi-crosshairs-gps</v-icon
-        >
+        <v-icon large :color="showWhereUserIs ? 'yellow darken-2' : 'black'">mdi-crosshairs-gps</v-icon>
       </v-btn>
       <v-spacer />
-      <v-btn
-        class="ml-2 text-h4"
-        min-width="0"
-        text
-        @click="registerCH.dialog = true"
-      >
+      <v-btn class="ml-2 text-h4" min-width="0" text @click="registerCH.dialog = true">
         치킨집 등록
         <v-icon>mdi-store-plus</v-icon>
       </v-btn>
@@ -56,36 +39,34 @@
       <div id="map"></div>
     </v-main>
     <!-- Navigation Drawer -->
-    <order-room-navigation-drawer
-      :navDrawer="navDrawer"
-      @createOrderRoom="createOrderRoom"
-    ></order-room-navigation-drawer>
+    <order-room-navigation-drawer :navDrawer="navDrawer" @createOrderRoom="createOrderRoom"></order-room-navigation-drawer>
     <!-- modal -->
     <create-room-dialog :room="room"></create-room-dialog>
-    <register-chicken-house-dialog
-      :registerCH="registerCH"
-    ></register-chicken-house-dialog>
+    <register-chicken-house-dialog :registerCH="registerCH"></register-chicken-house-dialog>
     <user-my-page :userPageInfo="userPageInfo"></user-my-page>
     <base-material-snackbar
       v-model="snackbar"
       :type="color"
       v-bind="{
         bottom: true,
-        center: true
+        center: true,
       }"
     >
-      <span class="font-weight-bold">{{ snackbarTitle }}</span> —
+      <span class="font-weight-bold">{{ snackbarTitle }}</span>
+      —
       {{ snackbarContent }}
     </base-material-snackbar>
+
     <base-material-snackbar
       v-model="$store.state.snackbar"
-      :type="color"
+      :type="$store.state.type"
       v-bind="{
         top: true,
         right: true
       }"
     >
-      <span class="font-weight-bold">{{ $store.state.title }}</span> —
+      <span class="font-weight-bold">{{ $store.state.title }}</span>
+      —
       {{ $store.state.content }}
     </base-material-snackbar>
 
@@ -98,9 +79,7 @@
         timeout: 5000
       }"
     >
-      <span class="text-h4 font-weight-medium text-right">
-        {{ chickenStore }} 영업 개시 ~</span
-      >
+      <span class="text-h4 font-weight-medium text-right">{{ chickenStore }} 영업 개시 ~</span>
     </base-material-snackbar>
   </v-app>
 </template>
@@ -132,7 +111,7 @@ export default {
       import("./RegisterChickenHouseDialog.vue"),
     CreateRoomDialog: () => import("./CreateRoomDialog"),
     OrderRoomNavigationDrawer: () => import("./OrderRoomNavigationDrawer"),
-    UserMyPage: () => import("./UserMyPage.vue")
+    UserMyPage: () => import("./UserMyPage.vue"),
   },
   data() {
     return {
@@ -144,7 +123,7 @@ export default {
       navDrawer: {
         storeName: null,
         roomCount: null,
-        orderRooms: []
+        orderRooms: [],
       },
       // Create Room Model
       room: {
@@ -155,20 +134,20 @@ export default {
         // roomNumber: "",
         storeIdx: 0,
         menus: [],
-        timer: 15
+        timer: 15,
       },
       registerCH: {
         dialog: false,
         notifications: false,
         sound: true,
-        widgets: false
+        widgets: false,
       },
       userPageInfo: {
         modal: false,
         // currentOrders: [],
         orderingLists: [],
         orderedLists: [],
-        timer: 0
+        timer: 0,
       },
       showWhereUserIs: true,
       userMarker: null,
@@ -177,14 +156,14 @@ export default {
       snackbar: false,
       color: "info",
       snackbarTitle: "",
-      snackbarContent: ""
+      snackbarContent: "",
     };
   },
   computed: {
     ...mapGetters(["timeout"]),
     ...mapState({
-      drawer: state => state.OrderRoomDrawer.drawer,
-      timer: state => state.myCounterInterval
+      drawer: (state) => state.OrderRoomDrawer.drawer,
+      timer: (state) => state.myCounterInterval,
     }),
     lastRegisteredStoreName() {
       const length = this.markerDatas.length;
@@ -192,11 +171,11 @@ export default {
         return this.markerDatas[length - 1].storeName;
       }
       return "";
-    }
+    },
   },
   methods: {
     ...mapMutations({
-      setDrawer: "SET_DRAWER"
+      setDrawer: "SET_DRAWER",
     }),
     test() {
       this.snackbar = "true";
@@ -233,20 +212,19 @@ export default {
       /**** 새롭게 구조화 된 부분 *****/
       console.log(this.room.storeName);
       this.AdminInstance.findChickenHouse(this.room.storeName).then(
-        CHAddress => {
+        (CHAddress) => {
           console.log(CHAddress);
-          const ChickenHouseInstance = contractInstance.getChickenHouseInstance(
-            CHAddress
-          );
-          ChickenHouseInstance.getStoreMenu().then(menus => {
+          const ChickenHouseInstance =
+            contractInstance.getChickenHouseInstance(CHAddress);
+          ChickenHouseInstance.getStoreMenu().then((menus) => {
             console.log("---- get store menus from ETH ----");
             console.log(menus);
 
-            menus.forEach(menu => {
+            menus.forEach((menu) => {
               this.room.menus.push({
                 ...menu,
                 description: "고소한 올리브유로 티킨 바삭한 프라이드 치킨!",
-                selected: false
+                selected: false,
               });
             });
 
@@ -295,9 +273,8 @@ export default {
         this.navDrawer.storeName
       );
       // 2. Chicken House 인스턴스 생성
-      const ChickenHouseInstance = contractInstance.getChickenHouseInstance(
-        CHAddress
-      );
+      const ChickenHouseInstance =
+        contractInstance.getChickenHouseInstance(CHAddress);
 
       // 3. 해당 Chicken House의 방 개수를 가져옴
       const roomCount = await ChickenHouseInstance.getRoomsCount();
@@ -310,13 +287,12 @@ export default {
         // 5. OrderRoom 주소를 가져옴
         const ORAddress = await ChickenHouseInstance.findOrderRoom(idx);
         // 6. OrderRoom 인스턴스 생성
-        const OrderRoomInstance = contractInstance.getOrderRoomInstance(
-          ORAddress
-        );
+        const OrderRoomInstance =
+          contractInstance.getOrderRoomInstance(ORAddress);
         const balance = await OrderRoomInstance.getBalance();
         console.log(`====== room;s balance ${balance} =====`);
         await OrderRoomInstance.getRoomInfo()
-          .then(result => {
+          .then((result) => {
             console.log(result);
             console.log(result._startTime);
             console.log(result._finishTime);
@@ -334,11 +310,11 @@ export default {
                 show: false,
                 description: "황금올리브 같이 먹을 분 구함!~",
                 menuState: result._menuState,
-                index: idx
+                index: idx,
               });
             }
           })
-          .catch(error => {
+          .catch((error) => {
             console.error(error);
           });
       }
@@ -372,7 +348,7 @@ export default {
               show: false,
               description: "황금올리브 같이 먹을 분 구함!~",
               menuState: returns._menuState,
-              index: Number(returns._roomNumber)
+              index: Number(returns._roomNumber),
             });
             this.navDrawer.roomCount += 1;
           }
@@ -401,7 +377,7 @@ export default {
         this.userPageInfo.modal = true;
         this.userPageInfo.orderingLists = [];
         this.userPageInfo.orderedLists = [];
-        this.AdminInstance.getStoreCount().then(async val => {
+        this.AdminInstance.getStoreCount().then(async (val) => {
           console.log(
             `---- get Each Chicken House Infos by idx, Counts: ${val} ----`
           );
@@ -410,9 +386,8 @@ export default {
             const CHAddress = await this.AdminInstance.findChickenHouseByIndex(
               idx
             );
-            const ChickenHouseInstance = contractInstance.getChickenHouseInstance(
-              CHAddress
-            );
+            const ChickenHouseInstance =
+              contractInstance.getChickenHouseInstance(CHAddress);
             // console.log("pass");
             this.watchEventApprovedOrRejected(ChickenHouseInstance);
             ChickenHouseInstance.roomCreated(async (error, result2) => {
@@ -424,9 +399,8 @@ export default {
                   eventReturns._roomNumber
                 );
                 // 6. OrderRoom 인스턴스 생성
-                const OrderRoomInstance = contractInstance.getOrderRoomInstance(
-                  ORAddress
-                );
+                const OrderRoomInstance =
+                  contractInstance.getOrderRoomInstance(ORAddress);
                 const result = await OrderRoomInstance.getStateRoom();
                 // 시간 나타내는 구문
                 this.userPageInfo.orderingLists.push({
@@ -435,7 +409,7 @@ export default {
                   price: eventReturns._price,
                   roomNumber: eventReturns._roomNumber,
                   state: result,
-                  date: eventReturns._date
+                  date: eventReturns._date,
                 });
               }
             });
@@ -445,9 +419,8 @@ export default {
                 const ORAddress = result3[idx].returnValues.orderRoom;
 
                 // 6. OrderRoom 인스턴스 생성
-                const OrderRoomInstance = contractInstance.getOrderRoomInstance(
-                  ORAddress
-                );
+                const OrderRoomInstance =
+                  contractInstance.getOrderRoomInstance(ORAddress);
                 const matched = await OrderRoomInstance.getRoomInfo();
 
                 this.userPageInfo.orderingLists.push({
@@ -456,7 +429,7 @@ export default {
                   price: matched._price,
                   roomNumber: result3[idx].returnValues._roomIndex,
                   state: matched._state,
-                  date: matched._startTime
+                  date: matched._startTime,
                 });
               }
             });
@@ -470,8 +443,9 @@ export default {
     watchEventApprovedOrRejected(storeInstance) {
       const callback = async (error, result) => {
         if (!error) {
-          console.log(result);
+          console.log("========= watchEventApprovedOrRejected ==========");
           const returns = result.returnValues;
+          console.log(returns);
           let index = 0;
           for (let i = 0; i < this.userPageInfo.orderingLists.length; i++) {
             if (this.userPageInfo.orderingLists[i].state === "2") {
@@ -487,6 +461,7 @@ export default {
             return;
           }
 
+          console.log(index);
           this.userPageInfo.orderingLists[index].state = returns._state;
 
           // 시간 나타내는 구문
@@ -501,7 +476,7 @@ export default {
             this.snackbarContent = `요청하신 주문방 ${returns._roomIndex}번이 사장님의 사정으로 거절 되었습니다! 다음에 다시 요청해주세요..!`;
           }
         } else {
-          console.log(rror);
+          console.log(error);
         }
       };
       storeInstance.watchIfApproved(callback);
@@ -526,7 +501,7 @@ export default {
       // 마커를 생성합니다
       const marker = new kakao.maps.Marker({
         position: markerPosition,
-        image: markerImage
+        image: markerImage,
       });
 
       // 마커가 지도 위에 표시되도록 설정합니다
@@ -554,7 +529,7 @@ export default {
           // 인포윈도우를 생성합니다
           const infowindow = new kakao.maps.InfoWindow({
             content: iwContent,
-            removable: iwRemoveable
+            removable: iwRemoveable,
           });
 
           this.infowindows.push(infowindow);
@@ -625,7 +600,7 @@ export default {
 
       /**** 새롭게 구조화 된 부분 *****/
       this.AdminInstance.getStoreCount()
-        .then(async val => {
+        .then(async (val) => {
           console.log(
             `---- get Each Chicken House Infos by idx, Counts: ${val} ----`
           );
@@ -634,29 +609,30 @@ export default {
             const CHAddress = await this.AdminInstance.findChickenHouseByIndex(
               idx
             );
-            const ChickenHouseInstance = contractInstance.getChickenHouseInstance(
-              CHAddress
-            );
+            const ChickenHouseInstance =
+              contractInstance.getChickenHouseInstance(CHAddress);
 
             // onOff 감지 event 실행
             this.onOffEvent(ChickenHouseInstance);
 
-            await ChickenHouseInstance.getChickenHouse().then(async result => {
-              const _orderCount = await ChickenHouseInstance.getRoomsCount();
-              console.log(result);
-              this.markerDatas.push({
-                latitude: Number(result._latitude),
-                longitude: Number(result._longitude),
-                removed: true,
-                storeName: result._storeName,
-                orderCount: _orderCount,
-                onOff: result._onOff
-              });
-            });
+            await ChickenHouseInstance.getChickenHouse().then(
+              async (result) => {
+                const _orderCount = await ChickenHouseInstance.getRoomsCount();
+                console.log(result);
+                this.markerDatas.push({
+                  latitude: Number(result._latitude),
+                  longitude: Number(result._longitude),
+                  removed: true,
+                  storeName: result._storeName,
+                  orderCount: _orderCount,
+                  onOff: result._onOff,
+                });
+              }
+            );
           }
           console.log("---- markerDatas setting on map ----");
           console.log(this.markerDatas);
-          this.markerDatas.forEach(markerData => {
+          this.markerDatas.forEach((markerData) => {
             this.createMarker(markerData);
           });
         })
@@ -669,7 +645,7 @@ export default {
 
       // 어떤 컨테이너 뷰에 맵을 띄울 것인가..
       const container = document.getElementById("map");
-      navigator.geolocation.getCurrentPosition(position => {
+      navigator.geolocation.getCurrentPosition((position) => {
         // const imageSrc = storeImg,
         //   imageSize = new kakao.maps.Size(24, 24),
         //   imageOption = { offset: new kakao.maps.Point(0, 0) };
@@ -686,14 +662,14 @@ export default {
 
         // 유저 현위치 마커를 생성합니다
         this.userMarker = new kakao.maps.Marker({
-          position: _position
+          position: _position,
           // image: markerImage,
         });
 
         // 지도 객체 초기화
         const options = {
           center: _position,
-          level: 3
+          level: 3,
         };
 
         this.map = new kakao.maps.Map(container, options);
@@ -707,7 +683,7 @@ export default {
     setCurrentPos() {
       this.showWhereUserIs = !this.showWhereUserIs;
       if (this.showWhereUserIs) {
-        navigator.geolocation.getCurrentPosition(position => {
+        navigator.geolocation.getCurrentPosition((position) => {
           const _position = new kakao.maps.LatLng(
             position.coords.latitude,
             position.coords.longitude
@@ -723,7 +699,7 @@ export default {
       } else {
         this.userMarker.setVisible(false);
       }
-    }
+    },
   },
   mounted() {
     console.log("=== Mounted Map.vue ===");
@@ -753,7 +729,7 @@ export default {
           removed: true,
           storeName: storeName,
           orderCount: 0,
-          onOff: 0
+          onOff: 0,
         };
         this.markerDatas.push(markerData);
         this.createMarker(markerData);
@@ -775,12 +751,12 @@ export default {
   beforeCreate() {
     this.AdminInstance = contractInstance.getAdminInstance();
     this.AdminInstance.storeNameOfOwner()
-      .then(storeName => {
+      .then((storeName) => {
         if (storeName) {
           console.log(storeName);
           this.$router.push({
             name: "OwnerPage2",
-            params: { storeName: storeName }
+            params: { storeName: storeName },
           });
         }
       })
@@ -790,21 +766,27 @@ export default {
     drawer(drawerState) {
       if (!drawerState) {
         console.log(drawerState);
-        this.infowindows.forEach(iw => iw.close());
-        this.markerDatas.forEach(md => (md.removed = true));
+        this.infowindows.forEach((iw) => iw.close());
+        this.markerDatas.forEach((md) => (md.removed = true));
       }
     },
-    timeout: function(val) {
+    timeout: function (val) {
       if (val) {
+        this.$store.commit("SNACKBAR_ALERT", {
+          title: "매칭하는 인원이 없습니다.",
+          content:
+            "방의 만료시간이 지나 매칭종료합니다.주문취소버튼을 눌러 환불 받아주세요.",
+          type: "warning",
+        });
         this.$store.commit("STOP_TIMER");
-        this.snackbar = true;
-        this.color = "warning";
-        this.snackbarTitle = "매칭하는 인원이 없습니다.";
-        this.snackbarContent =
-          "방의 만료시간이 지나 매칭종료합니다.주문취소버튼을 눌러 환불 받아주세요.";
+        // this.snackbar = true;
+        // this.color = "warning";
+        // this.snackbarTitle = "매칭하는 인원이 없습니다.";
+        // this.snackbarContent =
+        //   "방의 만료시간이 지나 매칭종료합니다.주문취소버튼을 눌러 환불 받아주세요.";
       }
-    }
-  }
+    },
+  },
 };
 </script>
 

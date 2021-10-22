@@ -40,6 +40,7 @@ export default new Vuex.Store({
       "https://demos.creative-tim.com/material-dashboard/assets/img/sidebar-1.jpg",
 
     snackbar: false,
+    type: "info",
     title: "",
     content: "",
     orderRoomTimer: 0,
@@ -73,6 +74,7 @@ export default new Vuex.Store({
     SNACKBAR_ALERT(state, payload) {
       state.title = payload.title;
       state.content = payload.content;
+      state.type = payload.type;
       state.snackbar = true;
     },
     START_TIMER(state, finish) {
@@ -85,6 +87,7 @@ export default new Vuex.Store({
     },
     STOP_TIMER(state) {
       console.log("stop!!");
+      if (!state.myCounterInterval) return;
       clearInterval(state.myCounterInterval);
       state.myCounterInterval = null;
     },
@@ -97,7 +100,12 @@ export default new Vuex.Store({
         "=============== Received message from websocket server. ==============="
       );
       const data = JSON.parse(message.data);
-
+      const ALERT = (title, content, type) => {
+        state.title = title;
+        state.content = content;
+        state.type = type;
+        state.snackbar = true;
+      };
       if (data.key === "ROOM-MATCHED") {
         if (!state.myRoomNumber) return;
         // 내 방인지 체크
@@ -107,11 +115,34 @@ export default new Vuex.Store({
         ) {
           clearInterval(state.myCounterInterval);
           state.myCounterInterval = null;
+          ALERT(
+            "방 매칭 알림!",
+            "방이 매칭 되었습니다! 주문 내역을 확인해주세요~",
+            "info"
+          );
+        }
+      } else if (data.key === "ROOM-APPROVED" || data.key === "ROOM-DENIED") {
+        if (!state.myRoomNumber) return;
+        // 내 방인지 체크
+        if (
+          state.myRoomNumber == data.roomNumber &&
+          state.storeNameOfRoom === data.storeName
+        ) {
           state.storeNameOfRoom = null;
           state.myRoomNumber = null;
-          state.title = "방 매칭 알림!";
-          state.content = "방이 매칭 되었습니다! 주문 내역을 확인해주세요~";
-          state.snackbar = true;
+          if (data.state === "3") {
+            ALERT(
+              "주문방 승인 안내",
+              `요청하신 주문방 ${data.roomNumber}번이 현재 승인 되었습니다! 치킨을 픽업해주세요!`,
+              "info"
+            );
+          } else {
+            ALERT(
+              "주문방 거절 안내",
+              `요청하신 주문방 ${data.roomNumber}번이 사장님의 사정으로 거절 되었습니다! 다음에 다시 요청해주세요..!`,
+              "info"
+            );
+          }
           // alert!!
         }
       }

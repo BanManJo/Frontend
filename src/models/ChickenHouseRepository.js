@@ -100,16 +100,17 @@ export class ChickenHouseRepository {
   async approveOrder(storeName, roomIndex) {
     try {
       await this._checkAccountAvailable();
-
+      let _hash;
       await this.contractInstance.methods
         .approveOrder(storeName, roomIndex)
         .send({ from: this.account, gas: this.gas })
         .on("transactionHash", function(hash) {
-          return hash;
+          _hash = hash;
         })
         .on("error", function(error, receipt) {
           throw error;
         });
+      return _hash;
     } catch (e) {
       throw e;
     }
@@ -118,15 +119,17 @@ export class ChickenHouseRepository {
   async refundToBothUsers(roomIndex) {
     try {
       await this._checkAccountAvailable();
+      let _hash;
       await this.contractInstance.methods
         .refundToBothUsers(roomIndex)
         .send({ from: this.account, gas: this.gas })
         .on("transactionHash", function(hash) {
-          return hash;
+          _hash = hash;
         })
         .on("error", function(error, receipt) {
           throw error;
         });
+      return _hash;
     } catch (e) {
       throw e;
     }

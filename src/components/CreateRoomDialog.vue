@@ -1,20 +1,11 @@
 <template>
   <div>
-    <v-dialog
-      v-model="room.roomModal"
-      scrollable
-      max-width="400"
-      :persistent="isCreating"
-    >
+    <v-dialog v-model="room.roomModal" scrollable max-width="400" :persistent="isCreating">
       <v-card>
         <v-card-title class="headline">{{ room.storeName }}</v-card-title>
         <v-divider></v-divider>
         <v-card-text style="text-align: center; overflow: hidden">
-          <v-progress-circular
-            indeterminate
-            color="red"
-            v-show="room.isLoading"
-          ></v-progress-circular>
+          <v-progress-circular indeterminate color="red" v-show="room.isLoading"></v-progress-circular>
         </v-card-text>
         <v-card-subtitle>메뉴 선택</v-card-subtitle>
         <v-card-text class="ma-0 pa-0">
@@ -29,9 +20,9 @@
                     순살
                     <v-icon>
                       {{
-                        menu.menuState === "2"
-                          ? "mdi-checkbox-marked"
-                          : "mdi-checkbox-blank-outline"
+                      menu.menuState === "2"
+                      ? "mdi-checkbox-marked"
+                      : "mdi-checkbox-blank-outline"
                       }}
                     </v-icon>
                   </span>
@@ -40,18 +31,22 @@
                   <span>{{ menu.price }}ETH</span>
                 </v-col>
                 <template v-slot:actions>
-                  <v-icon color="primary">{{
+                  <v-icon color="primary">
+                    {{
                     menu.selected ? "mdi-check" : "$expand"
-                  }}</v-icon>
+                    }}
+                  </v-icon>
                 </template>
               </v-expansion-panel-header>
               <v-expansion-panel-content>
                 <v-card text>
                   <v-card-text>{{ menu.description }}</v-card-text>
                   <v-card-actions>
-                    <v-btn outlined color="teal" @click="selectMenu(idx)">{{
+                    <v-btn outlined color="teal" @click="selectMenu(idx)">
+                      {{
                       !menu.selected ? "선택" : "선택취소"
-                    }}</v-btn>
+                      }}
+                    </v-btn>
                   </v-card-actions>
                 </v-card>
               </v-expansion-panel-content>
@@ -90,7 +85,8 @@
         center: true
       }"
     >
-      <span class="font-weight-bold">{{ color }}</span> — {{ content }}
+      <span class="font-weight-bold">{{ color }}</span>
+      — {{ content }}
     </base-material-snackbar>
   </div>
 </template>
@@ -109,14 +105,14 @@ export default {
       isCreating: false,
       alert: false,
       color: "",
-      content: ""
+      content: "",
       // not loaded on map page
       // isLoading: false,
     };
   },
   computed: {},
   props: {
-    room: Object
+    room: Object,
   },
   methods: {
     async checkStore() {
@@ -124,9 +120,8 @@ export default {
         this.room.storeName
       );
       console.log(CHAddress);
-      const ChickenHouseInstance = contractInstance.getChickenHouseInstance(
-        CHAddress
-      );
+      const ChickenHouseInstance =
+        contractInstance.getChickenHouseInstance(CHAddress);
 
       const storeState = await ChickenHouseInstance.getChickenHouse();
       console.log(storeState);
@@ -142,7 +137,7 @@ export default {
     async createOrderRoom() {
       console.log("=== Create Order Room ===");
       try {
-        const menu = this.room.menus.filter(data => data.selected)[0];
+        const menu = this.room.menus.filter((data) => data.selected)[0];
         console.log(`---- get Menu and Create Room, menu: ${menu}`);
         if (menu === undefined) {
           this.alert = true;
@@ -166,9 +161,8 @@ export default {
         /* 새롭게 구조화 된 부분 */
         const CHAddress = await this.AdminInstance.findChickenHouse(_storeName);
         console.log(CHAddress);
-        const ChickenHouseInstance = contractInstance.getChickenHouseInstance(
-          CHAddress
-        );
+        const ChickenHouseInstance =
+          contractInstance.getChickenHouseInstance(CHAddress);
 
         // user가 방을 만들면서 보낼 금액
         const ethPaidByUser = +_price / 2;
@@ -180,22 +174,26 @@ export default {
           _menuState,
           ethPaidByUser.toString()
         )
-          .then(async transaction => {
+          .then(async (transaction) => {
             console.log(`---- Create Order Room Succeed : ${transaction}`);
             const roomNumber = (await ChickenHouseInstance.getRoomsCount()) - 1;
             this.$store.commit("START_TIMER", +_timer);
             console.log(roomNumber);
             this.$store.commit("SET_ROOM_INFO", {
               storeName: _storeName,
-              roomNumber: roomNumber
+              roomNumber: roomNumber,
             });
-
+            this.$store.commit("SNACKBAR_ALERT", {
+              title: "방 생성 알림",
+              content: `${_storeName} 에 ${roomNumber}번 방이 생성되었습니다.`,
+              type: "success",
+            });
             this.room.isLoading = false;
             this.room.roomModal = false;
             this.isCreating = false;
             // alert 방생성되었습니다! by socket
           })
-          .catch(error => {
+          .catch((error) => {
             if (error.code === 4001) {
               console.log("--- User Denied Tsc ----");
               this.room.isLoading = false;
@@ -216,13 +214,13 @@ export default {
           menu.selected = false;
         }
       });
-    }
+    },
   },
   updated() {
     console.log("=== Updated CreateRoomDialog.vue ===");
     // 변수가 변경 될때마다 update 실행된다.!
   },
-  watch: {}
+  watch: {},
 };
 </script>
 
