@@ -66,18 +66,20 @@
       :registerCH="registerCH"
     ></register-chicken-house-dialog>
     <user-my-page :userPageInfo="userPageInfo"></user-my-page>
+
     <base-material-snackbar
       v-model="snackbar"
       :type="color"
       v-bind="{
         bottom: true,
-        center: true
+        center: true,
+        timeout: 5000
       }"
     >
-      <span class="font-weight-bold">{{ snackbarTitle }}</span> —
-      {{ snackbarContent }}
+      <span class="font-weight-bold text-h4">{{ snackbarTitle }}</span>
+      <span class="font-weight-bold text-h4">{{ snackbarContent }}</span>
     </base-material-snackbar>
-    <base-material-snackbar
+    <!-- <base-material-snackbar
       v-model="$store.state.snackbar"
       :type="color"
       v-bind="{
@@ -87,11 +89,11 @@
     >
       <span class="font-weight-bold">{{ $store.state.title }}</span> —
       {{ $store.state.content }}
-    </base-material-snackbar>
+    </base-material-snackbar> -->
 
-    <base-material-snackbar
-      v-model="snackbar"
-      color="indigo"
+    <!-- <base-material-snackbar
+      v-model="snackbars"
+      type="indigo"
       v-bind="{
         bottom: true,
         center: true,
@@ -101,7 +103,7 @@
       <span class="text-h4 font-weight-medium text-right">
         {{ chickenStore }} 영업 개시 ~</span
       >
-    </base-material-snackbar>
+    </base-material-snackbar> -->
   </v-app>
 </template>
 
@@ -172,12 +174,11 @@ export default {
       },
       showWhereUserIs: true,
       userMarker: null,
-      snackbarColor: "",
       chickenStore: "교촌치킨 가산점",
       snackbar: false,
       color: "info",
       snackbarTitle: "",
-      snackbarContent: ""
+      snackbarContent: "김현수"
     };
   },
   computed: {
@@ -199,19 +200,22 @@ export default {
       setDrawer: "SET_DRAWER"
     }),
     test() {
-      this.snackbar = "true";
+      console.log("test");
+      this.snackbar = true;
     },
     async onOffEvent(ChickenHouseInstance) {
       ChickenHouseInstance.watchIfOn(async (error, result) => {
         if (!error) {
           console.log(result);
           if (result.returnValues.onOff == 1) {
-            this.chickenStore = result.returnValues._storeName;
-
+            let chickenStore = result.returnValues._storeName;
+            this.snackbarContent = chickenStore + "  영업 개시 ~";
+            this.snackbarTitle = null;
+            this.color = "indigo";
             this.snackbar = true;
           } else if (result.returnValues.onOff == 2) {
             this.chickenStore = result.returnValues._storeName;
-            this.snackbar = true;
+            this.snackbars = true;
             return;
           }
         }
@@ -467,46 +471,46 @@ export default {
       }
     },
     /* ============= 치킨집 지도 마커 생성 함수 ============= */
-    watchEventApprovedOrRejected(storeInstance) {
-      const callback = async (error, result) => {
-        if (!error) {
-          console.log(result);
-          const returns = result.returnValues;
-          let index = 0;
-          for (let i = 0; i < this.userPageInfo.orderingLists.length; i++) {
-            if (this.userPageInfo.orderingLists[i].state === "2") {
-              index = i;
-              break;
-            }
-          }
+    // watchEventApprovedOrRejected(storeInstance) {
+    //   const callback = async (error, result) => {
+    //     if (!error) {
+    //       console.log(result);
+    //       const returns = result.returnValues;
+    //       let index = 0;
+    //       for (let i = 0; i < this.userPageInfo.orderingLists.length; i++) {
+    //         if (this.userPageInfo.orderingLists[i].state === "2") {
+    //           index = i;
+    //           break;
+    //         }
+    //       }
 
-          if (
-            returns._roomIndex !==
-            this.userPageInfo.orderingLists[index].roomNumber
-          ) {
-            return;
-          }
+    //       if (
+    //         returns._roomIndex !==
+    //         this.userPageInfo.orderingLists[index].roomNumber
+    //       ) {
+    //         return;
+    //       }
 
-          this.userPageInfo.orderingLists[index].state = returns._state;
+    //       this.userPageInfo.orderingLists[index].state = returns._state;
 
-          // 시간 나타내는 구문
-          // vuex alert!
-          this.snackbar = true;
-          this.color = "info";
-          if (returns._state === "3") {
-            this.snackbarTitle = "주문방 승인 안내";
-            this.snackbarContent = `요청하신 주문방 ${returns._roomIndex}번이 현재 승인 되었습니다! 치킨을 픽업해주세요!`;
-          } else {
-            this.snackbarTitle = "주문방 거절 안내";
-            this.snackbarContent = `요청하신 주문방 ${returns._roomIndex}번이 사장님의 사정으로 거절 되었습니다! 다음에 다시 요청해주세요..!`;
-          }
-        } else {
-          console.log(rror);
-        }
-      };
-      storeInstance.watchIfApproved(callback);
-      storeInstance.watchIfRejected(callback);
-    }, //주문취소하기 버튼
+    //       // 시간 나타내는 구문
+    //       // vuex alert!
+    //       this.snackbar = true;
+    //       this.color = "info";
+    //       if (returns._state === "3") {
+    //         this.snackbarTitle = "주문방 승인 안내";
+    //         this.snackbarContent = `요청하신 주문방 ${returns._roomIndex}번이 현재 승인 되었습니다! 치킨을 픽업해주세요!`;
+    //       } else {
+    //         this.snackbarTitle = "주문방 거절 안내";
+    //         this.snackbarContent = `요청하신 주문방 ${returns._roomIndex}번이 사장님의 사정으로 거절 되었습니다! 다음에 다시 요청해주세요..!`;
+    //       }
+    //     } else {
+    //       console.log(rror);
+    //     }
+    //   };
+    //   storeInstance.watchIfApproved(callback);
+    //   storeInstance.watchIfRejected(callback);
+    // }, //주문취소하기 버튼
     /* ============= 치킨집 지도 마커 생성 함수 ============= */
     createMarker(markerData) {
       const imageSrc = storeImg,
@@ -757,10 +761,10 @@ export default {
         };
         this.markerDatas.push(markerData);
         this.createMarker(markerData);
-        this.snackbar = true;
-        this.color = "info";
-        this.snackbarTitle = "치킨집 등록 알림!";
-        this.snackbarContent = `"${this.lastRegisteredStoreName}" 치킨집이 등록되었습니다! 확인해보세요~`;
+        // this.snackbar = true;
+        // this.color = "info";
+        // this.snackbarTitle = "치킨집 등록 알림!";
+        // this.snackbarContent = `"${this.lastRegisteredStoreName}" 치킨집이 등록되었습니다! 확인해보세요~`;
         // this.map.setCenter(new kakao.maps.LatLng(latitude, longitude));
       } else {
         throw error;
