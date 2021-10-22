@@ -1,12 +1,5 @@
 import Vue from "vue";
 import Router from "vue-router";
-import Demo from "@/components/Demo";
-import Map from "@/components/Map";
-import OwnerPage1 from "@/components/OwnerPage1";
-import OwnerPage2 from "@/components/OwnerPage2";
-import UserMyPage from "@/components/UserMyPage";
-import OwnerMyPage from "@/components/OwnerMyPage";
-import Index from "@/components/Index";
 Vue.use(Router);
 
 export default new Router({
@@ -75,39 +68,24 @@ export default new Router({
       ]
     },
     {
-      path: "/demo",
-      name: "Demo",
-      component: Demo
-    },
-    {
       path: "/map",
       name: "Map",
-      component: Map
+      component: () => import("@/components/Map")
     },
     {
-      path: "/ownerPage2/:storeName",
-      name: "OwnerPage2",
-      component: OwnerPage2
-    },
-    {
-      path: "/ownerPage1/:storeName",
-      name: "OwnerPage1",
-      component: OwnerPage1
-    },
-    {
-      path: "/userMyPage",
-      name: "UserMyPage",
-      component: UserMyPage
+      path: "/ownerPage/:storeName",
+      name: "OwnerPage",
+      component: () => import("@/components/OwnerPage")
     },
     {
       path: "/ownerMyPage/:storeName",
       name: "OwnerMyPage",
-      component: OwnerMyPage
+      component: () => import("@/components/OwnerMyPage")
     },
     {
-      path: "/index",
-      name: "Index",
-      component: Index
+      path: "/demo",
+      name: "Demo",
+      component: () => import("@/components/Demo")
     }
   ]
 });

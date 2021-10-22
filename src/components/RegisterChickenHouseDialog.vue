@@ -1,10 +1,6 @@
 <template>
   <div>
-    <v-dialog
-      v-model="registerCH.dialog"
-      transition="dialog-bottom-transition"
-      width="80%"
-    >
+    <v-dialog v-model="registerCH.dialog" transition="dialog-bottom-transition" width="80%">
       <v-card class="overflow-y-hidden" max-height="600">
         <v-app-bar color="grey lighten-4 " dark elevation="1">
           <v-btn
@@ -12,13 +8,12 @@
             text
             color="green"
             @click="registerChickenHouse"
-            ><v-icon large>mdi-account-edit </v-icon>등록하기</v-btn
           >
+            <v-icon large>mdi-account-edit</v-icon>등록하기
+          </v-btn>
           <v-spacer></v-spacer>
 
-          <v-toolbar-title class="black--text text-h3 font-weight-bold"
-            >치킨집 등록</v-toolbar-title
-          >
+          <v-toolbar-title class="black--text text-h3 font-weight-bold">치킨집 등록</v-toolbar-title>
 
           <v-spacer></v-spacer>
 
@@ -28,8 +23,9 @@
             color="black"
             icon
             @click="registerCH.dialog = false"
-            ><v-icon large>mdi-backspace </v-icon></v-btn
           >
+            <v-icon large>mdi-backspace</v-icon>
+          </v-btn>
         </v-app-bar>
         <v-sheet class="overflow-y-auto" height="600">
           <v-row justify="center" align="center">
@@ -52,16 +48,14 @@
                 color="primary"
                 class="font-weight-bold text-h5"
                 small
-                >중복 확인</v-btn
-              >
+              >중복 확인</v-btn>
               <v-btn
                 v-else
                 @click="nameOk = false"
                 color="primary"
                 class="font-weight-bold text-h5"
                 small
-                >수정 하기</v-btn
-              >
+              >수정 하기</v-btn>
             </v-col>
           </v-row>
 
@@ -86,8 +80,7 @@
                 color="primary"
                 class="font-weight-bold text-h5"
                 small
-                >주소 찾기</v-btn
-              >
+              >주소 찾기</v-btn>
             </v-col>
           </v-row>
           <v-row justify="center" align="center">
@@ -109,33 +102,16 @@
               <h3>메뉴 등록</h3>
             </v-col>
             <v-col cols="12" sm="2" lg="1">
-              <v-text-field
-                v-model="chicken"
-                color="purple darken-2"
-                label="치킨 이름"
-                required
-              ></v-text-field>
+              <v-text-field v-model="chicken" color="purple darken-2" label="치킨 이름" required></v-text-field>
             </v-col>
             <v-col cols="12" sm="2" lg="1">
-              <v-text-field
-                v-model="price"
-                color="blue darken-2"
-                label="가격"
-                required
-              ></v-text-field>
+              <v-text-field v-model="price" color="blue darken-2" label="가격" required></v-text-field>
             </v-col>
             <v-col cols="12" sm="2" lg="1">
               <v-checkbox v-model="sunsal" label="순살?"></v-checkbox>
             </v-col>
             <v-col cols="12" sm="1" lg="1">
-              <v-btn
-                @click="addMenu"
-                class="mx-1"
-                fab
-                dark
-                small
-                color="indigo"
-              >
+              <v-btn @click="addMenu" class="mx-1" fab dark small color="indigo">
                 <v-icon large dark>mdi-plus</v-icon>
               </v-btn>
             </v-col>
@@ -143,14 +119,7 @@
           <v-row justify="center" align="center">
             <v-col cols="1"></v-col>
             <v-col cols="5">
-              <v-textarea
-                v-model="description"
-                label="메뉴 설명"
-                clearable
-                no-resize
-                outlined
-                rows="1"
-              ></v-textarea>
+              <v-textarea v-model="description" label="메뉴 설명" clearable no-resize outlined rows="1"></v-textarea>
             </v-col>
           </v-row>
           <v-row class="mb-10" justify="center" align="start">
@@ -160,13 +129,7 @@
             <v-col cols="12" sm="7" lg="6">
               <v-row>
                 <template v-for="(menu, idx) in menus">
-                  <v-col
-                    v-if="menu.appended"
-                    :key="idx"
-                    cols="12"
-                    sm="6"
-                    lg="6"
-                  >
+                  <v-col v-if="menu.appended" :key="idx" cols="12" sm="6" lg="6">
                     <base-material-menu-card
                       color="#FF8C00"
                       icon="mdi-food-drumstick"
@@ -198,7 +161,8 @@
         center: true
       }"
     >
-      <span class="font-weight-bold">{{ color }}</span> — {{ content }}
+      <span class="font-weight-bold text-h4">{{ color }}</span>
+      <span class="text-h4">— {{ content }}</span>
     </base-material-snackbar>
   </div>
 </template>
@@ -221,24 +185,24 @@ export default {
       menus: [],
       address: "",
       map: null,
-      required: value => !!value || "Required.",
+      required: (value) => !!value || "Required.",
       nameOk: false,
       alert: false,
       content: "",
       color: "",
-      collapseOnScroll: true
+      collapseOnScroll: true,
     };
   },
   computed: {},
   props: {
-    registerCH: Object
+    registerCH: Object,
   },
   methods: {
     async registerChickenHouse() {
       console.log("=== Register Chicken House ===");
       if (!this.nameOk) {
         this.alert = true;
-        this.color = "warning";
+        this.color = "error";
         this.content = "치킨집 이름 중복을 확인해주세요.";
         return;
       }
@@ -248,20 +212,20 @@ export default {
         this.longitude == null
       ) {
         this.alert = true;
-        this.color = "warning";
+        this.color = "error";
         this.content = "양식을 올바르게 작성하였는지 다시 확인해주세요.";
         return;
       }
       // make lists of chicke and price
       const chickens = this.menus
-        .filter(menu => menu.appended)
-        .map(menu => menu.chicken);
+        .filter((menu) => menu.appended)
+        .map((menu) => menu.chicken);
       const prices = this.menus
-        .filter(menu => menu.appended)
-        .map(menu => menu.price);
+        .filter((menu) => menu.appended)
+        .map((menu) => menu.price);
       const isSunsals = this.menus
-        .filter(menu => menu.appended)
-        .map(menu => (menu.sunsal ? 2 : 1));
+        .filter((menu) => menu.appended)
+        .map((menu) => (menu.sunsal ? 2 : 1));
 
       console.log(`---- Chicken Admin Set Menu: ${chickens}, ${prices} ----`);
       try {
@@ -276,7 +240,7 @@ export default {
         console.log(`---- Register Succeed : ${transaction}`);
         this.$router.push({
           name: "OwnerPage2",
-          params: { storeName: this.storeName }
+          params: { storeName: this.storeName },
         });
       } catch (e) {
         this.error = e.message;
@@ -315,7 +279,7 @@ export default {
         price: Number(this.price),
         appended: true,
         sunsal: this.sunsal,
-        description: this.description
+        description: this.description,
       });
       this.chicken = "";
       this.description = "";
@@ -341,7 +305,7 @@ export default {
         let mapContainer = document.getElementById("map-chicken-house"); // 지도를 표시할 div
         let mapOption = {
           center: coords,
-          level: 5
+          level: 5,
         };
 
         //지도를 미리 생성
@@ -351,7 +315,7 @@ export default {
         //마커를 미리 생성
         let marker = new kakao.maps.Marker({
           position: coords,
-          map: this.map
+          map: this.map,
         });
         mapContainer.style.display = "block";
         // 해당 주소에 대한 좌표를 받아서
@@ -367,12 +331,12 @@ export default {
       //   let _address = this.address;
 
       new daum.Postcode({
-        oncomplete: this.setAddress
+        oncomplete: this.setAddress,
       }).open();
       //   console.log(_address);
     },
     checkNameRedundancy() {
-      this.AdminInstance.findChickenHouse(this.storeName).then(result => {
+      this.AdminInstance.findChickenHouse(this.storeName).then((result) => {
         console.log(result);
         if (result == 0) {
           this.alert = true;
@@ -381,20 +345,20 @@ export default {
           this.nameOk = true;
         } else {
           this.alert = true;
-          this.color = "warning";
+          this.color = "error";
           this.content = "이미 사용되는 이름입니다. 다시설정해주세요";
           this.storeName = "";
           this.nameOk = false;
         }
       });
-    }
+    },
   },
   mounted() {
     const postCodeScript = document.createElement("script");
     postCodeScript.src =
       "//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js";
     document.head.appendChild(postCodeScript);
-  }
+  },
 };
 </script>
 

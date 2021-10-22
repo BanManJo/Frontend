@@ -199,7 +199,6 @@ export default {
         return "00:00";
       }
       if (this.timeout) {
-        this.snackbar = true;
         this.$store.commit("STOP_TIMER");
         return "00:00";
       } else {

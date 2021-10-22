@@ -118,7 +118,7 @@ export default new Vuex.Store({
           ALERT(
             "방 매칭 알림!",
             "방이 매칭 되었습니다! 주문 내역을 확인해주세요~",
-            "info"
+            "success"
           );
         }
       } else if (data.key === "ROOM-APPROVED" || data.key === "ROOM-DENIED") {
@@ -134,13 +134,13 @@ export default new Vuex.Store({
             ALERT(
               "주문방 승인 안내",
               `요청하신 주문방 ${data.roomNumber}번이 현재 승인 되었습니다! 치킨을 픽업해주세요!`,
-              "info"
+              "success"
             );
           } else {
             ALERT(
               "주문방 거절 안내",
               `요청하신 주문방 ${data.roomNumber}번이 사장님의 사정으로 거절 되었습니다! 다음에 다시 요청해주세요..!`,
-              "info"
+              "error"
             );
           }
           // alert!!

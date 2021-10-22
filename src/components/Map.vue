@@ -65,9 +65,8 @@
         right: true
       }"
     >
-      <span class="font-weight-bold">{{ $store.state.title }}</span>
-      —
-      {{ $store.state.content }}
+      <span class="font-weight-bold text-h4">{{ $store.state.title }}</span>
+      <span class="text-h4">— {{ $store.state.content }}</span>
     </base-material-snackbar>
   </v-app>
 </template>
@@ -172,17 +171,28 @@ export default {
       ChickenHouseInstance.watchIfOn(async (error, result) => {
         if (!error) {
           console.log(result);
+          let chickenStore = result.returnValues._storeName;
           if (result.returnValues.onOff == 1) {
-            let chickenStore = result.returnValues._storeName;
             this.snackbarContent = chickenStore + "  영업 개시 ~";
             this.snackbarTitle = null;
             this.color = "indigo";
             this.snackbar = true;
-          } else if (result.returnValues.onOff == 2) {
-            this.chickenStore = result.returnValues._storeName;
-            this.snackbars = true;
-            return;
           }
+          //  else if (result.returnValues.onOff == 2) {
+          //   this.chickenStore = result.returnValues._storeName;
+          //   this.snackbars = true;
+          //   return;
+          // }
+          // marker window를 찾자
+          this.markerDatas.forEach((markerData, idx) => {
+            if (markerData.storeName === chickenStore) {
+              markerData.onOff = result.returnValues.onOff;
+              this.createMarker(markerData);
+              this.infowindows[idx].close();
+              this.infowindows[idx] = this.infowindows.pop();
+              return;
+            }
+          });
         }
       });
     },
@@ -457,12 +467,13 @@ export default {
           // 시간 나타내는 구문
           // vuex alert!
           this.snackbar = true;
-          this.color = "info";
           if (returns._state === "3") {
-            this.snackbarTitle = "주문방 승인 안내";
+            this.color = "success";
+            this.snackbarTitle = "주문방 승인";
             this.snackbarContent = `요청하신 주문방 ${returns._roomIndex}번이 현재 승인 되었습니다! 치킨을 픽업해주세요!`;
           } else {
-            this.snackbarTitle = "주문방 거절 안내";
+            this.color = "error";
+            this.snackbarTitle = "주문방 거절";
             this.snackbarContent = `요청하신 주문방 ${returns._roomIndex}번이 사장님의 사정으로 거절 되었습니다! 다음에 다시 요청해주세요..!`;
           }
         } else {
@@ -475,7 +486,7 @@ export default {
     /* ============= 치킨집 지도 마커 생성 함수 ============= */
     createMarker(markerData) {
       const imageSrc = storeImg,
-        imageSize = new kakao.maps.Size(64, 64),
+        imageSize = new kakao.maps.Size(96, 96),
         imageOption = { offset: new kakao.maps.Point(27, 50) };
 
       const markerImage = new kakao.maps.MarkerImage(
@@ -679,7 +690,7 @@ export default {
             position.coords.longitude
           );
 
-          this.map.setLevel(3);
+          // this.map.setLevel(3);
 
           this.userMarker.setVisible(true);
           this.userMarker.setPosition(_position);
@@ -723,11 +734,6 @@ export default {
         };
         this.markerDatas.push(markerData);
         this.createMarker(markerData);
-        // this.snackbar = true;
-        // this.color = "info";
-        // this.snackbarTitle = "치킨집 등록 알림!";
-        // this.snackbarContent = `"${this.lastRegisteredStoreName}" 치킨집이 등록되었습니다! 확인해보세요~`;
-        // this.map.setCenter(new kakao.maps.LatLng(latitude, longitude));
       } else {
         throw error;
       }
@@ -763,10 +769,10 @@ export default {
     timeout: function (val) {
       if (val) {
         this.$store.commit("SNACKBAR_ALERT", {
-          title: "매칭하는 인원이 없습니다.",
+          title: "매칭 실패",
           content:
-            "방의 만료시간이 지나 매칭종료합니다.주문취소버튼을 눌러 환불 받아주세요.",
-          type: "warning",
+            "방의 만료시간이 지나 매칭종료합니다. 주문취소 버튼을 눌러 환불 받아주세요.",
+          type: "error",
         });
         this.$store.commit("STOP_TIMER");
         // this.snackbar = true;

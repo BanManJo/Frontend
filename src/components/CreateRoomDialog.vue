@@ -86,7 +86,7 @@
       }"
     >
       <span class="font-weight-bold">{{ color }}</span>
-      — {{ content }}
+      <span class="text-h4">— {{ content }}</span>
     </base-material-snackbar>
   </div>
 </template>
@@ -184,7 +184,7 @@ export default {
               roomNumber: roomNumber,
             });
             this.$store.commit("SNACKBAR_ALERT", {
-              title: "방 생성 알림",
+              title: "방 생성",
               content: `${_storeName} 에 ${roomNumber}번 방이 생성되었습니다.`,
               type: "success",
             });
