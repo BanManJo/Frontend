@@ -44,19 +44,19 @@
     <create-room-dialog :room="room"></create-room-dialog>
     <register-chicken-house-dialog :registerCH="registerCH"></register-chicken-house-dialog>
     <user-my-page :userPageInfo="userPageInfo"></user-my-page>
+
     <base-material-snackbar
       v-model="snackbar"
       :type="color"
       v-bind="{
         bottom: true,
         center: true,
+        timeout: 5000
       }"
     >
-      <span class="font-weight-bold">{{ snackbarTitle }}</span>
-      —
-      {{ snackbarContent }}
+      <span class="font-weight-bold text-h4">{{ snackbarTitle }}</span>
+      <span class="font-weight-bold text-h4">{{ snackbarContent }}</span>
     </base-material-snackbar>
-
     <base-material-snackbar
       v-model="$store.state.snackbar"
       :type="$store.state.type"
@@ -68,18 +68,6 @@
       <span class="font-weight-bold">{{ $store.state.title }}</span>
       —
       {{ $store.state.content }}
-    </base-material-snackbar>
-
-    <base-material-snackbar
-      v-model="snackbar"
-      color="indigo"
-      v-bind="{
-        bottom: true,
-        center: true,
-        timeout: 5000
-      }"
-    >
-      <span class="text-h4 font-weight-medium text-right">{{ chickenStore }} 영업 개시 ~</span>
     </base-material-snackbar>
   </v-app>
 </template>
@@ -151,7 +139,6 @@ export default {
       },
       showWhereUserIs: true,
       userMarker: null,
-      snackbarColor: "",
       chickenStore: "교촌치킨 가산점",
       snackbar: false,
       color: "info",
@@ -178,19 +165,22 @@ export default {
       setDrawer: "SET_DRAWER",
     }),
     test() {
-      this.snackbar = "true";
+      console.log("test");
+      this.snackbar = true;
     },
     async onOffEvent(ChickenHouseInstance) {
       ChickenHouseInstance.watchIfOn(async (error, result) => {
         if (!error) {
           console.log(result);
           if (result.returnValues.onOff == 1) {
-            this.chickenStore = result.returnValues._storeName;
-
+            let chickenStore = result.returnValues._storeName;
+            this.snackbarContent = chickenStore + "  영업 개시 ~";
+            this.snackbarTitle = null;
+            this.color = "indigo";
             this.snackbar = true;
           } else if (result.returnValues.onOff == 2) {
             this.chickenStore = result.returnValues._storeName;
-            this.snackbar = true;
+            this.snackbars = true;
             return;
           }
         }
@@ -733,10 +723,10 @@ export default {
         };
         this.markerDatas.push(markerData);
         this.createMarker(markerData);
-        this.snackbar = true;
-        this.color = "info";
-        this.snackbarTitle = "치킨집 등록 알림!";
-        this.snackbarContent = `"${this.lastRegisteredStoreName}" 치킨집이 등록되었습니다! 확인해보세요~`;
+        // this.snackbar = true;
+        // this.color = "info";
+        // this.snackbarTitle = "치킨집 등록 알림!";
+        // this.snackbarContent = `"${this.lastRegisteredStoreName}" 치킨집이 등록되었습니다! 확인해보세요~`;
         // this.map.setCenter(new kakao.maps.LatLng(latitude, longitude));
       } else {
         throw error;
