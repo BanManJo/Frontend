@@ -106,11 +106,11 @@ export default {
           if (storeName) {
             console.log(storeName);
             this.$router.push({
-              name: "OwnerPage2",
+              name: "OwnerPage",
               params: { storeName: storeName },
             });
           } else {
-            if (route.name === "OwnerPage2") {
+            if (route.name === "OwnerPage") {
               this.$router.push({ name: "Map" });
             } else {
               this.$router.go();

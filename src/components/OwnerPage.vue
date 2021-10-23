@@ -6,7 +6,7 @@
 
       <v-spacer></v-spacer>
 
-      <router-link :to="`/OwnerPage2/${storeName}`">
+      <router-link :to="`/OwnerPage/${storeName}`">
         <v-btn class="ml-2 text-h4" min-width="0" text>
           주문 관리
           <v-icon>mdi-account-edit</v-icon>
@@ -563,7 +563,7 @@ export default {
     // }
   },
   created() {
-    console.log(`=== Created OwnerPage2 ${this.storeName} ===`);
+    console.log(`=== Created OwnerPage ${this.storeName} ===`);
     this.getOnOff();
     this.getOrderRooms();
     this.getOrderedLists();

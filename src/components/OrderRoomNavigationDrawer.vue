@@ -1,11 +1,6 @@
 <template>
   <v-container>
-    <v-navigation-drawer
-      style="overflow: hidden"
-      v-model="drawer"
-      absolute
-      width="400"
-    >
+    <v-navigation-drawer style="overflow: hidden" v-model="drawer" absolute width="400">
       <v-list align="center" dense app>
         <v-row class="mt-1" align="center" justify="center">
           <v-btn
@@ -21,12 +16,7 @@
           >
             <v-icon>mdi-arrow-left-thick</v-icon>
           </v-btn>
-          <v-text-field
-            :label="$t('search')"
-            color="secondary"
-            hide-details
-            style="max-width: 70%"
-          >
+          <v-text-field :label="$t('search')" color="secondary" hide-details style="max-width: 70%">
             <template v-if="$vuetify.breakpoint.mdAndUp" v-slot:append-outer>
               <v-btn class="mt-n2" elevation="1" color="orange" fab x-small>
                 <v-icon>mdi-magnify</v-icon>
@@ -113,15 +103,15 @@ export default {
       //   drawer: this.navDrawer.drawer,
       items: [
         { title: "Home", icon: "dashboard" },
-        { title: "About", icon: "question_answer" }
+        { title: "About", icon: "question_answer" },
       ],
       right: null,
-      alertWhenStoreOff: false
+      alertWhenStoreOff: false,
     };
   },
   props: {
     navDrawer: Object,
-    createOrderRoom: Function
+    createOrderRoom: Function,
     // orderRooms: Array,
     // drawer: Boolean,
   },
@@ -130,7 +120,7 @@ export default {
       return this.navDrawer.orderRooms;
     },
     ownerPage() {
-      return `/ownerPage2/${this.navDrawer.storeName}`;
+      return `/ownerPage/${this.navDrawer.storeName}`;
     },
     drawer: {
       get() {
@@ -138,8 +128,8 @@ export default {
       },
       set(val) {
         this.$store.commit("SET_DRAWER", val);
-      }
-    }
+      },
+    },
   },
   methods: {
     async matchRoom(storeName, roomNumber, price) {
@@ -147,9 +137,8 @@ export default {
 
       // find Chicken House address and get instance
       const CHAddress = await this.AdminInstance.findChickenHouse(storeName);
-      const ChickenHouseInstance = contractInstance.getChickenHouseInstance(
-        CHAddress
-      );
+      const ChickenHouseInstance =
+        contractInstance.getChickenHouseInstance(CHAddress);
       const storeState = await ChickenHouseInstance.getChickenHouse();
       console.log(storeState);
       if (storeState._onOff == 0) {
@@ -162,17 +151,18 @@ export default {
       await ChickenHouseInstance.matchRoom(
         roomNumber,
         ethUserPay.toString()
-      ).then(result => {
+      ).then((result) => {
         console.log(result);
         // this.$store.commit("STOP_TIMER");
         // socket!
         const message = {
           key: "ROOM-MATCHED",
           storeName: storeName,
-          roomNumber: roomNumber
+          roomNumber: roomNumber,
         };
         this.$socket.send(JSON.stringify(message));
         // alert! Your room Matched!
+        this.$store.commit("STOP_TIMER");
       });
 
       // storeIdx (if needed)
@@ -183,8 +173,8 @@ export default {
       this.navDrawer.orderRooms = [];
     },
     ...mapMutations({
-      setDrawer: "SET_DRAWER"
-    })
+      setDrawer: "SET_DRAWER",
+    }),
   },
   mounted() {
     console.log("=== Mounted Navigation Drawer ===");
@@ -192,7 +182,7 @@ export default {
   },
   updated() {
     console.log("=== Updated Navigation Drawer ===");
-  }
+  },
 };
 </script>
 

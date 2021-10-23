@@ -466,16 +466,16 @@ export default {
 
           // 시간 나타내는 구문
           // vuex alert!
-          this.snackbar = true;
-          if (returns._state === "3") {
-            this.color = "success";
-            this.snackbarTitle = "주문방 승인";
-            this.snackbarContent = `요청하신 주문방 ${returns._roomIndex}번이 현재 승인 되었습니다! 치킨을 픽업해주세요!`;
-          } else {
-            this.color = "error";
-            this.snackbarTitle = "주문방 거절";
-            this.snackbarContent = `요청하신 주문방 ${returns._roomIndex}번이 사장님의 사정으로 거절 되었습니다! 다음에 다시 요청해주세요..!`;
-          }
+          // this.snackbar = true;
+          // if (returns._state === "3") {
+          //   this.color = "success";
+          //   this.snackbarTitle = "주문방 승인";
+          //   this.snackbarContent = `요청하신 주문방 ${returns._roomIndex}번이 현재 승인 되었습니다! 치킨을 픽업해주세요!`;
+          // } else {
+          //   this.color = "error";
+          //   this.snackbarTitle = "주문방 거절";
+          //   this.snackbarContent = `요청하신 주문방 ${returns._roomIndex}번이 사장님의 사정으로 거절 되었습니다! 다음에 다시 요청해주세요..!`;
+          // }
         } else {
           console.log(error);
         }
@@ -692,9 +692,9 @@ export default {
 
           // this.map.setLevel(3);
 
-          this.userMarker.setVisible(true);
           this.userMarker.setPosition(_position);
           this.map.panTo(_position);
+          this.userMarker.setVisible(true);
           console.log("---- find where user is ----");
         }, console.log);
       } else {
@@ -751,7 +751,7 @@ export default {
         if (storeName) {
           console.log(storeName);
           this.$router.push({
-            name: "OwnerPage2",
+            name: "OwnerPage",
             params: { storeName: storeName },
           });
         }

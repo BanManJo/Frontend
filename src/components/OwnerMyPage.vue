@@ -1,17 +1,17 @@
 <template>
-  <v-app
-    style="
-    background: #f5f5f5;"
-  >
+  <v-app style="
+    background: #f5f5f5;">
     <!-- <child-component v-on:update="getResiterMenu"></child-component> -->
     <v-app-bar id="app-bar" absolute app color="transparent" flat height="75">
-      <v-toolbar-title class="text-h3 font-weight-bold">{{
+      <v-toolbar-title class="text-h3 font-weight-bold">
+        {{
         storeName
-      }}</v-toolbar-title>
+        }}
+      </v-toolbar-title>
 
       <v-spacer />
 
-      <router-link :to="`/OwnerPage2/${storeName}`">
+      <router-link :to="`/OwnerPage/${storeName}`">
         <v-btn class="ml-2 text-h4" min-width="0" text>
           주문 관리
           <v-icon>mdi-account-edit</v-icon>
@@ -35,13 +35,9 @@
         <v-col>
           <v-card flat outlined>
             <v-toolbar flat>
-              <v-toolbar-title class="dark--text"
-                >가게 이름 : {{ storeName }}</v-toolbar-title
-              >
+              <v-toolbar-title class="dark--text">가게 이름 : {{ storeName }}</v-toolbar-title>
               <v-spacer></v-spacer>
-              <v-btn class="text-h4" color="primary">
-                수정하기
-              </v-btn>
+              <v-btn class="text-h4" color="primary">수정하기</v-btn>
             </v-toolbar>
           </v-card>
         </v-col>
@@ -50,13 +46,9 @@
         <v-col>
           <v-card flat outlined>
             <v-toolbar flat>
-              <v-toolbar-title class="dark--text"
-                >주소 : {{ location[0] }}</v-toolbar-title
-              >
+              <v-toolbar-title class="dark--text">주소 : {{ location[0] }}</v-toolbar-title>
               <v-spacer></v-spacer>
-              <v-btn class="text-h4" color="primary">
-                수정하기
-              </v-btn>
+              <v-btn class="text-h4" color="primary">수정하기</v-btn>
             </v-toolbar>
           </v-card>
         </v-col>
@@ -73,16 +65,10 @@
       >
         <!-- 메뉴 정보 수정 부분 -->
         <v-row row wrap align="center">
-          <v-col
-            sm="8"
-            md="6"
-            lg="4"
-            v-for="infor in information"
-            :key="infor.name"
-          >
+          <v-col sm="8" md="6" lg="4" v-for="infor in information" :key="infor.name">
             <!-- <v-responsive class="pt-4">
               Menu
-            </v-responsive> -->
+            </v-responsive>-->
             <v-card class="text-center" flat outlined>
               <v-card-text>
                 <!-- <div class="text-h3">{{ information.Name }}</div> -->
@@ -93,12 +79,9 @@
                 <div class="text-h4">가격 : {{ infor.price }} ether</div>
               </v-card-text>
               <v-card-actions>
-                <v-btn
-                  class="ma-2 text-h4"
-                  color="primary"
-                  @click="open(infor.menuIndex)"
-                  ><span>수정하기</span></v-btn
-                >
+                <v-btn class="ma-2 text-h4" color="primary" @click="open(infor.menuIndex)">
+                  <span>수정하기</span>
+                </v-btn>
                 <v-spacer></v-spacer>
                 <v-btn
                   class="ma-2 text-h4"
@@ -106,8 +89,7 @@
                   :id="infor.menuIndex"
                   @click="openDeleteAlert"
                   v-text="'삭제하기'"
-                >
-                </v-btn>
+                ></v-btn>
               </v-card-actions>
             </v-card>
           </v-col>
@@ -126,11 +108,7 @@
     <!-- modal  -->
     <owner-dialog :owner="owner" @reload="getResiterMenu"></owner-dialog>
     <menu-dialog :owner="owner" @reload="getResiterMenu"></menu-dialog>
-    <alert-dialog
-      :content="content"
-      :alert="alert"
-      v-on:confirm="deleteMenu"
-    ></alert-dialog>
+    <alert-dialog :content="content" :alert="alert" v-on:confirm="deleteMenu"></alert-dialog>
 
     <!-- <v-dialog v-model="deleteAlert" max-width="300">
       <v-card>
@@ -154,7 +132,7 @@
           </v-btn>
         </v-card-text>
       </v-card>
-    </v-dialog> -->
+    </v-dialog>-->
   </v-app>
 </template>
 
@@ -168,7 +146,7 @@ export default {
   components: {
     OwnerDialog: () => import("./OwnerDialog"),
     MenuDialog: () => import("./MenuDialog"),
-    AlertDialog: () => import("./AlertDialog")
+    AlertDialog: () => import("./AlertDialog"),
     // "child-component": childComponent
   },
 
@@ -182,22 +160,22 @@ export default {
         storeName: this.$route.params.storeName,
         menus: this.information,
         chosenIndex: "",
-        menuModal: false
+        menuModal: false,
       },
       alert: {
-        modal: false
+        modal: false,
       },
       content: "",
       location: {},
 
       information: [],
-      index: 0
+      index: 0,
     };
   },
   computed: {
     storeName() {
       return this.$route.params.storeName;
-    }
+    },
   },
   methods: {
     openDeleteAlert(event) {
@@ -231,9 +209,8 @@ export default {
       const CHAddress = await this.AdminInstance.findChickenHouse(
         this.storeName
       );
-      const ChickenHouseInstance = contractInstance.getChickenHouseInstance(
-        CHAddress
-      );
+      const ChickenHouseInstance =
+        contractInstance.getChickenHouseInstance(CHAddress);
 
       const result = await ChickenHouseInstance.deleteMenu(this.index);
 
@@ -242,12 +219,12 @@ export default {
     },
 
     testInstance() {
-      this.AdminInstance.getStoreCount().then(count => {
+      this.AdminInstance.getStoreCount().then((count) => {
         // resolve
         alert(`Store Counts : ${count}`);
       });
     },
-    getMenus: function() {
+    getMenus: function () {
       // 컨트랙트에서 메뉴 데이터 가져오기
       // getStoreMenu
       // data = await this.AdminInstance.getStoreMenu(owner.storeName)
@@ -267,9 +244,8 @@ export default {
       const CHAddress = await this.AdminInstance.findChickenHouse(
         this.storeName
       );
-      const ChickenHouseInstance = contractInstance.getChickenHouseInstance(
-        CHAddress
-      );
+      const ChickenHouseInstance =
+        contractInstance.getChickenHouseInstance(CHAddress);
       const result = await ChickenHouseInstance.getChickenHouse();
       console.log(result);
       console.log(result._latitude);
@@ -300,13 +276,12 @@ export default {
       const CHAddress = await this.AdminInstance.findChickenHouse(
         this.storeName
       );
-      const ChickenHouseInstance = contractInstance.getChickenHouseInstance(
-        CHAddress
-      );
+      const ChickenHouseInstance =
+        contractInstance.getChickenHouseInstance(CHAddress);
 
       const roomCount = await ChickenHouseInstance.getRoomsCount();
 
-      ChickenHouseInstance.getStoreMenu().then(result => {
+      ChickenHouseInstance.getStoreMenu().then((result) => {
         console.log("---- get store menus from ETH ----");
         console.log(result);
         console.log(result[0].chickenName);
@@ -322,21 +297,21 @@ export default {
               chickenName: result[i].chickenName,
               kind: "뼈",
               price: result[i].price,
-              menuIndex: result[i].menuIndex
+              menuIndex: result[i].menuIndex,
             });
           } else if (result[i].menuState == 2) {
             this.information.push({
               chickenName: result[i].chickenName,
               kind: "순살",
               price: result[i].price,
-              menuIndex: result[i].menuIndex
+              menuIndex: result[i].menuIndex,
             });
           }
         }
       });
 
       console.log("=== Done Show OrderRoom (state = 2) ===");
-    }
+    },
   },
 
   created() {
@@ -358,7 +333,7 @@ export default {
         "http://dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=f16dcaffdef9152c39799852d826d9c4&libraries=services";
       document.head.appendChild(script);
     }
-  }
+  },
 
   // mounted() {
   //   getMenus();

@@ -239,7 +239,7 @@ export default {
         );
         console.log(`---- Register Succeed : ${transaction}`);
         this.$router.push({
-          name: "OwnerPage2",
+          name: "OwnerPage",
           params: { storeName: this.storeName },
         });
       } catch (e) {
