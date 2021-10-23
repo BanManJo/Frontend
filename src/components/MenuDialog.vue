@@ -4,26 +4,12 @@
     <v-card>
       <v-card-title class="headline">메뉴 추가</v-card-title>
       <v-card-text style="text-align: center">
-        <v-progress-circular
-          indeterminate
-          color="red"
-          v-show="owner.isLoading"
-        ></v-progress-circular>
+        <v-progress-circular indeterminate color="red" v-show="owner.isLoading"></v-progress-circular>
         <v-col style="height: 100%; padding-bottom: 5px" xs12 sm12 md12>
-          <v-text-field
-            v-model="menu"
-            placeholder="예) 황올 양념 치킨"
-            label="메뉴"
-            persistent-hint
-          ></v-text-field>
+          <v-text-field v-model="menu" placeholder="예) 황올 양념 치킨" label="메뉴" persistent-hint></v-text-field>
           <v-checkbox v-model="sunsal" label="순살?"></v-checkbox>
 
-          <v-text-field
-            v-model="price"
-            placeholder="예) 2"
-            label="가격 (ether)"
-            persistent-hint
-          ></v-text-field>
+          <v-text-field v-model="price" placeholder="예) 2" label="가격 (ETH)" persistent-hint></v-text-field>
         </v-col>
         <v-col style="height: 100%; padding-bottom: 5px" xs12 sm12 md12>
           <v-btn @click="addOneMenu" color="indigo" class="text-h4">확인</v-btn>
@@ -52,7 +38,7 @@ export default {
       sunsal: false,
 
       AdminInstance: contractInstance.getAdminInstance(), // Admin Instance data,
-      succeed: false
+      succeed: false,
       // not loaded on map page
       // isLoading: false,
     };
@@ -75,9 +61,8 @@ export default {
       const CHAddress = await this.AdminInstance.findChickenHouse(
         this.owner.storeName
       );
-      const ChickenHouseInstance = contractInstance.getChickenHouseInstance(
-        CHAddress
-      );
+      const ChickenHouseInstance =
+        contractInstance.getChickenHouseInstance(CHAddress);
 
       if (this.sunsal == true) {
         await ChickenHouseInstance.addOneMenu(this.menu, this.price, 2);
@@ -91,11 +76,11 @@ export default {
       // var con_test = confirm("등록하신 메뉴를 수정하시겠습니까?");
       // console.log(menuInfo);
       // this.$emit("menuChanged", menuInfo);
-    }
+    },
     // sendEvent: function() {
     //   this.$emit("update");
     // }
-  }
+  },
 };
 </script>
 

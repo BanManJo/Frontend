@@ -76,7 +76,7 @@
                   메뉴 : {{ infor.chickenName }} /
                   {{ infor.kind }}
                 </div>
-                <div class="text-h4">가격 : {{ infor.price }} ether</div>
+                <div class="text-h4">가격 : {{ infor.price }} ETH</div>
               </v-card-text>
               <v-card-actions>
                 <v-btn class="ma-2 text-h4" color="primary" @click="open(infor.menuIndex)">

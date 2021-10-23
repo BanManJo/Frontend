@@ -81,7 +81,7 @@
                 <v-spacer></v-spacer>-->
                 <span class="blackText">
                   가격:
-                  {{ currentOrder.price }} ether
+                  {{ currentOrder.price }} ETH
                 </span>
                 <br />
                 <!-- <v-spacer></v-spacer>

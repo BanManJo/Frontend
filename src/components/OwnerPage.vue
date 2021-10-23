@@ -72,7 +72,7 @@
                 <div class="text-h3">방번호 : {{ orderRoom.roomNumber }}</div>
                 <br />
                 <div class="text-h4">메뉴 : {{ orderRoom.menu }} / {{ orderRoom.kind }}</div>
-                <div class="text-h4">가격 : {{ orderRoom.price }} ether</div>
+                <div class="text-h4">가격 : {{ orderRoom.price }} ETH</div>
               </v-card-text>
               <v-card-actions>
                 <v-btn

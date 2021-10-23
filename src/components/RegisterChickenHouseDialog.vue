@@ -105,7 +105,7 @@
               <v-text-field v-model="chicken" color="purple darken-2" label="치킨 이름" required></v-text-field>
             </v-col>
             <v-col cols="12" sm="2" lg="1">
-              <v-text-field v-model="price" color="blue darken-2" label="가격" required></v-text-field>
+              <v-text-field v-model="price" color="blue darken-2" label="가격 (ETH)" required></v-text-field>
             </v-col>
             <v-col cols="12" sm="2" lg="1">
               <v-checkbox v-model="sunsal" label="순살?"></v-checkbox>
