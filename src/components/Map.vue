@@ -605,6 +605,30 @@ export default {
           console.log(
             `---- get Each Chicken House Infos by idx, Counts: ${val} ----`
           );
+          this.markerDatas.push({
+            latitude: 37.4873567,
+            longitude: 126.9002596,
+            removed: true,
+            storeName: "BHC 가산점",
+            orderCount: 0,
+            onOff: 1,
+          });
+          this.markerDatas.push({
+            latitude: 37.4837693,
+            longitude: 126.8613777,
+            removed: true,
+            storeName: "BBQ 가산점",
+            orderCount: 0,
+            onOff: 1,
+          });
+          this.markerDatas.push({
+            latitude: 37.4678688,
+            longitude: 126.8886669,
+            removed: true,
+            storeName: "교촌 가산점",
+            orderCount: 0,
+            onOff: 1,
+          });
           for (let idx = 0; idx < val; idx++) {
             // idx를 통해 chicken House를 바로 가져옴..
             const CHAddress = await this.AdminInstance.findChickenHouseByIndex(
@@ -646,57 +670,51 @@ export default {
 
       // 어떤 컨테이너 뷰에 맵을 띄울 것인가..
       const container = document.getElementById("map");
-      navigator.geolocation.getCurrentPosition((position) => {
-        // const imageSrc = storeImg,
-        //   imageSize = new kakao.maps.Size(24, 24),
-        //   imageOption = { offset: new kakao.maps.Point(0, 0) };
+      // navigator.geolocation.getCurrentPosition((position) => {
+      // const imageSrc = storeImg,
+      //   imageSize = new kakao.maps.Size(24, 24),
+      //   imageOption = { offset: new kakao.maps.Point(0, 0) };
 
-        // const markerImage = new kakao.maps.MarkerImage(
-        //     imageSrc,
-        //     imageSize,
-        //     imageOption
-        //   ),
-        const _position = new kakao.maps.LatLng(
-          position.coords.latitude,
-          position.coords.longitude
-        );
+      // const markerImage = new kakao.maps.MarkerImage(
+      //     imageSrc,
+      //     imageSize,
+      //     imageOption
+      //   ),
+      const _position = new kakao.maps.LatLng(37.4773606, 126.8869551);
 
-        // 유저 현위치 마커를 생성합니다
-        this.userMarker = new kakao.maps.Marker({
-          position: _position,
-          // image: markerImage,
-        });
+      // 유저 현위치 마커를 생성합니다
+      this.userMarker = new kakao.maps.Marker({
+        position: _position,
+        // image: markerImage,
+      });
 
-        // 지도 객체 초기화
-        const options = {
-          center: _position,
-          level: 3,
-        };
+      // 지도 객체 초기화
+      const options = {
+        center: _position,
+        level: 5,
+      };
 
-        this.map = new kakao.maps.Map(container, options);
+      this.map = new kakao.maps.Map(container, options);
 
-        this.userMarker.setMap(this.map);
-        console.log("---- call create marker func ----");
-        this.initMarkers();
-      }, console.log);
+      // this.userMarker.setMap(this.map);
+      console.log("---- call create marker func ----");
+      this.initMarkers();
+      // }, console.log);
       console.log("=== Done Init Map ===");
     },
     setCurrentPos() {
       this.showWhereUserIs = !this.showWhereUserIs;
       if (this.showWhereUserIs) {
-        navigator.geolocation.getCurrentPosition((position) => {
-          const _position = new kakao.maps.LatLng(
-            position.coords.latitude,
-            position.coords.longitude
-          );
+        // navigator.geolocation.getCurrentPosition((position) => {
+        const _position = new kakao.maps.LatLng(37.4773606, 126.8869551);
 
-          // this.map.setLevel(3);
+        // this.map.setLevel(3);
 
-          this.userMarker.setPosition(_position);
-          this.map.panTo(_position);
-          this.userMarker.setVisible(true);
-          console.log("---- find where user is ----");
-        }, console.log);
+        this.userMarker.setPosition(_position);
+        this.map.panTo(_position);
+        this.userMarker.setVisible(true);
+        console.log("---- find where user is ----");
+        // }, console.log);
       } else {
         this.userMarker.setVisible(false);
       }
