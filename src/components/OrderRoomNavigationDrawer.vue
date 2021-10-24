@@ -163,6 +163,10 @@ export default {
         this.$socket.send(JSON.stringify(message));
         // alert! Your room Matched!
         this.$store.commit("STOP_TIMER");
+        this.$sotre.commit("SET_ROOM_INFO", {
+          storeName: storeName,
+          roomNumber: roomNumber,
+        });
       });
 
       // storeIdx (if needed)
