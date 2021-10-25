@@ -485,6 +485,7 @@ export default {
     }, //주문취소하기 버튼
     /* ============= 치킨집 지도 마커 생성 함수 ============= */
     createMarker(markerData) {
+      this.markerDatas.push(markerData);
       const imageSrc = storeImg,
         imageSize = new kakao.maps.Size(96, 96),
         imageOption = { offset: new kakao.maps.Point(27, 50) };
@@ -510,7 +511,6 @@ export default {
 
       // 마커에 커서가 오버됐을 때 마커 위에 표시할 인포윈도우를 생성합니다
       console.log("---- call make Info Window func ----");
-      const geocoder = new kakao.maps.services.Geocoder();
 
       const callback = (result, status) => {
         console.log(status);
@@ -583,6 +583,7 @@ export default {
           });
         }
       };
+      const geocoder = new kakao.maps.services.Geocoder();
       geocoder.coord2Address(
         markerPosition.getLng(),
         markerPosition.getLat(),
@@ -600,35 +601,36 @@ export default {
       console.log("---- get Store Counts from ETH ----");
 
       /**** 새롭게 구조화 된 부분 *****/
+
+      this.createMarker({
+        latitude: 37.4873567,
+        longitude: 126.9002596,
+        removed: true,
+        storeName: "BHC 가산점",
+        orderCount: 0,
+        onOff: 1,
+      });
+      this.createMarker({
+        latitude: 37.4837693,
+        longitude: 126.8613777,
+        removed: true,
+        storeName: "BBQ 가산점",
+        orderCount: 0,
+        onOff: 1,
+      });
+      this.createMarker({
+        latitude: 37.4678688,
+        longitude: 126.8886669,
+        removed: true,
+        storeName: "교촌 가산점",
+        orderCount: 0,
+        onOff: 1,
+      });
       this.AdminInstance.getStoreCount()
         .then(async (val) => {
           console.log(
             `---- get Each Chicken House Infos by idx, Counts: ${val} ----`
           );
-          this.markerDatas.push({
-            latitude: 37.4873567,
-            longitude: 126.9002596,
-            removed: true,
-            storeName: "BHC 가산점",
-            orderCount: 0,
-            onOff: 1,
-          });
-          this.markerDatas.push({
-            latitude: 37.4837693,
-            longitude: 126.8613777,
-            removed: true,
-            storeName: "BBQ 가산점",
-            orderCount: 0,
-            onOff: 1,
-          });
-          this.markerDatas.push({
-            latitude: 37.4678688,
-            longitude: 126.8886669,
-            removed: true,
-            storeName: "교촌 가산점",
-            orderCount: 0,
-            onOff: 1,
-          });
           for (let idx = 0; idx < val; idx++) {
             // idx를 통해 chicken House를 바로 가져옴..
             const CHAddress = await this.AdminInstance.findChickenHouseByIndex(
@@ -644,22 +646,24 @@ export default {
               async (result) => {
                 const _orderCount = await ChickenHouseInstance.getRoomsCount();
                 console.log(result);
-                this.markerDatas.push({
+                const markerData = {
                   latitude: Number(result._latitude),
                   longitude: Number(result._longitude),
                   removed: true,
                   storeName: result._storeName,
                   orderCount: _orderCount,
                   onOff: result._onOff,
-                });
+                };
+                // this.markerDatas.push(markerData);
+                this.createMarker(markerData);
               }
             );
           }
           console.log("---- markerDatas setting on map ----");
           console.log(this.markerDatas);
-          this.markerDatas.forEach((markerData) => {
-            this.createMarker(markerData);
-          });
+          // this.markerDatas.forEach((markerData) => {
+          // this.createMarker(markerData);
+          // });
         })
         .catch();
       console.log("=== Done Create Marker ===");
