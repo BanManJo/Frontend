@@ -16,9 +16,16 @@
           >
             <v-icon>mdi-arrow-left-thick</v-icon>
           </v-btn>
-          <v-text-field :label="$t('search')" color="secondary" hide-details style="max-width: 70%">
+          <v-text-field
+            v-model="searchWord"
+            label="메뉴 검색"
+            color="secondary"
+            hide-details
+            @click="initSearch"
+            style="max-width: 70%"
+          >
             <template v-if="$vuetify.breakpoint.mdAndUp" v-slot:append-outer>
-              <v-btn class="mt-n2" elevation="1" color="orange" fab x-small>
+              <v-btn @click="searchRooms" class="mt-n2" elevation="1" color="orange" fab x-small>
                 <v-icon>mdi-magnify</v-icon>
               </v-btn>
             </template>
@@ -54,7 +61,12 @@
         >
           <v-icon large>mdi-plus</v-icon>
         </v-btn>
-        <v-col v-for="(orderRoom, idx) in orderRooms" :key="idx" text>
+        <v-row v-show="showSearchResult" justify="center" class="mt-3">
+          <template>"{{searchWord}}"로 검색한 결과 입니다.</template>
+          <!-- <br /> -->
+          <!-- <v-btn @click="initSearch" small text :ripple="false">검색 결과 초기화</v-btn> -->
+        </v-row>
+        <v-row v-for="(orderRoom, idx) in orderRooms" :key="idx" text class="ma-2">
           <base-material-order-room-card
             color="orange"
             icon="mdi-clock-time-eight-outline"
@@ -72,7 +84,7 @@
             :room-number="orderRoom.index"
             @matchRoom="matchRoom"
           />
-        </v-col>
+        </v-row>
       </v-list>
     </v-navigation-drawer>
     <base-material-snackbar
@@ -107,6 +119,8 @@ export default {
       ],
       right: null,
       alertWhenStoreOff: false,
+      searchWord: "",
+      showSearchResult: false,
     };
   },
   props: {
@@ -117,7 +131,7 @@ export default {
   },
   computed: {
     orderRooms() {
-      return this.navDrawer.orderRooms;
+      return this.navDrawer.orderRooms.filter((or) => or.show);
     },
     ownerPage() {
       return `/ownerPage/${this.navDrawer.storeName}`;
@@ -132,6 +146,19 @@ export default {
     },
   },
   methods: {
+    searchRooms() {
+      this.navDrawer.orderRooms.map((or) => {
+        or.show = or.chickenName.includes(this.searchWord) ? true : false;
+      });
+      this.showSearchResult = true;
+    },
+    initSearch() {
+      this.navDrawer.orderRooms.map((or) => {
+        or.show = true;
+      });
+      this.showSearchResult = false;
+      this.searchWord = "";
+    },
     async matchRoom(storeName, roomNumber, price) {
       console.log("=== Create Match Room ===");
 

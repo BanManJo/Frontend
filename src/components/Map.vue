@@ -5,13 +5,35 @@
       <v-toolbar-title class="text-h3 font-weight-bold">반 만 조</v-toolbar-title>
       <v-spacer></v-spacer>
 
-      <v-text-field :label="$t('search')" color="secondary" hide-details>
-        <template v-if="$vuetify.breakpoint.mdAndUp" v-slot:append-outer>
-          <v-btn class="mt-n2" small text>
-            <v-icon>mdi-magnify</v-icon>
-          </v-btn>
+      <v-menu bottom offset-y max-height="40%">
+        <template v-slot:activator="{ on, attrs }">
+          <v-text-field
+            v-model="searchStore"
+            label="치킨집 검색"
+            v-bind="attrs"
+            color="secondary"
+            hide-details
+            v-on="on"
+            @click="setDrawer(false)"
+            clearable
+            style
+          >
+            <!-- <template v-if="$vuetify.breakpoint.mdAndUp" v-slot:append-outer> -->
+            <!-- <v-btn class="mt-n2" v-bind="attrs" small text>
+                <v-icon>mdi-magnify</v-icon>
+            </v-btn>-->
+            <!-- </template> -->
+          </v-text-field>
         </template>
-      </v-text-field>
+        <v-list class="mt-2">
+          <!-- <v-list-item v-for="(item, i) in items" :key="i" @click="() => {}">
+            <v-list-item-title>{{ item.title }}</v-list-item-title>
+          </v-list-item>-->
+          <v-list-item v-for="(store, i) in searchedStores" :key="i" @click="focusOnAStore(store)">
+            <v-list-item-title>{{store.storeName}}</v-list-item-title>
+          </v-list-item>
+        </v-list>
+      </v-menu>
 
       <v-btn class="ml-2 text-h4" min-width="0" text @click="setCurrentPos">
         <v-icon large :color="showWhereUserIs ? 'yellow darken-2' : 'black'">mdi-crosshairs-gps</v-icon>
@@ -143,6 +165,7 @@ export default {
       color: "info",
       snackbarTitle: "",
       snackbarContent: "",
+      searchStore: "",
     };
   },
   computed: {
@@ -158,6 +181,17 @@ export default {
       }
       return "";
     },
+    searchedStores() {
+      if (this.searchStore) {
+        return this.markerDatas.filter((md) => {
+          return md.storeName
+            .toLowerCase()
+            .includes(this.searchStore.toLowerCase());
+        });
+      } else {
+        return this.markerDatas;
+      }
+    },
   },
   methods: {
     ...mapMutations({
@@ -166,6 +200,20 @@ export default {
     test() {
       console.log("test");
       this.snackbar = true;
+    },
+    focusOnAStore(store) {
+      // this.setDrawer(false);
+      const markerPosition = new kakao.maps.LatLng(
+        store.latitude,
+        store.longitude
+      );
+      this.map.setCenter(markerPosition);
+      // this.markerDatas.forEach((md) => {
+      //   md.iw.close();
+      //   md.removed = true;
+      // });
+      store.iw.open(this.map, store.marker);
+      store.removed = false;
     },
     async onOffEvent(ChickenHouseInstance) {
       ChickenHouseInstance.watchIfOn(async (error, result) => {
@@ -184,15 +232,29 @@ export default {
           //   return;
           // }
           // marker window를 찾자
-          this.markerDatas.forEach((markerData, idx) => {
-            if (markerData.storeName === chickenStore) {
-              markerData.onOff = result.returnValues.onOff;
+          const length = this.markerDatas.length;
+          for (let i = 0; i < length; i++) {
+            if (this.markerDatas[i].storeName === chickenStore) {
+              this.markerDatas[i].onOff = result.returnValues.onOff;
+              this.markerDatas[i].iw.close();
+              this.markerDatas[i].removed = true;
+              const markerData = this.markerDatas[i];
+              this.markerDatas.splice(i, 1);
               this.createMarker(markerData);
-              this.infowindows[idx].close();
-              this.infowindows[idx] = this.infowindows.pop();
-              return;
+              // this.markerDatas[i] = this.markerDatas.pop();
+              break;
             }
-          });
+          }
+          // this.markerDatas.forEach((markerData, idx) => {
+          //   if (markerData.storeName === chickenStore) {
+          //     markerData.onOff = result.returnValues.onOff;
+          //     this.createMarker(markerData);
+          //     // this.infowindows[idx].close();
+          //     // this.infowindows[idx] = this.infowindows.pop();
+
+          //     return;
+          //   }
+          // });
         }
       });
     },
@@ -257,7 +319,9 @@ export default {
       if (this.drawer && this.navDrawer.storeName) {
         this.markerDatas.forEach((markerData, idx) => {
           if (markerData.storeName === this.navDrawer.storeName) {
-            this.infowindows[idx].close();
+            // this.infowindows[idx].close();
+            markerData.iw.close();
+            markerData.removed = true;
             return;
           }
         });
@@ -307,7 +371,7 @@ export default {
                 chickenName: result._chickenName,
                 duration: duration,
                 price: result._price,
-                show: false,
+                show: true,
                 description: "황금올리브 같이 먹을 분 구함!~",
                 menuState: result._menuState,
                 index: idx,
@@ -345,7 +409,7 @@ export default {
               chickenName: returns._chickenName,
               duration: +returns._date + +returns._finish * 60,
               price: returns._price,
-              show: false,
+              show: true,
               description: "황금올리브 같이 먹을 분 구함!~",
               menuState: returns._menuState,
               index: Number(returns._roomNumber),
@@ -485,7 +549,7 @@ export default {
     }, //주문취소하기 버튼
     /* ============= 치킨집 지도 마커 생성 함수 ============= */
     createMarker(markerData) {
-      this.markerDatas.push(markerData);
+      // this.markerDatas.push(markerData);
       const imageSrc = storeImg,
         imageSize = new kakao.maps.Size(96, 96),
         imageOption = { offset: new kakao.maps.Point(27, 50) };
@@ -533,7 +597,10 @@ export default {
             removable: iwRemoveable,
           });
 
-          this.infowindows.push(infowindow);
+          // this.infowindows.push(infowindow);
+          markerData["iw"] = infowindow;
+          markerData["marker"] = marker;
+          this.markerDatas.push(markerData);
           kakao.maps.event.addListener(marker, "click", () => {
             if (this.drawer) {
               // drawer가 열려 있다.
@@ -552,7 +619,7 @@ export default {
                     }
                   } else {
                     if (!_markerData.removed) {
-                      this.infowindows[index].close();
+                      _markerData.iw.close();
                       _markerData.removed = true;
                     }
                   }
@@ -572,7 +639,7 @@ export default {
                   }
                 } else {
                   if (!_markerData.removed) {
-                    this.infowindows[index].close();
+                    _markerData.iw.close();
                     _markerData.removed = true;
                   }
                 }
@@ -754,7 +821,7 @@ export default {
           orderCount: 0,
           onOff: 0,
         };
-        this.markerDatas.push(markerData);
+        // this.markerDatas.push(markerData);
         this.createMarker(markerData);
       } else {
         throw error;
@@ -784,8 +851,11 @@ export default {
     drawer(drawerState) {
       if (!drawerState) {
         console.log(drawerState);
-        this.infowindows.forEach((iw) => iw.close());
-        this.markerDatas.forEach((md) => (md.removed = true));
+        // this.infowindows.forEach((iw) => iw.close());
+        this.markerDatas.forEach((md) => {
+          md.removed = true;
+          md.iw.close();
+        });
       }
     },
     timeout: function (val) {
